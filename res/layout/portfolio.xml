@@ -1,0 +1,38 @@
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+    <ListView
+            android:id="@+id/portfolio_list"
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"/>
+
+    <!--
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_weight="1"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="-50dp"
+        android:background="#818380">
+
+        <TextView
+            android:textSize="14dp"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:singleLine="false"
+            android:padding="6dp"
+            android:shadowColor="#BB000000"
+              android:shadowRadius="2.75"
+            android:gravity="fill_horizontal"
+            android:textColor="#FFFFFFFF"
+            android:textStyle="bold"
+            android:text="This portfolio listing is created automatically from the stocks set up in your widgets." />
+
+    </LinearLayout>
+    -->
+</LinearLayout>
+

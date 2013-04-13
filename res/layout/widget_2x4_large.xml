@@ -1,0 +1,26 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:padding="0dp"
+                android:clickable="true"
+                android:focusable="true">
+
+    <ImageView
+            android:id="@+id/widget_bg"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal"
+            android:adjustViewBounds="false"
+            android:scaleType="fitXY"
+            android:src="@+drawable/ministock_bg_transparent68_large"/>
+
+    <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:paddingBottom="3dp"
+            android:orientation="horizontal">
+
+        <include layout="@layout/widget_columns4_large"/>
+
+    </LinearLayout>
+</RelativeLayout>    
