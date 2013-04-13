@@ -31,8 +31,6 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 
-//http://d.yimg.com/autoc.finance.yahoo.com/autoc?callback=YAHOO.Finance.SymbolSuggest.ssCallback&query=a
-
 /**
  * The main activity for the dictionary. Also displays search results triggered
  * by the search dialog.

@@ -53,7 +53,7 @@ public class DataSource {
         HashMap<String, HashMap<StockField, String>> all_quotes =
                 new HashMap<String, HashMap<StockField, String>>();
 
-        // If fresh data is request, use our data provider Yahoo
+        // If fresh data is request, retrieve from the stock data provider
         if (noCache) {
 
             // Retrieve all widget symbols
@@ -68,9 +68,9 @@ public class DataSource {
                     .getPortfolioStockMap(context)
                     .keySet());
 
-            // Retrieve the data from Yahoo
+            // Retrieve the data from the stock data provider
             all_quotes =
-                    YahooFinanceQuotes.getQuotes(context, widgetSymbols
+                    StockQuotes.getQuotes(context, widgetSymbols
                             .toArray(new String[widgetSymbols.size()]));
         }
 

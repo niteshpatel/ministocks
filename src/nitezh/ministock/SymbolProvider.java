@@ -43,7 +43,7 @@ import java.util.Map;
 public class SymbolProvider extends ContentProvider {
 
     public static String AUTHORITY =
-            "name.nitesh.ministocks.library.stocksymbols";
+            "nitezh.ministocks.stocksymbols";
 
     private static final int SEARCH_SUGGEST = 0;
     private static final int SHORTCUT_REFRESH = 1;
@@ -124,7 +124,7 @@ public class SymbolProvider extends ContentProvider {
         query = query == null ? "" : query.toLowerCase().trim();
 
         List<Map<String, String>> suggestions =
-                YahooSymbolSuggestions.getSuggestions(query);
+                StockSuggestions.getSuggestions(query);
 
         // Check whether an exact match is found in the symbol
         if (!query.equals("")) {

@@ -139,7 +139,7 @@
         <!-- Provides search suggestions for words and their definitions. -->
         <provider
                 android:name="SymbolProvider"
-                android:authorities="name.nitesh.ministocks.library.stocksymbols"
+                android:authorities="nitezh.ministocks.stocksymbols"
                 android:syncable="false"/>
 
         <!-- Receivers -->

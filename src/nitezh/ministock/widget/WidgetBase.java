@@ -50,6 +50,23 @@ import java.util.HashMap;
 
 public class WidgetBase extends AppWidgetProvider {
 
+    // Update type
+    public static final int VIEW_UPDATE = 0;
+    public static final int VIEW_CHANGE = 1;
+    public static final int VIEW_NO_UPDATE = 2;
+    // View type
+    public static final int VIEW_DAILY_PERCENT = 0;
+    public static final int VIEW_DAILY_CHANGE = 1;
+    public static final int VIEW_PORTFOLIO_PERCENT = 2;
+    public static final int VIEW_PORTFOLIO_CHANGE = 3;
+    public static final int VIEW_PORTFOLIO_PERCENT_AER = 4;
+    public static final int VIEW_PL_DAILY_PERCENT = 5;
+    public static final int VIEW_PL_DAILY_CHANGE = 6;
+    public static final int VIEW_PL_PERCENT = 7;
+    public static final int VIEW_PL_CHANGE = 8;
+    public static final int VIEW_PL_PERCENT_AER = 9;
+    // Static variables used by the alarm manager
+    public static final String ALARM_UPDATE = "nitezh.ministock.ALARM_UPDATE";
     // Colours
     public static int COLOUR_GAIN = Color.parseColor("#CCFF66");
     public static int COLOUR_LOSS = Color.parseColor("#FF6666");
@@ -57,25 +74,6 @@ public class WidgetBase extends AppWidgetProvider {
     public static int COLOUR_ALERT_LOW = Color.parseColor("#FF66FF");
     public static int COLOUR_VOLUME = Color.LTGRAY;
     public static int COLOUR_NA = Color.parseColor("#66CCCC");
-
-    // Update type
-    public static final int VIEW_UPDATE = 0;
-    public static final int VIEW_CHANGE = 1;
-    public static final int VIEW_NO_UPDATE = 2;
-
-    // View type
-    public static final int VIEW_DAILY_PERCENT = 0;
-    public static final int VIEW_DAILY_CHANGE = 1;
-
-    public static final int VIEW_PORTFOLIO_PERCENT = 2;
-    public static final int VIEW_PORTFOLIO_CHANGE = 3;
-    public static final int VIEW_PORTFOLIO_PERCENT_AER = 4;
-
-    public static final int VIEW_PL_DAILY_PERCENT = 5;
-    public static final int VIEW_PL_DAILY_CHANGE = 6;
-    public static final int VIEW_PL_PERCENT = 7;
-    public static final int VIEW_PL_CHANGE = 8;
-    public static final int VIEW_PL_PERCENT_AER = 9;
 
     public static RemoteViews getRemoteViews(
             Context context,
@@ -638,9 +636,6 @@ public class WidgetBase extends AppWidgetProvider {
         return colour;
     }
 
-    // Static variables used by the alarm manager
-    public static final String ALARM_UPDATE = "nitezh.ministock.ALARM_UPDATE";
-
     public static void setOnClickPendingIntents(
             Context context,
             int appWidgetId,
@@ -1096,67 +1091,9 @@ public class WidgetBase extends AppWidgetProvider {
         updateAlarmManager(context);
     }
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-
-        String action = intent.getAction();
-
-        // Update all widgets if requested
-        if (ALARM_UPDATE.equals(action)) {
-            doScheduledUpdates(context);
-        } else if (action.equals("LEFT")
-                || action.equals("RIGHT")
-                || action == null) {
-
-            Bundle extras = intent.getExtras();
-            if (extras != null) {
-                int appWidgetId =
-                        extras.getInt(
-                                AppWidgetManager.EXTRA_APPWIDGET_ID,
-                                AppWidgetManager.INVALID_APPWIDGET_ID);
-
-                // Bring up the preferences screen if the user clicked
-                // on the left side of the widget
-                if (!action.equals("RIGHT")) {
-
-                    PreferencesBase.mAppWidgetId = appWidgetId;
-                    Intent activity = new Intent(context, Preferences.class);
-                    activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(activity);
-
-                }
-                // Update the widget if the user clicked on the right
-                // side of the widget
-                else {
-                    update(context, appWidgetId, VIEW_CHANGE);
-                }
-
-            }
-        } else {
-            super.onReceive(context, intent);
-        }
-    }
-
-    @Override
-    public void onUpdate(
-            Context context,
-            AppWidgetManager appWidgetManager,
-            int[] appWidgetIds) {
-        /*
-         * Update the intersection of the appWidgetManager appWidgetIds and the
-		 * true saved appWidgetIds
-		 */
-
-        // Reset alarm manager if needed
-        updateAlarmManager(context);
-
-        for (int i : UserData.getAppWidgetIds2(context))
-            update(context, i, VIEW_NO_UPDATE);
-    }
-
     public static void doScheduledUpdates(Context context) {
-		/*
-		 * Update the widget if allowed by the update schedule
+        /*
+         * Update the widget if allowed by the update schedule
 		 */
 
         boolean doUpdates = true;
@@ -1192,14 +1129,6 @@ public class WidgetBase extends AppWidgetProvider {
 
         else
             updateWidgets(context, VIEW_NO_UPDATE);
-    }
-
-    @Override
-    public void onEnabled(Context context) {
-        super.onEnabled(context);
-
-        // Update the alarm manager
-        updateAlarmManager(context);
     }
 
     public static void updateAlarmManager(Context context) {
@@ -1246,6 +1175,72 @@ public class WidgetBase extends AppWidgetProvider {
                 calendar.getTimeInMillis(),
                 interval,
                 pendingIntent);
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+
+        String action = intent.getAction();
+
+        // Update all widgets if requested
+        if (ALARM_UPDATE.equals(action)) {
+            doScheduledUpdates(context);
+        } else if (action.equals("LEFT")
+                || action.equals("RIGHT")
+                || action == null) {
+
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                int appWidgetId =
+                        extras.getInt(
+                                AppWidgetManager.EXTRA_APPWIDGET_ID,
+                                AppWidgetManager.INVALID_APPWIDGET_ID);
+
+                // Bring up the preferences screen if the user clicked
+                // on the left side of the widget
+                if (!action.equals("RIGHT")) {
+
+                    Preferences.mAppWidgetId = appWidgetId;
+                    Intent activity = new Intent(context, Preferences.class);
+                    activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(activity);
+
+                }
+                // Update the widget if the user clicked on the right
+                // side of the widget
+                else {
+                    update(context, appWidgetId, VIEW_CHANGE);
+                }
+
+            }
+        } else {
+            super.onReceive(context, intent);
+        }
+    }
+
+    @Override
+    public void onUpdate(
+            Context context,
+            AppWidgetManager appWidgetManager,
+            int[] appWidgetIds) {
+        /*
+         * Update the intersection of the appWidgetManager appWidgetIds and the
+		 * true saved appWidgetIds
+		 */
+
+        // Reset alarm manager if needed
+        updateAlarmManager(context);
+
+        for (int i : UserData.getAppWidgetIds2(context))
+            update(context, i, VIEW_NO_UPDATE);
+    }
+
+    @Override
+    public void onEnabled(Context context) {
+        super.onEnabled(context);
+
+        // Update the alarm manager
+        updateAlarmManager(context);
     }
 
     @Override

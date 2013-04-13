@@ -32,7 +32,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
-public class YahooFinanceQuotes {
+public class StockQuotes {
 
     private static final String BASE_URL =
             "http://download.finance.yahoo.com/d/quotes.csv";

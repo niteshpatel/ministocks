@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class YahooSymbolSuggestions {
+public class StockSuggestions {
 
     private static final String BASE_URL =
             "http://d.yimg.com/autoc.finance.yahoo.com/autoc?callback=YAHOO.Finance.SymbolSuggest.ssCallback&query=";

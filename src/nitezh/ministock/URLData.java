@@ -39,7 +39,7 @@ public class URLData {
     /* URL data retrieval without caching */
     public static String getURLData2(String url) {
 
-        // TODO (nasty hack to avoid broken data from Yahoo)
+        // TODO (nasty hack to avoid broken data)
         if (url.indexOf("INDU") == -1) {
             url = url.replace("&s=", "&s=INDU+");
         }
