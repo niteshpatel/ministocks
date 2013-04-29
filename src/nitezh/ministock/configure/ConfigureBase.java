@@ -37,9 +37,9 @@ import nitezh.ministock.Tools;
 import nitezh.ministock.UserData;
 import nitezh.ministock.widget.WidgetBase;
 
-public abstract class ConfigureBase extends Activity {
+abstract class ConfigureBase extends Activity {
 
-    protected int mWidgetSize = 0;
+    int mWidgetSize = 0;
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -51,7 +51,7 @@ public abstract class ConfigureBase extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
-    public void setupWidget(int widgetSize) {
+    void setupWidget(int widgetSize) {
 
         // Update the widget when we end configuration
         Bundle extras = getIntent().getExtras();
@@ -72,7 +72,7 @@ public abstract class ConfigureBase extends Activity {
             // and add default preferences (view and Stock1)
             Context context = getBaseContext();
             UserData.addAppWidgetSize(context, appWidgetId, widgetSize);
-            Editor editor = Tools.getWidgetPrefs(context, appWidgetId).edit();
+            Editor editor = Tools.getWidgetPreferences(context, appWidgetId).edit();
 
             if (widgetSize == 0 || widgetSize == 2)
                 editor.putBoolean("show_percent_change", true);

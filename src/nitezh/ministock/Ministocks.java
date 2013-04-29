@@ -51,7 +51,6 @@ public class Ministocks extends Activity {
 
         TextView text = (TextView) findViewById(R.id.ministocks_text);
         text.setText(html);
-
     }
 
     @Override

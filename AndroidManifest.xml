@@ -148,6 +148,7 @@
                 android:label="Ministocks">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="nitezh.ministock.ASYNC_UPDATE"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="nitezh.ministock.ALARM_UPDATE"/>

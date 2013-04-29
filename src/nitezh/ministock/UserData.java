@@ -27,24 +27,15 @@ package nitezh.ministock;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.os.Environment;
 
-import java.io.*;
+import java.io.File;
 import java.util.*;
 
 public class UserData {
 
-    public enum PortfolioField {
-        PRICE, DATE, QUANTITY, LIMIT_HIGH, LIMIT_LOW, CUSTOM_DISPLAY
-    }
-
-    private static final HashMap<String, HashMap<Integer, String>> mWidgetsStockMap =
-            new HashMap<String, HashMap<Integer, String>>();
-    private static final HashMap<String, HashMap<PortfolioField, String>> mPortfolioStockMap =
-            new HashMap<String, HashMap<PortfolioField, String>>();
-
+    private static final HashMap<String, HashMap<PortfolioField, String>> mPortfolioStockMap = new HashMap<String, HashMap<PortfolioField, String>>();
     // Cache markers
-    public static boolean mDirtyPortfolioStockMap = true;
+    private static boolean mDirtyPortfolioStockMap = true;
 
     public static void addAppWidgetSize(
             Context context,
@@ -52,7 +43,7 @@ public class UserData {
             int widgetSize) {
 
         // Record widgetSize
-        Editor editor = Tools.getWidgetPrefs(context, appWidgetId).edit();
+        Editor editor = Tools.getWidgetPreferences(context, appWidgetId).edit();
         editor.putInt("widgetSize", widgetSize);
         editor.commit();
     }
@@ -63,18 +54,18 @@ public class UserData {
             Integer widgetSize) {
 
         // Get the existing widgetIds from the preferences
-        SharedPreferences prefs = Tools.getAppPrefs(context);
+        SharedPreferences preferences = Tools.getAppPreferences(context);
 
         // Add the new appWidgetId
         StringBuilder rawAppWidgetIds = new StringBuilder();
-        rawAppWidgetIds.append(prefs.getString("appWidgetIds", ""));
+        rawAppWidgetIds.append(preferences.getString("appWidgetIds", ""));
         if (!rawAppWidgetIds.toString().equals(""))
             rawAppWidgetIds.append(",");
 
         rawAppWidgetIds.append(String.valueOf(appWidgetId));
 
         // Update the preferences too
-        Editor editor = prefs.edit();
+        Editor editor = preferences.edit();
         editor.putString("appWidgetIds", rawAppWidgetIds.toString());
         editor.commit();
 
@@ -86,11 +77,10 @@ public class UserData {
     public static void delAppWidgetId(Context context, int appWidgetId) {
 
         // Get the existing widgetIds from the preferences
-        SharedPreferences prefs = Tools.getAppPrefs(context);
+        SharedPreferences preferences = Tools.getAppPreferences(context);
 
         ArrayList<String> newAppWidgetIds = new ArrayList<String>();
-        for (String id : prefs.getString("appWidgetIds", "").split(","))
-            newAppWidgetIds.add(id);
+        Collections.addAll(newAppWidgetIds, preferences.getString("appWidgetIds", "").split(","));
 
         // Remove the one to remove
         newAppWidgetIds.remove(String.valueOf(appWidgetId));
@@ -98,14 +88,14 @@ public class UserData {
         // Add the new appWidgetId
         StringBuilder appWidgetIds = new StringBuilder();
         for (String id : newAppWidgetIds)
-            appWidgetIds.append(id + ",");
+            appWidgetIds.append(id).append(",");
 
         // Remove trailing comma
         if (appWidgetIds.length() > 0)
             appWidgetIds.deleteCharAt(appWidgetIds.length() - 1);
 
         // Update the preferences too
-        Editor editor = prefs.edit();
+        Editor editor = preferences.edit();
         editor.putString("appWidgetIds", appWidgetIds.toString());
         editor.commit();
     }
@@ -113,7 +103,7 @@ public class UserData {
     public static int[] getAppWidgetIds2(Context context) {
 
         // Get the widgetIds from the preferences
-        SharedPreferences prefs = Tools.getAppPrefs(context);
+        SharedPreferences prefs = Tools.getAppPreferences(context);
 
         StringBuilder rawAppWidgetIds = new StringBuilder();
         rawAppWidgetIds.append(prefs.getString("appWidgetIds", ""));
@@ -135,35 +125,24 @@ public class UserData {
     public static Set<String> getWidgetsStockSymbols(Context context) {
 
         Set<String> widgetStockSymbols = new HashSet<String>();
-        SharedPreferences widgetPrefs;
+        SharedPreferences widgetPreferences;
 
         // Add the stock symbols from the widget preferences
         for (int appWidgetId : getAppWidgetIds2(context)) {
 
-            widgetPrefs = Tools.getWidgetPrefs(context, appWidgetId);
-            if (widgetPrefs == null)
+            widgetPreferences = Tools.getWidgetPreferences(context, appWidgetId);
+            if (widgetPreferences == null)
                 continue;
 
             // If widget preferences were found, extract the stock symbols
             for (int i = 1; i < 11; i++) {
 
-                String stockSymbol = widgetPrefs.getString("Stock" + i, "");
+                String stockSymbol = widgetPreferences.getString("Stock" + i, "");
                 if (!stockSymbol.equals(""))
                     widgetStockSymbols.add(stockSymbol);
             }
         }
         return widgetStockSymbols;
-    }
-
-    public static HashMap<String, HashMap<Integer, String>> getWidgetsStockMap(
-            Context context) {
-
-        // Clear existing stock maps add an empty HashMap for each symbol
-        mWidgetsStockMap.clear();
-        for (String s : getWidgetsStockSymbols(context))
-            mWidgetsStockMap.put(s, new HashMap<Integer, String>());
-
-        return mWidgetsStockMap;
     }
 
     public static HashMap<String, HashMap<PortfolioField, String>>
@@ -178,7 +157,7 @@ public class UserData {
 
         // Parse the stock info from the raw string
         for (String rawStock : Tools
-                .getAppPrefs(context)
+                .getAppPreferences(context)
                 .getString("portfolio", "")
                 .split(",")) {
 
@@ -211,82 +190,6 @@ public class UserData {
         return mPortfolioStockMap;
     }
 
-    public static void backupPortfolio(Context context) {
-
-        // Get stock data from preferences
-        String rawStocks =
-                Tools.getAppPrefs(context).getString("portfolio", "");
-
-        // Do not backup if the portfolio data is currently empty
-        if (!(rawStocks.length() > 0)) {
-            return;
-        }
-
-        try {
-
-            // Create the storage directory
-            File path = Environment.getExternalStorageDirectory();
-            File file = new File(path, "ministocks");
-            file.mkdirs();
-
-            // Create and write the data file
-            File file2 = new File(file, "portfolio.txt");
-            FileOutputStream fos = null;
-            try {
-                fos = new FileOutputStream(file2);
-            } catch (FileNotFoundException e1) {
-            }
-
-            try {
-                fos.write(rawStocks.toString().getBytes());
-                fos.flush();
-                fos.close();
-            } catch (IOException e) {
-            }
-
-            // TODO (catch all exceptions)
-        } catch (Exception e) {
-        }
-    }
-
-    public static void restorePortfolio(Context context) {
-
-        // Restore portfolio from external backup
-        try {
-            // Get the data file
-            File path = Environment.getExternalStorageDirectory();
-            File file = new File(path, "ministocks");
-            File file2 = new File(file, "portfolio.txt");
-
-            // Read text from file
-            StringBuilder text = new StringBuilder();
-
-            try {
-                BufferedReader br = new BufferedReader(new FileReader(file2));
-                String line;
-
-                while ((line = br.readLine()) != null) {
-                    text.append(line);
-                    text.append('\n');
-                }
-
-                br.close();
-
-                // Commit changes to the preferences
-                Editor editor = Tools.getAppPrefs(context).edit();
-                editor.putString("portfolio", text.toString());
-                editor.commit();
-
-                mDirtyPortfolioStockMap = true;
-
-            } catch (IOException e) {
-            }
-
-        } catch (Exception e) {
-            // TODO (catch all exceptions)
-        }
-    }
-
     public static void setPortfolioStockMap(
             Context context,
             HashMap<String, HashMap<PortfolioField, String>> stockMap) {
@@ -305,7 +208,7 @@ public class UserData {
                     || (stockInfoMap.get(PortfolioField.CUSTOM_DISPLAY) != null && !stockInfoMap
                     .get(PortfolioField.CUSTOM_DISPLAY)
                     .equals(""))) {
-                rawStocks.append(symbol + ":");
+                rawStocks.append(symbol).append(":");
 
                 for (PortfolioField f : PortfolioField.values()) {
 
@@ -314,7 +217,7 @@ public class UserData {
                     if (data == null || data.equals(""))
                         data = "empty";
 
-                    rawStocks.append(data + "|");
+                    rawStocks.append(data).append("|");
                 }
 
                 // Remove trailing pipe
@@ -330,7 +233,7 @@ public class UserData {
             rawStocks.deleteCharAt(rawStocks.length() - 1);
 
         // Commit changes to the preferences
-        Editor editor = Tools.getAppPrefs(context).edit();
+        Editor editor = Tools.getAppPreferences(context).edit();
         editor.putString("portfolio", rawStocks.toString());
         editor.commit();
 
@@ -370,13 +273,17 @@ public class UserData {
 
         // Remove files we do not have an active widget for
         String appDir = context.getFilesDir().getParentFile().getPath();
-        File f_shared_prefs = new File(appDir + "/shared_prefs");
+        File f_shared_preferences = new File(appDir + "/shared_prefs");
 
-        // Check if shared_prefs exists
+        // Check if shared_preferences exists
         // TODO: Work out why this is ever null and an alternative strategy
-        if (f_shared_prefs.exists())
-            for (File f : f_shared_prefs.listFiles())
+        if (f_shared_preferences.exists())
+            for (File f : f_shared_preferences.listFiles())
                 if (!l.contains(f.getName()))
                     f.delete();
+    }
+
+    public enum PortfolioField {
+        PRICE, DATE, QUANTITY, LIMIT_HIGH, LIMIT_LOW, CUSTOM_DISPLAY
     }
 }

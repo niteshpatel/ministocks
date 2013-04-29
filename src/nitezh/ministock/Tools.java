@@ -38,17 +38,15 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 
 public class Tools {
 
-    public static final HashMap<String, String> mCurrencyCodeMap =
-            new HashMap<String, String>();
-    public static final HashMap<String, String> mCurrencyCharMap =
-            new HashMap<String, String>();
+    public static final String BUILD = "45";
+    private static final HashMap<String, String> mCurrencyCodeMap = new HashMap<String, String>();
+    private static final HashMap<String, String> mCurrencyCharMap = new HashMap<String, String>();
 
     static {
         // Populate currency code map
@@ -130,7 +128,7 @@ public class Tools {
     }
 
     // Determine currency symbol from exchange
-    public static String getCurrencySymbol(String symbol) {
+    private static String getCurrencySymbol(String symbol) {
 
         // Now add the currency symbol
         String currencyChar = null;
@@ -157,16 +155,16 @@ public class Tools {
         String currencySymbol = getCurrencySymbol(symbol);
 
         // Divide by 100 if needed
-        if (currencySymbol == "£")
+        if (currencySymbol.equals("£"))
             try {
                 value = String.format("%.0f", Tools.parseDouble(value) / 100);
 
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
 
         // Move minus sign to front if we have one
         String prefix = "";
-        if (value.indexOf("-") > -1) {
+        if (value.contains("-")) {
             prefix = "-";
             value = value.substring(1);
         }
@@ -175,43 +173,39 @@ public class Tools {
         return prefix + currencySymbol + value;
     }
 
-    public static Double parseDouble(String value, Double defaultValue) {
+    public static Double parseDouble(String value) {
         try {
-            return parseDouble(value);
+
+            // First replace decimal points with the local separator
+            char separator = new DecimalFormatSymbols().getDecimalSeparator();
+            value = value.replace('.', separator);
+            return NumberFormat.getInstance().parse(value).doubleValue();
 
         } catch (Exception e) {
-            return defaultValue;
+            return null;
         }
     }
 
-    public static Double parseDouble(String value) throws ParseException {
-
-        // First replace decimal points with the local separator
-        char seperator = new DecimalFormatSymbols().getDecimalSeparator();
-        value = value.replace('.', seperator);
-        return NumberFormat.getInstance().parse(value).doubleValue();
-    }
-
-    public static SharedPreferences getAppPrefs(Context context) {
+    public static SharedPreferences getAppPreferences(Context context) {
         return context.getSharedPreferences(
                 context.getString(R.string.prefs_name),
                 0);
     }
 
-    public static SharedPreferences getWidgetPrefs(
+    public static SharedPreferences getWidgetPreferences(
             Context context,
             int appWidgetId) {
-        SharedPreferences widgetPrefs = null;
+        SharedPreferences widgetPreferences = null;
         try {
-            widgetPrefs =
+            widgetPreferences =
                     context.getSharedPreferences(
                             context.getString(R.string.prefs_name)
                                     + appWidgetId,
                             0);
 
-        } catch (NotFoundException e) {
+        } catch (NotFoundException ignored) {
         }
-        return widgetPrefs;
+        return widgetPreferences;
     }
 
     public static String timeDigitPad(int c) {
@@ -221,13 +215,13 @@ public class Tools {
             return "0" + String.valueOf(c);
     }
 
-    public static String decimalPlaceFormat(String s, int places) {
+    public static String decimalPlaceFormat(String s) {
 
         // Format to two decimal places
         try {
-            return String.format("%." + places + "f", Double.parseDouble(s));
+            return String.format("%." + 2 + "f", Double.parseDouble(s));
 
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return s;
     }
@@ -396,11 +390,11 @@ public class Tools {
     }
 
     /* Number of days elapsed from given date */
-    public static double elapsedDays(String dateString, String dateFormat) {
+    public static double elapsedDays(String dateString) {
 
         double daysElapsed = 0;
         if (dateString != null) {
-            SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 
             try {
                 double elapsed =
@@ -409,27 +403,25 @@ public class Tools {
                                 .getTime()) / 1000;
                 daysElapsed = elapsed / 86400;
 
-            } catch (ParseException e) {
+            } catch (ParseException ignored) {
             }
         }
         return daysElapsed;
     }
 
     /* Number of milliseconds elapsed from given date */
-    public static double elapsedTime(String dateString, String dateFormat) {
+    public static double elapsedTime(String dateString) {
 
         double daysElapsed = 0;
         if (dateString != null) {
-            SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
             try {
-                double elapsed =
-                        (new Date().getTime() - formatter
-                                .parse(dateString)
-                                .getTime());
-                daysElapsed = elapsed;
+                daysElapsed = (new Date().getTime() - formatter
+                        .parse(dateString)
+                        .getTime());
 
-            } catch (ParseException e) {
+            } catch (ParseException ignored) {
             }
         }
         return daysElapsed;
@@ -459,25 +451,12 @@ public class Tools {
         }
     }
 
-    /* Return the intersection of two arrays */
-    public static Integer[] arrayIntersect(int[] array1, int[] array2) {
-        ArrayList<Integer> list = new ArrayList<Integer>();
+    public static int getField(String name) {
+        try {
+            return R.id.class.getField(name).getInt(R.class);
 
-        // Find the intersection
-        final int N = array1.length;
-        final int M = array2.length;
-
-        for (int i = 0; i < N; i++)
-            for (int j = 0; j < M; j++)
-                if (array1[i] == array2[j])
-                    list.add(array1[i]);
-
-        Object[] objectArray = list.toArray();
-        Integer[] intArray = new Integer[objectArray.length];
-
-        for (int i = 0; i < objectArray.length; i++)
-            intArray[i] = (Integer) objectArray[i];
-
-        return intArray;
+        } catch (Exception e) {
+            return 0;
+        }
     }
 }

@@ -35,84 +35,61 @@ import java.util.Set;
 
 public class DataSource {
 
-    public enum StockField {
-        PRICE, CHANGE, PERCENT, EXCHANGE, VOLUME, NAME
-    }
-
     private static String mTimeStamp;
     private static HashMap<String, HashMap<StockField, String>> mCachedQuotes;
 
-    /**
-     * Get Stock Quotes *
-     */
     public HashMap<String, HashMap<StockField, String>> getStockData(
             Context context,
             String[] symbols,
             boolean noCache) {
 
-        HashMap<String, HashMap<StockField, String>> all_quotes =
-                new HashMap<String, HashMap<StockField, String>>();
+        HashMap<String, HashMap<StockField, String>> allQuotes = new HashMap<String, HashMap<StockField, String>>();
 
         // If fresh data is request, retrieve from the stock data provider
         if (noCache) {
 
-            // Retrieve all widget symbols
-            Set<String> widgetSymbols =
-                    UserData.getWidgetsStockSymbols(context);
-
-            // Always include ^DJI
+            // Retrieve all widget symbols and additionally add ^DJI
+            Set<String> widgetSymbols = UserData.getWidgetsStockSymbols(context);
             widgetSymbols.add("^DJI");
-
-            // Add portfolio symbols
-            widgetSymbols.addAll(UserData
-                    .getPortfolioStockMap(context)
-                    .keySet());
+            widgetSymbols.addAll(UserData.getPortfolioStockMap(context).keySet());
 
             // Retrieve the data from the stock data provider
-            all_quotes =
-                    StockQuotes.getQuotes(context, widgetSymbols
-                            .toArray(new String[widgetSymbols.size()]));
+            allQuotes = StockQuotes.getQuotes(context, widgetSymbols.toArray(new String[widgetSymbols.size()]));
         }
 
         // If there is no information used the last retrieved info
-        if (all_quotes.isEmpty()) {
-            all_quotes = loadQuotes(context);
+        if (allQuotes.isEmpty()) {
+            allQuotes = loadQuotes(context);
         }
 
         // Otherwise save the info
         else {
-            SimpleDateFormat formatter = new SimpleDateFormat("dd MMM HH:mm");
-            String timeStamp = formatter.format(new Date()).toUpperCase();
-            saveQuotes(context, all_quotes, timeStamp);
+            SimpleDateFormat format = new SimpleDateFormat("dd MMM HH:mm");
+            String timeStamp = format.format(new Date()).toUpperCase();
+            saveQuotes(context, allQuotes, timeStamp);
         }
 
         // Filter out quotes that are not for this widget and return
-        HashMap<String, HashMap<StockField, String>> quotes =
-                new HashMap<String, HashMap<StockField, String>>();
-        for (String s : symbols) {
-            if (!s.equals("")) {
-                quotes.put(s, all_quotes.get(s));
-            }
-        }
+        HashMap<String, HashMap<StockField, String>> quotes = new HashMap<String, HashMap<StockField, String>>();
+        for (String s : symbols)
+            if (!s.equals(""))
+                quotes.put(s, allQuotes.get(s));
         return quotes;
     }
 
-    private HashMap<String, HashMap<StockField, String>> loadQuotes(
-            Context context) {
+    private HashMap<String, HashMap<StockField, String>> loadQuotes(Context context) {
 
         // If we have cached data on the class use that for efficiency
-        if ((mCachedQuotes) != null) {
+        if ((mCachedQuotes) != null)
             return mCachedQuotes;
-        }
 
         // Create empty HashMap to store the results
-        HashMap<String, HashMap<StockField, String>> quotes =
-                new HashMap<String, HashMap<StockField, String>>();
+        HashMap<String, HashMap<StockField, String>> quotes = new HashMap<String, HashMap<StockField, String>>();
 
         // Load the saved quotes
-        SharedPreferences prefs = Tools.getAppPrefs(context);
-        String savedQuotes = prefs.getString("savedQuotes", "");
-        String timeStamp = prefs.getString("savedQuotesTime", "");
+        SharedPreferences preferences = Tools.getAppPreferences(context);
+        String savedQuotes = preferences.getString("savedQuotes", "");
+        String timeStamp = preferences.getString("savedQuotesTime", "");
 
         // Parse the string and convert to a hash map
         if (!savedQuotes.equals("")) {
@@ -123,13 +100,9 @@ public class DataSource {
                     String[] values = line.split(";");
                     quotes.put(values[0], new HashMap<StockField, String>());
 
-                    for (StockField f : StockField.values()) {
-                        if (!values[f.ordinal() + 1].equals("")) {
-                            quotes.get(values[0]).put(
-                                    f,
-                                    values[f.ordinal() + 1]);
-                        }
-                    }
+                    for (StockField f : StockField.values())
+                        if (!values[f.ordinal() + 1].equals(""))
+                            quotes.get(values[0]).put(f, values[f.ordinal() + 1]);
                 }
 
             } catch (Exception e) {
@@ -175,9 +148,13 @@ public class DataSource {
         mTimeStamp = timeStamp;
 
         // Save preferences
-        Editor editor = Tools.getAppPrefs(context).edit();
+        Editor editor = Tools.getAppPreferences(context).edit();
         editor.putString("savedQuotes", savedQuotes.toString());
         editor.putString("savedQuotesTime", timeStamp);
         editor.commit();
+    }
+
+    public enum StockField {
+        PRICE, CHANGE, PERCENT, EXCHANGE, VOLUME, NAME
     }
 }

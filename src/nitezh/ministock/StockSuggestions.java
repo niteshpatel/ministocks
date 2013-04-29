@@ -37,11 +37,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class StockSuggestions {
+class StockSuggestions {
 
     private static final String BASE_URL =
             "http://d.yimg.com/autoc.finance.yahoo.com/autoc?callback=YAHOO.Finance.SymbolSuggest.ssCallback&query=";
-    public static final Pattern PATTERN_RESPONSE =
+    private static final Pattern PATTERN_RESPONSE =
             Pattern
                     .compile("YAHOO\\.Finance\\.SymbolSuggest\\.ssCallback\\((\\{.*?\\})\\)");
 
@@ -63,7 +63,7 @@ public class StockSuggestions {
         }
 
         // Return if empty response
-        if (response.equals("") || response == null) {
+        if (response == null || response.equals("")) {
             return suggestions;
         }
 

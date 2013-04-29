@@ -32,14 +32,14 @@ import org.json.JSONObject;
 
 import java.util.Calendar;
 
-public class PreferenceCache {
+class PreferenceCache {
 
     private static String mCache = "";
-    private SharedPreferences prefs = null;
+    private SharedPreferences preferences = null;
 
     public PreferenceCache(Context context) {
         if (context != null)
-            prefs = Tools.getAppPrefs(context);
+            preferences = Tools.getAppPreferences(context);
     }
 
     public void put(String key, String data, Integer ttl) {
@@ -67,8 +67,8 @@ public class PreferenceCache {
 
         // Save cache
         mCache = cache.toString();
-        if (prefs != null) {
-            Editor editor = prefs.edit();
+        if (preferences != null) {
+            Editor editor = preferences.edit();
             editor.putString(key, mCache);
             editor.commit();
         }
@@ -95,18 +95,16 @@ public class PreferenceCache {
         }
     }
 
-    public JSONObject getCache() {
+    JSONObject getCache() {
 
         // Get cache
-        if (prefs != null && mCache.equals(""))
-            mCache = prefs.getString("JSONcache", "");
+        if (preferences != null && mCache.equals(""))
+            mCache = preferences.getString("JSONcache", "");
 
         JSONObject cache = new JSONObject();
         try {
             cache = new JSONObject(mCache);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (JSONException ignore) {
         }
         return cache;
     }

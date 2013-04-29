@@ -47,23 +47,23 @@ public class Preferences extends PreferenceActivity
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     // Constants
-    public static final int STRING_TYPE = 0;
-    public static final int LIST_TYPE = 1;
-    public static final int CHECKBOX_TYPE = 2;
+    private static final int STRING_TYPE = 0;
+    private static final int LIST_TYPE = 1;
+    private static final int CHECKBOX_TYPE = 2;
     // Public variables
     public static int mAppWidgetId = 0;
     // Private
-    protected static boolean mStocksDirty = false;
-    protected static String mSymbolSearchKey = "";
+    private static boolean mStocksDirty = false;
+    private static String mSymbolSearchKey = "";
     private final String CHANGE_LOG =
             "• Fix issue with NASDAQ stock symbol.<br /><br />• Add option for larger widget font.<br /><br />• Other minor bug-fixes.<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>";
     // Fields for time pickers
-    protected TimePickerDialog.OnTimeSetListener mTimeSetListener;
-    protected String mTimePickerKey = null;
-    protected int mHour = 0;
-    protected int mMinute = 0;
+    private TimePickerDialog.OnTimeSetListener mTimeSetListener;
+    private String mTimePickerKey = null;
+    private int mHour = 0;
+    private int mMinute = 0;
 
-    protected String getChangeLog() {
+    String getChangeLog() {
         return CHANGE_LOG;
     }
 
@@ -93,7 +93,7 @@ public class Preferences extends PreferenceActivity
         return super.getSharedPreferences(name + mAppWidgetId, mode);
     }
 
-    public SharedPreferences getAppPrefs() {
+    SharedPreferences getAppPreferences() {
 
         // Convenience method to get global preferences
         return super.getSharedPreferences(getString(R.string.prefs_name), 0);
@@ -113,7 +113,7 @@ public class Preferences extends PreferenceActivity
         try {
             screen.removePreference(findPreference(name));
 
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 
@@ -122,16 +122,16 @@ public class Preferences extends PreferenceActivity
         try {
             screen.removePreference(findPreference(name));
 
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 
     private void showRecentChanges() {
 
         // Return if the change log has already been viewed
-        if (getAppPrefs()
+        if (getAppPreferences()
                 .getString("change_log_viewed", "")
-                .equals(Utils.BUILD)) {
+                .equals(Tools.BUILD)) {
             return;
         }
 
@@ -145,12 +145,12 @@ public class Preferences extends PreferenceActivity
             public Object call() throws Exception {
 
                 // Ensure we don't show this again
-                SharedPreferences prefs = getAppPrefs();
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("change_log_viewed", Utils.BUILD);
+                SharedPreferences preferences = getAppPreferences();
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("change_log_viewed", Tools.BUILD);
 
                 // Set first install if not set
-                if (prefs.getString("install_date", "").equals("")) {
+                if (preferences.getString("install_date", "").equals("")) {
                     editor.putString("install_date", new SimpleDateFormat(
                             "yyyyMMdd").format(new Date()).toUpperCase());
                 }
@@ -162,7 +162,7 @@ public class Preferences extends PreferenceActivity
 
         Tools.alertWithCallback(
                 this,
-                "BUILD " + Utils.BUILD,
+                "BUILD " + Tools.BUILD,
                 getChangeLog(),
                 "Close",
                 null,
@@ -208,8 +208,8 @@ public class Preferences extends PreferenceActivity
         }
 
         // Hide Feedback option if not relevant
-        String install_date = getAppPrefs().getString("install_date", null);
-        if (Tools.elapsedDays(install_date, "yyyyMMdd") < 30)
+        String install_date = getAppPreferences().getString("install_date", null);
+        if (Tools.elapsedDays(install_date) < 30)
             removePref("about_menu", "rate_app");
 
         // Initialise the summaries when the preferences screen loads
@@ -218,7 +218,7 @@ public class Preferences extends PreferenceActivity
             updateSummaries(sharedPreferences, key);
 
         // Update version number
-        findPreference("version").setSummary("BUILD " + Utils.BUILD);
+        findPreference("version").setSummary("BUILD " + Tools.BUILD);
 
         // Force update of global preferences
         // TODO Ensure the items below are included in the above list
@@ -268,7 +268,7 @@ public class Preferences extends PreferenceActivity
         updateSummaries(sharedPreferences, key);
     }
 
-    public void
+    void
     updateStockValue(SharedPreferences sharedPreferences, String key) {
 
         // Unregister the listener whenever a key changes
@@ -294,7 +294,7 @@ public class Preferences extends PreferenceActivity
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
-    public void updateFromGlobal(
+    void updateFromGlobal(
             SharedPreferences sharedPreferences,
             String key,
             int valType) {
@@ -304,24 +304,24 @@ public class Preferences extends PreferenceActivity
                 .getSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(this);
 
-        // Update the widget prefs with the interval
+        // Update the widget preferences with the interval
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         if (valType == STRING_TYPE) {
-            String value = getAppPrefs().getString(key, "");
+            String value = getAppPreferences().getString(key, "");
             if (!value.equals("")) {
                 editor.putString(key, value);
             }
 
         } else if (valType == LIST_TYPE) {
-            String value = getAppPrefs().getString(key, "");
+            String value = getAppPreferences().getString(key, "");
             if (!value.equals("")) {
                 editor.putString(key, value);
                 ((ListPreference) findPreference(key)).setValue(value);
             }
 
         } else if (valType == CHECKBOX_TYPE) {
-            Boolean value = getAppPrefs().getBoolean(key, false);
+            Boolean value = getAppPreferences().getBoolean(key, false);
             editor.putBoolean(key, value);
             ((CheckBoxPreference) findPreference(key)).setChecked(value);
         }
@@ -331,7 +331,7 @@ public class Preferences extends PreferenceActivity
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
-    public void updateGlobalPref(
+    void updateGlobalPref(
             SharedPreferences sharedPreferences,
             String key,
             int valType) {
@@ -342,7 +342,7 @@ public class Preferences extends PreferenceActivity
                 .unregisterOnSharedPreferenceChangeListener(this);
 
         // Update the global preferences with the widget update interval
-        SharedPreferences.Editor editor = getAppPrefs().edit();
+        SharedPreferences.Editor editor = getAppPreferences().edit();
 
         if (valType == STRING_TYPE || valType == LIST_TYPE)
             editor.putString(key, sharedPreferences.getString(key, ""));
@@ -356,28 +356,28 @@ public class Preferences extends PreferenceActivity
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
-    protected void showDisclaimer() {
+    void showDisclaimer() {
         String title = "Disclaimer";
         String body =
                 "Copyright © 2011 Nitesh Patel<br/><br />All rights reserved.<br /><br /> THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.";
         Tools.showSimpleDialog(this, title, body);
     }
 
-    protected void showHelp() {
+    void showHelp() {
         String title = "Entering stocks";
         String body =
                 "<b>Entering stock symbols</b><br/><br />Stock symbols must be in the Yahoo format, which you can look up on the Yahoo Finance website.";
         Tools.showSimpleDialog(this, title, body);
     }
 
-    protected void showHelpPrices() {
+    void showHelpPrices() {
         String title = "Updating prices";
         String body =
-                "You can set how often, and when the widget updates in the Advanced settings menu.  The setting applies globally to all the widgets.<br /><br />Stock price information is provided by Yahoo Finance, and there may be a delay (from real-time prices, to up to 30 mins) for some exchanges.<br /><br />Note that the time in the lower-left of the widget is the time that the data was retrieved from Yahoo, not the time of the live price.<br /><br />If an internet connection is not present when an update occurs, the widget will just use the last shown data, and the time for that data.<br /><br /><b>Update prices now feature</b><br /><br />This will update the prices in all your widgets, if there is an internet connection available.";
+                "You can set how often, and when the widget updates in the Advanced settings menu.  The setting applies globally to all the widgets.<br /><br />Stock price information is provided by Yahoo Finance, and there may be a delay (from real-time prices, to up to 30 minutes) for some exchanges.<br /><br />Note that the time in the lower-left of the widget is the time that the data was retrieved from Yahoo, not the time of the live price.<br /><br />If an internet connection is not present when an update occurs, the widget will just use the last shown data, and the time for that data.<br /><br /><b>Update prices now feature</b><br /><br />This will update the prices in all your widgets, if there is an internet connection available.";
         Tools.showSimpleDialog(this, title, body);
     }
 
-    protected void showTimePickerDialog(
+    void showTimePickerDialog(
             Preference preference,
             String defaultValue) {
         // Get the raw value from the preferences
@@ -408,12 +408,12 @@ public class Preferences extends PreferenceActivity
         }
     }
 
-    public void setTimePickerPreference(int hourOfDay, int minute) {
+    void setTimePickerPreference(int hourOfDay, int minute) {
 
         // Set the preference value
-        SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
+        SharedPreferences preferences = getPreferenceScreen().getSharedPreferences();
 
-        SharedPreferences.Editor editor = prefs.edit();
+        SharedPreferences.Editor editor = preferences.edit();
         editor.putString(mTimePickerKey, String.valueOf(hourOfDay)
                 + ":"
                 + String.valueOf(minute));
@@ -425,7 +425,7 @@ public class Preferences extends PreferenceActivity
                 mTimePickerKey);
     }
 
-    public void setPreference(String key, String value, String summary) {
+    void setPreference(String key, String value, String summary) {
 
         // Return if no key
         if (key.equals("")) {
@@ -433,7 +433,7 @@ public class Preferences extends PreferenceActivity
         }
 
         // Set the stock value
-        SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
+        SharedPreferences preferences = getPreferenceScreen().getSharedPreferences();
 
         // Ignore the remove and manual entry options
         if (value.endsWith("and close")) {
@@ -446,7 +446,7 @@ public class Preferences extends PreferenceActivity
         // Set dirty
         mStocksDirty = true;
 
-        SharedPreferences.Editor editor = prefs.edit();
+        SharedPreferences.Editor editor = preferences.edit();
         editor.putString(key, value);
         editor.putString(key + "_summary", summary);
         editor.commit();
@@ -611,11 +611,11 @@ public class Preferences extends PreferenceActivity
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("message/rfc822");
 
-                String[] to_addr = {"nitezh@gmail.com"};
-                intent.putExtra(Intent.EXTRA_EMAIL, to_addr);
+                String[] toAddress = {"nitezh@gmail.com"};
+                intent.putExtra(Intent.EXTRA_EMAIL, toAddress);
                 intent.putExtra(
                         Intent.EXTRA_SUBJECT,
-                        getString(R.string.app_name) + " BUILD " + Utils.BUILD);
+                        getString(R.string.app_name) + " BUILD " + Tools.BUILD);
                 intent.setType("message/rfc822");
 
                 // In case we can't launch e-mail, show a dialog
@@ -687,7 +687,7 @@ public class Preferences extends PreferenceActivity
                 });
     }
 
-    public void updateSummaries(SharedPreferences sharedPreferences, String key) {
+    void updateSummaries(SharedPreferences sharedPreferences, String key) {
 
         // Initialise the Stock summaries
         if (key.startsWith("Stock") && !key.endsWith("_summary")) {
@@ -729,7 +729,7 @@ public class Preferences extends PreferenceActivity
 
             // Update summary based on selected value
             String displayValue = "30 minutes";
-            String value = getAppPrefs().getString(key, "1800000");
+            String value = getAppPreferences().getString(key, "1800000");
             if (value.equals("300000")) {
                 displayValue = "5 minutes";
             } else if (value.equals("900000")) {
@@ -751,7 +751,7 @@ public class Preferences extends PreferenceActivity
 
         // Update time picker summaries
         else if (key.equals("update_start") || key.equals("update_end")) {
-            String value = getAppPrefs().getString(key, null);
+            String value = getAppPreferences().getString(key, null);
 
             mHour = 0;
             mMinute = 0;
@@ -799,7 +799,7 @@ public class Preferences extends PreferenceActivity
     private void showHelpUsage() {
         String title = "Selecting widget views";
         String body =
-                "The widget has multiple views that display different information.<br /><br />These views can be turned on from the Widget views menu in settings.<br /><br />Once selected, the views can be changed on your homescreen by touching the right-side of the widget.<br /><br />If a stock does not have information for a particular view, then the daily percentage change will instead be displayed for that stock in blue.<br /><br /><b>Daily change %</b><br /><br />Shows the current stock price with the daily percentage change.<br /><br /><b>Daily change (DA)</b><br /><br />Shows the current stock price with the daily price change.<br /><br /><b>Total change % (PF T%)</b><br /><br />Shows the current stock price with the total percentage change from the buy price in the portfolio.<br /><br /><b>Total change (PF TA)</b><br /><br />Shows the current stock price with the total price change from the buy price in the portfolio.<br /><br /><b>Total change AER % (PF AER)</b><br /><br />Shows the current stock price with the annualised percentage change using the buy price in the portfolio.<br /><br /><b>P/L daily change % (P/L D%)</b><br /><br />Shows your current holding value with the daily percentage change.<br /><br /><b>P/L daily change (P/L DA)</b><br /><br />Shows your current holding value with the daily price change.<br /><br /><b>P/L total change % (P/L T%)</b><br /><br />Shows your current holding value with the total percentage change from the buy cost in the portfolio.<br /><br /><b>P/L total change (P/L TA)</b><br /><br />Shows your current holding value with the total value change from the buy cost in the portfolio.<br /><br /><b>P/L total change AER (P/L AER)</b><br /><br />Shows your current holding value with the annualised percentage change using the buy cost in the portfolio.";
+                "The widget has multiple views that display different information.<br /><br />These views can be turned on from the Widget views menu in settings.<br /><br />Once selected, the views can be changed on your home screen by touching the right-side of the widget.<br /><br />If a stock does not have information for a particular view, then the daily percentage change will instead be displayed for that stock in blue.<br /><br /><b>Daily change %</b><br /><br />Shows the current stock price with the daily percentage change.<br /><br /><b>Daily change (DA)</b><br /><br />Shows the current stock price with the daily price change.<br /><br /><b>Total change % (PF T%)</b><br /><br />Shows the current stock price with the total percentage change from the buy price in the portfolio.<br /><br /><b>Total change (PF TA)</b><br /><br />Shows the current stock price with the total price change from the buy price in the portfolio.<br /><br /><b>Total change AER % (PF AER)</b><br /><br />Shows the current stock price with the annualised percentage change using the buy price in the portfolio.<br /><br /><b>P/L daily change % (P/L D%)</b><br /><br />Shows your current holding value with the daily percentage change.<br /><br /><b>P/L daily change (P/L DA)</b><br /><br />Shows your current holding value with the daily price change.<br /><br /><b>P/L total change % (P/L T%)</b><br /><br />Shows your current holding value with the total percentage change from the buy cost in the portfolio.<br /><br /><b>P/L total change (P/L TA)</b><br /><br />Shows your current holding value with the total value change from the buy cost in the portfolio.<br /><br /><b>P/L total change AER (P/L AER)</b><br /><br />Shows your current holding value with the annualised percentage change using the buy cost in the portfolio.";
         Tools.showSimpleDialog(this, title, body);
     }
 
@@ -811,7 +811,7 @@ public class Preferences extends PreferenceActivity
     }
 
     private void showChangeLog() {
-        String title = "BUILD " + Utils.BUILD;
+        String title = "BUILD " + Tools.BUILD;
         String body = CHANGE_LOG;
         Tools.showSimpleDialog(this, title, body);
     }

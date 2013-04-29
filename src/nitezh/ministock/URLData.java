@@ -34,15 +34,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class URLData {
+class URLData {
 
     /* URL data retrieval without caching */
-    public static String getURLData2(String url) {
+    private static String getURLData2(String url) {
 
-        // TODO (nasty hack to avoid broken data)
-        if (url.indexOf("INDU") == -1) {
+        // Ensure we always request some data
+        if (!url.contains("INDU"))
             url = url.replace("&s=", "&s=INDU+");
-        }
 
         // Grab the data from the source
         String response = null;
@@ -54,51 +53,37 @@ public class URLData {
             InputStream stream = connection.getInputStream();
 
             // Read information out of input stream
-            BufferedReader r =
-                    new BufferedReader(new InputStreamReader(stream));
+            BufferedReader r = new BufferedReader(new InputStreamReader(stream));
             StringBuilder builder = new StringBuilder();
             String line;
-            while ((line = r.readLine()) != null) {
-                builder.append(line + "\n");
-            }
+            while ((line = r.readLine()) != null)
+                builder.append(line).append("\n");
             response = builder.toString();
 
-        } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (MalformedURLException ignored) {
+        } catch (IOException ignored) {
         }
-
         return response;
     }
 
     /* URL data retrieval that supports caching */
     public static String getURLData(Context context, String url, Integer ttl) {
-
-        String data = null;
         PreferenceCache cache = new PreferenceCache(context);
+        String data;
 
         // Return cached data if we have it
-        if (ttl != null && cache != null) {
+        if (ttl != null) {
             data = cache.get(url);
             if (data != null)
                 return data;
         }
 
-        // Get fresh data from the URL
+        // Get the data and update the cache
         data = getURLData2(url);
-
-        // Update cache if we have one
-        if (cache != null && data != null)
+        if (data != null) {
             cache.put(url, data, ttl);
-
-        // Only return strings
-        if (data == null)
-            data = "";
-
-        return data;
+            return data;
+        }
+        return "";
     }
 }

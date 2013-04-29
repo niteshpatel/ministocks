@@ -42,7 +42,7 @@ import java.util.Map;
  */
 public class SymbolProvider extends ContentProvider {
 
-    public static String AUTHORITY =
+    private static final String AUTHORITY =
             "nitezh.ministocks.stocksymbols";
 
     private static final int SEARCH_SUGGEST = 0;
@@ -108,19 +108,15 @@ public class SymbolProvider extends ContentProvider {
                 if (uri.getPathSegments().size() > 1) {
                     query = uri.getLastPathSegment().toLowerCase();
                 }
-                return getSuggestions(query, projection);
+                return getSuggestions(query);
             case SHORTCUT_REFRESH:
-                String shortcutId = null;
-                if (uri.getPathSegments().size() > 1) {
-                    shortcutId = uri.getLastPathSegment();
-                }
-                return refreshShortcut(shortcutId, projection);
+                return null;
             default:
                 throw new IllegalArgumentException("Unknown URL " + uri);
         }
     }
 
-    private Cursor getSuggestions(String query, String[] projection) {
+    private Cursor getSuggestions(String query) {
         query = query == null ? "" : query.toLowerCase().trim();
 
         List<Map<String, String>> suggestions =
@@ -130,9 +126,8 @@ public class SymbolProvider extends ContentProvider {
         if (!query.equals("")) {
 
             boolean symbolFound = false;
-            for (int i = 0; i < suggestions.size(); i++) {
-                if (suggestions
-                        .get(i)
+            for (Map<String, String> suggestion1 : suggestions) {
+                if (suggestion1
                         .get("symbol")
                         .equals(query.toUpperCase())) {
                     symbolFound = true;
@@ -169,17 +164,6 @@ public class SymbolProvider extends ContentProvider {
         }
 
         return cursor;
-    }
-
-    /**
-     * Note: this is unused as is, but if we included
-     * {@link SearchManager#SUGGEST_COLUMN_SHORTCUT_ID} as a column in our
-     * results, we could expect to receive refresh queries on this uri for the
-     * id provided, in which case we would return a cursor with a single item
-     * representing the refreshed suggestion data.
-     */
-    private Cursor refreshShortcut(String shortcutId, String[] projection) {
-        return null;
     }
 
     /**

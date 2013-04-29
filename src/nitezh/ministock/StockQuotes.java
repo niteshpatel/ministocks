@@ -32,33 +32,13 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
-public class StockQuotes {
+class StockQuotes {
 
-    private static final String BASE_URL =
-            "http://download.finance.yahoo.com/d/quotes.csv";
-
-    // s: symbol
-    // d1: date UTC-05:00
-    // t1: time UTC-05:00
-    // l1: price
-    // c1: change
-    // p2: percentage change
-
+    private static final String BASE_URL = "http://download.finance.yahoo.com/d/quotes.csv";
+    private static final String FX_URL = "http://ministocks-app.appspot.com/getcurrencydata";
+    private static final String GOOGLE_URL = "http://finance.google.com/finance/info?client=ig&q=.DJI,.IXIC";
     private static final String FORMAT = "sd1t1l1c1p2xvn";
-
-    public static final String FIELD_NAME = "n";
-    public static final String FIELD_PRICE = "l1";
-    public static final String FIELD_CHANGE = "c1";
-    public static final String FIELD_PERCENT = "p2";
-    public static final String FIELD_EXCHANGE = "x";
-    public static final String FIELD_VOLUME = "v";
-
-    public static final int COUNT_FIELDS = 9;
-
-    public static final String FX_URL =
-            "http://ministocks-app.appspot.com/getcurrencydata";
-    public static final String GOOGLE_URL =
-            "http://finance.google.com/finance/info?client=ig&q=.DJI,.IXIC";
+    private static final int COUNT_FIELDS = 9;
 
     public static HashMap<String, HashMap<StockField, String>> getQuotes(
             Context context,
@@ -66,29 +46,21 @@ public class StockQuotes {
 
         // Check if we have FX symbols
         // Check if we have DJI/IXIC (needs to come from Google)
-        Boolean hasFX = false;
-        Boolean hasGoogle = false;
+        boolean hasFX = false;
+        boolean hasGoogle = false;
         for (String s : symbols) {
-            if (s.indexOf("=") > -1) {
+            if (s.contains("="))
                 hasFX = true;
-            }
-            if (s.indexOf("^DJI") > -1 || s.indexOf("^IXIC") > -1) {
+            if (s.contains("^DJI") || s.contains("^IXIC"))
                 hasGoogle = true;
-            }
         }
 
         // Get FX data if we need to
-        JSONObject fx_data = new JSONObject();
+        JSONObject fxData = new JSONObject();
         if (hasFX) {
             try {
-                fx_data =
-                        new JSONObject(URLData.getURLData(
-                                context,
-                                FX_URL,
-                                86400));
-
-            } catch (JSONException e) {
-                e.printStackTrace();
+                fxData = new JSONObject(URLData.getURLData(context, FX_URL, 86400));
+            } catch (JSONException ignored) {
             }
         }
 
@@ -96,40 +68,27 @@ public class StockQuotes {
         JSONArray gData = new JSONArray();
         if (hasGoogle) {
             try {
-                gData =
-                        new JSONArray(URLData.getURLData(
-                                context,
-                                GOOGLE_URL,
-                                300).replace("//", ""));
-
-            } catch (JSONException e) {
-                e.printStackTrace();
+                gData = new JSONArray(URLData.getURLData(context, GOOGLE_URL, 300).replace("//", ""));
+            } catch (JSONException ignored) {
             }
         }
 
         // Create empty HashMap to store the results
-        HashMap<String, HashMap<StockField, String>> quotes =
-                new HashMap<String, HashMap<StockField, String>>();
+        HashMap<String, HashMap<StockField, String>> quotes = new HashMap<String, HashMap<StockField, String>>();
 
         // Convert the list of stock symbols into a url-encoded parameter
-        StringBuilder s_query = new StringBuilder();
+        StringBuilder sQuery = new StringBuilder();
         for (String s : symbols) {
-
-            // Skip empty symbols
-            if (s.equals("")) {
+            if (s.equals(""))
                 continue;
-            }
-
             // If the query string is not empty add a '+'
-            if (!s_query.toString().equals("")) {
-                s_query.append("+");
-            }
-
-            s_query.append(s);
+            if (!sQuery.toString().equals(""))
+                sQuery.append("+");
+            sQuery.append(s);
         }
 
         // Build the data source url and get the data
-        String url = BASE_URL + "?f=" + FORMAT + "&s=" + s_query.toString();
+        String url = BASE_URL + "?f=" + FORMAT + "&s=" + sQuery.toString();
         String response = URLData.getURLData(context, url, 300);
 
         // If the symbols list was invalid return empty
@@ -154,7 +113,7 @@ public class StockQuotes {
             }
 
             // Use ^DJI data from Google
-            if (hasGoogle && gData.length() > 0 && values[0].equals("INDU")) {
+            if (gData.length() > 0 && values[0].equals("INDU")) {
 
                 JSONObject dji;
                 try {
@@ -167,24 +126,24 @@ public class StockQuotes {
                     values[7] = "0";
                     values[8] = "Dow Jones Industrial Average";
 
-                } catch (JSONException e) {
+                } catch (JSONException ignored) {
                 }
             }
 
             // Use ^IXIC data from Google
-            if (hasGoogle && gData.length() > 0 && values[0].equals("^IXIC")) {
+            if (gData.length() > 0 && values[0].equals("^IXIC")) {
 
-                JSONObject ixic;
+                JSONObject jsonObject;
                 try {
-                    ixic = gData.getJSONObject(1);
-                    values[3] = ((String) ixic.get("l_cur")).replace(",", "");
-                    values[4] = (String) ixic.get("c");
-                    values[5] = (String) ixic.get("cp");
+                    jsonObject = gData.getJSONObject(1);
+                    values[3] = ((String) jsonObject.get("l_cur")).replace(",", "");
+                    values[4] = (String) jsonObject.get("c");
+                    values[5] = (String) jsonObject.get("cp");
                     values[6] = "IXIC";
                     values[7] = "0";
                     values[8] = "NASDAQ Composite";
 
-                } catch (JSONException e) {
+                } catch (JSONException ignored) {
                 }
             }
 
@@ -194,17 +153,16 @@ public class StockQuotes {
             }
 
             // Are we FX item
-            Boolean isFX = values[0].indexOf("=") > -1;
+            Boolean isFX = values[0].contains("=");
 
             // Get additional FX data if applicable
             Double yesterdayPrice = null;
             if (isFX) {
                 try {
-                    JSONObject item = fx_data.getJSONObject(values[0]);
-                    yesterdayPrice =
-                            Double.parseDouble(item.getString("price"));
+                    JSONObject item = fxData.getJSONObject(values[0]);
+                    yesterdayPrice = Double.parseDouble(item.getString("price"));
 
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
 
@@ -214,13 +172,9 @@ public class StockQuotes {
                 try {
                     price = Double.parseDouble(values[3]);
                     if (isFX)
-                        quotes.get(values[0]).put(
-                                StockField.PRICE,
-                                Tools.getTrimmedDouble2(price, 6));
+                        quotes.get(values[0]).put(StockField.PRICE, Tools.getTrimmedDouble2(price, 6));
                     else
-                        quotes.get(values[0]).put(
-                                StockField.PRICE,
-                                Tools.getTrimmedDouble(price, 6, 4));
+                        quotes.get(values[0]).put(StockField.PRICE, Tools.getTrimmedDouble(price, 6, 4));
 
                 } catch (Exception e) {
                     try {
@@ -250,13 +204,9 @@ public class StockQuotes {
             }
             if (change != null) {
                 if (price != null && (price < 10 || isFX))
-                    quotes.get(values[0]).put(
-                            StockField.CHANGE,
-                            Tools.getTrimmedDouble(change, 5, 3));
+                    quotes.get(values[0]).put(StockField.CHANGE, Tools.getTrimmedDouble(change, 5, 3));
                 else
-                    quotes.get(values[0]).put(
-                            StockField.CHANGE,
-                            Tools.getTrimmedDouble(change, 5));
+                    quotes.get(values[0]).put(StockField.CHANGE, Tools.getTrimmedDouble(change, 5));
             }
 
             // Percentage changes are only set to one decimal place
@@ -270,9 +220,7 @@ public class StockQuotes {
                 }
             }
             if (pc != null) {
-                quotes.get(values[0]).put(
-                        StockField.PERCENT,
-                        String.format("%.1f", pc) + "%");
+                quotes.get(values[0]).put(StockField.PERCENT, String.format("%.1f", pc) + "%");
             }
 
             // Add name and volume
