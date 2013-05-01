@@ -130,7 +130,7 @@ public class Portfolio extends Activity {
             if (data != null) {
                 if (stockInfoMap.containsKey(PortfolioField.CUSTOM_DISPLAY)) {
                     name = stockInfoMap.get(PortfolioField.CUSTOM_DISPLAY);
-                    group.put("custom_name", name);
+                    group.put("customName", name);
                 }
                 if (name.equals(""))
                     name = data.get(StockField.NAME);
@@ -144,8 +144,8 @@ public class Portfolio extends Activity {
             group.put("currentPrice", currentPrice);
 
             // Default labels
-            group.put("limit_high_label", "High alert:");
-            group.put("limit_low_label", "Low alert:");
+            group.put("limitHigh_label", "High alert:");
+            group.put("limitLow_label", "Low alert:");
 
             // Add stock info the the list view
             if (stockInfoMap.containsKey(PortfolioField.PRICE)
@@ -162,13 +162,13 @@ public class Portfolio extends Activity {
                 // High alert and label
                 String limitHigh = Tools.decimalPlaceFormat(stockInfoMap.get(PortfolioField.LIMIT_HIGH));
                 if (limitHigh != null && !limitHigh.equals(""))
-                    group.put("limit_high_label", "High alert:");
+                    group.put("limitHigh_label", "High alert:");
                 group.put("limitHigh", limitHigh);
 
                 // Low alert and label
                 String limitLow = Tools.decimalPlaceFormat(stockInfoMap.get(PortfolioField.LIMIT_LOW));
                 if (limitLow != null && !limitLow.equals(""))
-                    group.put("limit_low_label", "Low alert:");
+                    group.put("limitLow_label", "Low alert:");
                 group.put("limitLow", limitLow);
 
                 // Quantity and label
@@ -229,17 +229,17 @@ public class Portfolio extends Activity {
                         R.layout.portfolio_list_item, new String[]{
                         "symbol",
                         "name",
-                        "buy_price",
+                        "buyPrice",
                         "date",
-                        "limit_high",
-                        "limit_high_label",
-                        "limit_low",
-                        "limit_low_label",
+                        "limitHigh",
+                        "limitHigh_label",
+                        "limitLow",
+                        "limitLow_label",
                         "quantity",
-                        "current_price",
-                        "last_change",
-                        "total_change",
-                        "holding_value",},
+                        "currentPrice",
+                        "lastChange",
+                        "totalChange",
+                        "holdingValue",},
 
                         new int[]{
                                 R.id.portfolio_list_item_symbol,
@@ -338,12 +338,12 @@ public class Portfolio extends Activity {
         mStockSymbol = stockMap.get("symbol");
 
         // Get portfolio details for this stock
-        String price = stockMap.get("buy_price") != null ? stockMap.get("buy_price") : "";
+        String price = stockMap.get("buyPrice") != null ? stockMap.get("buyPrice") : "";
         String date = stockMap.get("date") != null ? stockMap.get("date") : "";
         String quantity = stockMap.get("quantity") != null ? stockMap.get("quantity") : "";
-        String limitHigh = stockMap.get("limit_high") != null ? stockMap.get("limit_high") : "";
-        String limitLow = stockMap.get("limit_low") != null ? stockMap.get("limit_low") : "";
-        String customDisplay = stockMap.get("custom_name") != null ? stockMap.get("custom_name") : "";
+        String limitHigh = stockMap.get("limitHigh") != null ? stockMap.get("limitHigh") : "";
+        String limitLow = stockMap.get("limitLow") != null ? stockMap.get("limitLow") : "";
+        String customDisplay = stockMap.get("customName") != null ? stockMap.get("customName") : "";
 
         // Initialise the price
         EditText priceEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_price);
