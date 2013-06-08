@@ -56,7 +56,7 @@ public class Preferences extends PreferenceActivity
     private static boolean mStocksDirty = false;
     private static String mSymbolSearchKey = "";
     private final String CHANGE_LOG =
-            "• Ministocks is now open source.<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>";
+            "• Fix issue where negative values in the widget were appearing green in some foreign languages.<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>";
     // Fields for time pickers
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
     private String mTimePickerKey = null;
