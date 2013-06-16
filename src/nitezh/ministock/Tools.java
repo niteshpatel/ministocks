@@ -44,7 +44,7 @@ import java.util.concurrent.Callable;
 
 public class Tools {
 
-    public static final String BUILD = "46";
+    public static final String BUILD = "48";
     private static final HashMap<String, String> mCurrencyCodeMap = new HashMap<String, String>();
     private static final HashMap<String, String> mCurrencyCharMap = new HashMap<String, String>();
 

@@ -58,6 +58,15 @@
             android:paddingBottom="12dp">
 
         <LinearLayout
+                android:id="@+id/line0"
+                android:orientation="horizontal"
+                android:visibility="visible"
+                style="@style/StockLine">
+
+            <TextView android:id="@+id/text0" style="@style/StockDatum" android:text="loading data..."/>
+        </LinearLayout>
+
+        <LinearLayout
                 android:id="@+id/line1"
                 android:orientation="horizontal"
                 style="@style/StockLine">

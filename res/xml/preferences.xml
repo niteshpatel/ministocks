@@ -302,12 +302,12 @@
                     android:title="Rate Ministocks"/>
             <Preference
                     android:key="change_history"
-                    android:summary="View recent changes"
+                    android:summary="View changes for this version"
                     android:title="Recent changes"/>
             <Preference
                     android:key="about"
-                    android:summary="View the disclaimer"
-                    android:title="Disclaimer"/>
+                    android:summary="View the license"
+                    android:title="License"/>
         </PreferenceScreen>
     </PreferenceCategory>
 

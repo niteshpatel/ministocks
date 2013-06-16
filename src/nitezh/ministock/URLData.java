@@ -48,8 +48,8 @@ class URLData {
         try {
             // Set connection timeout and socket timeout
             URLConnection connection = new URL(url).openConnection();
-            connection.setConnectTimeout(10000);
-            connection.setReadTimeout(15000);
+            connection.setConnectTimeout(30000);
+            connection.setReadTimeout(60000);
             InputStream stream = connection.getInputStream();
 
             // Read information out of input stream
