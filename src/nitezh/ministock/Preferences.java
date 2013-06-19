@@ -56,7 +56,7 @@ public class Preferences extends PreferenceActivity
     private static boolean mStocksDirty = false;
     private static String mSymbolSearchKey = "";
     private final String CHANGE_LOG =
-            "• Add loading message on boot.<br /><br />• Fix issue with negative value colours in some foreign languages.<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>";
+            "• Handle older widgets with different layout.<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>";
     // Fields for time pickers
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
     private String mTimePickerKey = null;
