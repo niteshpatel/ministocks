@@ -167,8 +167,11 @@ public class WidgetBase extends AppWidgetProvider {
     // Display the correct number of widget rows
     private static void displayRows(RemoteViews views, int arraySize) {
 
-        for (int i = 0; i < 11; i++)
-            views.setViewVisibility(Tools.getField("line" + i), View.GONE);
+        for (int i = 0; i < 11; i++) {
+            int viewId = Tools.getField("line" + i);
+            if (viewId > 0)
+                views.setViewVisibility(Tools.getField("line" + i), View.GONE);
+        }
 
         for (int i = 1; i < arraySize + 1; i++)
             views.setViewVisibility(Tools.getField("line" + i), View.VISIBLE);
