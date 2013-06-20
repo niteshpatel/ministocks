@@ -72,7 +72,7 @@ public class DataSource {
         // Filter out quotes that are not for this widget and return
         HashMap<String, HashMap<StockField, String>> quotes = new HashMap<String, HashMap<StockField, String>>();
         for (String s : symbols)
-            if (!s.equals(""))
+            if (s != null && !s.equals(""))
                 quotes.put(s, allQuotes.get(s));
         return quotes;
     }

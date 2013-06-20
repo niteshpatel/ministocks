@@ -44,7 +44,7 @@ import java.util.concurrent.Callable;
 
 public class Tools {
 
-    public static final String BUILD = "49";
+    public static final String BUILD = "50";
     private static final HashMap<String, String> mCurrencyCodeMap = new HashMap<String, String>();
     private static final HashMap<String, String> mCurrencyCharMap = new HashMap<String, String>();
 
@@ -174,6 +174,10 @@ public class Tools {
     }
 
     public static Double parseDouble(String value) {
+        return parseDouble(value, null);
+    }
+
+    public static Double parseDouble(String value, Double defaultValue) {
         try {
 
             // First replace decimal points with the local separator
@@ -182,7 +186,7 @@ public class Tools {
             return NumberFormat.getInstance().parse(value).doubleValue();
 
         } catch (Exception e) {
-            return null;
+            return defaultValue;
         }
     }
 

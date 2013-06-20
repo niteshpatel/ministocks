@@ -621,7 +621,7 @@ public class WidgetBase extends AppWidgetProvider {
             value = "0";
 
         int colour;
-        if (Tools.parseDouble(value) < 0) {
+        if (Tools.parseDouble(value, 0d) < 0) {
             colour = COLOUR_LOSS;
 
         } else if (value.equals("0.0%")
