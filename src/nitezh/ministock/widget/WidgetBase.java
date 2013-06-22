@@ -616,8 +616,8 @@ public class WidgetBase extends AppWidgetProvider {
      * <p/>
      * Green for rise, red for fall, grey for unchanged.
      *
-     * @param value
-     * @return
+     * @param value The change value.
+     * @return Colour for this change value.
      */
     private static int getColourForChange(String value) {
         double parsedValue = Tools.parseDouble(value, 0d);
