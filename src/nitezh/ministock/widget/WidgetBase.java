@@ -72,6 +72,7 @@ public class WidgetBase extends AppWidgetProvider {
     // Colours
     private static final int COLOUR_GAIN = Color.parseColor("#CCFF66");
     private static final int COLOUR_LOSS = Color.parseColor("#FF6666");
+    private static final int COLOUR_SAME = Color.WHITE;
     private static final int COLOUR_ALERT_HIGH = Color.parseColor("#FFEE33");
     private static final int COLOUR_ALERT_LOW = Color.parseColor("#FF66FF");
     private static final int COLOUR_VOLUME = Color.LTGRAY;
@@ -561,11 +562,11 @@ public class WidgetBase extends AppWidgetProvider {
                 } else {
                     rowItems.put("COL3_VALUE", column3);
                 }
-                rowItems.put("COL3_COLOUR", getColourForChange(column3, preferences));
+                rowItems.put("COL3_COLOUR", getColourForChange(column3));
             }
             if (column4 != null) {
                 rowItems.put("COL4_VALUE", column4);
-                rowItems.put("COL4_COLOUR", getColourForChange(column4, preferences));
+                rowItems.put("COL4_COLOUR", getColourForChange(column4));
             }
 
         } else {
@@ -577,7 +578,7 @@ public class WidgetBase extends AppWidgetProvider {
                 } else {
                     rowItems.put("COL2_VALUE", column2);
                 }
-                rowItems.put("COL2_COLOUR", getColourForChange(column2, preferences));
+                rowItems.put("COL2_COLOUR", getColourForChange(column2));
             }
         }
         return rowItems;
@@ -610,33 +611,27 @@ public class WidgetBase extends AppWidgetProvider {
         return value;
     }
 
-    private static int getColourForChange(String value, SharedPreferences preferences) {
-
-        // Colour the percentage change
-        // - Red if the price went down
-        // - Gray if the price went unchanged
-        // - Green if the price went up
-
-        if (value.equals(""))
-            value = "0";
+    /**
+     * Get the colour used for this change.
+     * <p/>
+     * Green for rise, red for fall, grey for unchanged.
+     *
+     * @param value
+     * @return
+     */
+    private static int getColourForChange(String value) {
+        double parsedValue = Tools.parseDouble(value, 0d);
 
         int colour;
-        if (Tools.parseDouble(value, 0d) < 0) {
+        if (parsedValue < 0) {
             colour = COLOUR_LOSS;
 
-        } else if (value.equals("0.0%")
-                || value.equals("0.00")
-                || value.equals("0.000"))
+        } else if (parsedValue == 0) {
+            colour = COLOUR_SAME;
 
-            // Choose green or gray based on preferences
-            if (preferences.getBoolean("green_zero", false))
-                colour = COLOUR_GAIN;
-
-            else
-                colour = Color.GRAY;
-
-        else
+        } else {
             colour = COLOUR_GAIN;
+        }
 
         return colour;
     }

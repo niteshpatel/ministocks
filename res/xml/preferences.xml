@@ -198,12 +198,6 @@
                         android:summaryOff="Hide stock exchange code"
                         android:summaryOn="Hide stock exchange code"
                         android:title="Hide exchange code"/>
-                <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="green_zero"
-                        android:summaryOff="Use green colour for zero values"
-                        android:summaryOn="Use green colour for zero values"
-                        android:title="Use green for zeros"/>
             </PreferenceScreen>
             <PreferenceScreen
                     android:key="update_schedule"
