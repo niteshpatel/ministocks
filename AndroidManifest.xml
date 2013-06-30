@@ -160,7 +160,7 @@
         </receiver>
         <receiver
                 android:name=".widget.Widget_1x4"
-                android:label="Ministocks (1x4)">
+                android:label="Ministocks (wide)">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
@@ -174,7 +174,7 @@
         </receiver>
         <receiver
                 android:name=".widget.Widget_2x2"
-                android:label="Ministocks (2x2)">
+                android:label="Ministocks (tall)">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
@@ -188,7 +188,7 @@
         </receiver>
         <receiver
                 android:name=".widget.Widget_2x4"
-                android:label="Ministocks (2x4)">
+                android:label="Ministocks (wide/tall)">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
