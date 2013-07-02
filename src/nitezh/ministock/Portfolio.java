@@ -337,6 +337,12 @@ public class Portfolio extends Activity {
 
         mStockSymbol = stockMap.get("symbol");
 
+        // Get current data for this stock
+        HashMap<StockField, String> data = mStockData.get(mStockSymbol);
+        String currentPrice = "";
+        if (data != null)
+            currentPrice = data.get(StockField.PRICE);
+
         // Get portfolio details for this stock
         String price = stockMap.get("buyPrice") != null ? stockMap.get("buyPrice") : "";
         String date = stockMap.get("date") != null ? stockMap.get("date") : "";
@@ -344,6 +350,12 @@ public class Portfolio extends Activity {
         String limitHigh = stockMap.get("limitHigh") != null ? stockMap.get("limitHigh") : "";
         String limitLow = stockMap.get("limitLow") != null ? stockMap.get("limitLow") : "";
         String customDisplay = stockMap.get("customName") != null ? stockMap.get("customName") : "";
+
+        // If there is no price data, use today's price and date
+        if (price.equals("")) {
+            price = currentPrice;
+            date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        }
 
         // Initialise the price
         EditText priceEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_price);
@@ -433,7 +445,7 @@ public class Portfolio extends Activity {
                         // Allow a blank date
                         if (!date.equals("")) {
                             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-                            date = formatter.format(formatter.parse(date)).toUpperCase();
+                            date = formatter.format(formatter.parse(date.replaceAll("[./]", "-"))).toUpperCase();
                         }
 
                         // Allow a blank quantity

@@ -56,7 +56,7 @@ public class Preferences extends PreferenceActivity
     private static boolean mStocksDirty = false;
     private static String mSymbolSearchKey = "";
     private final String CHANGE_LOG =
-            "• Update launcher and widget icons.<br /><br />• Bug-fixes and optimisations.<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>";
+            "• Provide default price and date values for portfolio items.<br /><br /> • Allow multiple separators types for portfolio item dates.<br /><br />• Bug-fixes and optimisations.<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>";
     // Fields for time pickers
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
     private String mTimePickerKey = null;
