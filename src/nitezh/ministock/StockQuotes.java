@@ -35,7 +35,7 @@ import java.util.HashMap;
 class StockQuotes {
 
     private static final String BASE_URL = "http://download.finance.yahoo.com/d/quotes.csv";
-    private static final String FX_URL = "http://ministocks-app.appspot.com/getcurrencydata";
+    private static final String FX_URL = "https://ministocks-app.appspot.com/getcurrencydata";
     private static final String GOOGLE_URL = "http://finance.google.com/finance/info?client=ig&q=.DJI,.IXIC";
     private static final String FORMAT = "sd1t1l1c1p2xvn";
     private static final int COUNT_FIELDS = 9;
