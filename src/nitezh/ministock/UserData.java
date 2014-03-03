@@ -27,6 +27,8 @@ package nitezh.ministock;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.*;
@@ -155,33 +157,75 @@ public class UserData {
         // Clear the old data
         mPortfolioStockMap.clear();
 
-        // Parse the stock info from the raw string
-        for (String rawStock : Tools
-                .getAppPreferences(context)
-                .getString("portfolio", "")
-                .split(",")) {
+        // Use the Json data if present
+        String rawJson = Tools.getAppPreferences(context).getString("portfolioJson", "");
+        if (rawJson.equals("")) {
 
-            String[] stockArray = rawStock.split(":");
+            // If there is no Json data then use the old style data
+            for (String rawStock : Tools
+                    .getAppPreferences(context)
+                    .getString("portfolio", "")
+                    .split(",")) {
 
-            // Skip empties and invalid formatted stocks
-            if (stockArray.length != 2)
-                continue;
+                String[] stockArray = rawStock.split(":");
 
-            // Create stock map, ignoring any items with nulls
-            String[] stockInfo = stockArray[1].split("\\|");
-            if (stockInfo.length > 0 && stockInfo[0] != null) {
+                // Skip empties and invalid formatted stocks
+                if (stockArray.length != 2)
+                    continue;
+
+                // Create stock map, ignoring any items with nulls
+                String[] stockInfo = stockArray[1].split("\\|");
+                if (stockInfo.length > 0 && stockInfo[0] != null) {
+
+                    HashMap<PortfolioField, String> stockInfoMap =
+                            new HashMap<PortfolioField, String>();
+                    for (PortfolioField f : PortfolioField.values()) {
+                        String data = "";
+                        if (stockInfo.length > f.ordinal()
+                                && !stockInfo[f.ordinal()].equals("empty")) {
+                            data = stockInfo[f.ordinal()];
+                        }
+                        stockInfoMap.put(f, data);
+                    }
+                    mPortfolioStockMap.put(stockArray[0], stockInfoMap);
+                }
+            }
+
+        } else {
+
+            JSONObject json = null;
+            try {
+                json = new JSONObject(rawJson);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            // Parse the stock info from the raw string
+            Iterator keys = json.keys();
+            while (keys.hasNext()) {
+                String key = keys.next().toString();
+                JSONObject itemData = new JSONObject();
+                try {
+                    itemData = json.getJSONObject(key);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
                 HashMap<PortfolioField, String> stockInfoMap =
                         new HashMap<PortfolioField, String>();
                 for (PortfolioField f : PortfolioField.values()) {
                     String data = "";
-                    if (stockInfo.length > f.ordinal()
-                            && !stockInfo[f.ordinal()].equals("empty")) {
-                        data = stockInfo[f.ordinal()];
+                    try {
+                        if (!itemData.get(f.name()).equals("empty")) {
+                            data = itemData.get(f.name()).toString();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
                     stockInfoMap.put(f, data);
                 }
-                mPortfolioStockMap.put(stockArray[0], stockInfoMap);
+                mPortfolioStockMap.put(key, stockInfoMap);
             }
         }
 
@@ -194,21 +238,26 @@ public class UserData {
             Context context,
             HashMap<String, HashMap<PortfolioField, String>> stockMap) {
 
-        // Convert the portfolio stock map into a string to store in the
-        // preferences
-        StringBuilder rawStocks = new StringBuilder();
+        // Convert the portfolio stock map into a Json string to store in preferences
+        JSONObject json = new JSONObject();
         for (String symbol : stockMap.keySet()) {
 
-            HashMap<PortfolioField, String> stockInfoMap = stockMap.get(symbol);
-
             // Create the raw string, ignoring any items with nulls
+            HashMap<PortfolioField, String> stockInfoMap = stockMap.get(symbol);
             if ((stockInfoMap.get(PortfolioField.PRICE) != null && !stockInfoMap
                     .get(PortfolioField.PRICE)
                     .equals(""))
                     || (stockInfoMap.get(PortfolioField.CUSTOM_DISPLAY) != null && !stockInfoMap
                     .get(PortfolioField.CUSTOM_DISPLAY)
                     .equals(""))) {
-                rawStocks.append(symbol).append(":");
+
+                // Create a JSON object to store this data
+                JSONObject itemData = new JSONObject();
+                try {
+                    json.put(symbol, itemData);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
                 for (PortfolioField f : PortfolioField.values()) {
 
@@ -217,24 +266,18 @@ public class UserData {
                     if (data == null || data.equals(""))
                         data = "empty";
 
-                    rawStocks.append(data).append("|");
+                    try {
+                        itemData.put(f.name(), data);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-
-                // Remove trailing pipe
-                if (rawStocks.charAt(rawStocks.length() - 1) == '|')
-                    rawStocks.deleteCharAt(rawStocks.length() - 1);
-
-                rawStocks.append(",");
             }
         }
 
-        // Remove trailing comma
-        if (rawStocks.length() > 0)
-            rawStocks.deleteCharAt(rawStocks.length() - 1);
-
         // Commit changes to the preferences
         Editor editor = Tools.getAppPreferences(context).edit();
-        editor.putString("portfolio", rawStocks.toString());
+        editor.putString("portfolioJson", json.toString());
         editor.commit();
 
         // Set the cache flag as dirty
@@ -284,6 +327,6 @@ public class UserData {
     }
 
     public enum PortfolioField {
-        PRICE, DATE, QUANTITY, LIMIT_HIGH, LIMIT_LOW, CUSTOM_DISPLAY
+        PRICE, DATE, QUANTITY, LIMIT_HIGH, LIMIT_LOW, CUSTOM_DISPLAY, SYMBOL_2
     }
 }
