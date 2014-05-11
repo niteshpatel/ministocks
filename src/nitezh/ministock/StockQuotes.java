@@ -186,17 +186,17 @@ class StockQuotes {
                 }
 
                 // Note that if the change or percent == "N/A" set to 0
-                if (values[4].equals("N/A") && yesterdayPrice == null) {
+                if ((values[4].equals("N/A") || values[4].equals("")) && yesterdayPrice == null) {
                     values[4] = "0.00";
                 }
-                if (values[5].equals("N/A") && yesterdayPrice == null) {
+                if ((values[5].equals("N/A") || values[5].equals("")) && yesterdayPrice == null) {
                     values[5] = "0.00";
                 }
             }
 
             // Changes are only set to 5 significant figures
             Double change = null;
-            if (!values[4].equals("N/A")) {
+            if (!values[4].equals("N/A") && !values[4].equals("")) {
                 change = Double.parseDouble(values[4]);
 
             } else if (yesterdayPrice != null && price != null) {
@@ -211,7 +211,7 @@ class StockQuotes {
 
             // Percentage changes are only set to one decimal place
             Double pc = null;
-            if (!values[5].equals("N/A")) {
+            if (!values[5].equals("N/A") && !values[5].equals("")) {
                 pc = Double.parseDouble(values[5].replace("%", ""));
 
             } else {
