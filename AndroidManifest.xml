@@ -25,8 +25,8 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="nitezh.ministock"
-          android:versionCode="52"
-          android:versionName="52">
+          android:versionCode="53"
+          android:versionName="53">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-sdk android:minSdkVersion="10"/>
