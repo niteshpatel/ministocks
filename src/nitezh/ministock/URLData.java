@@ -21,7 +21,6 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  */
-
 package nitezh.ministock;
 
 import android.content.Context;
@@ -35,14 +34,11 @@ import java.net.URL;
 import java.net.URLConnection;
 
 class URLData {
-
     /* URL data retrieval without caching */
     private static String getURLData2(String url) {
-
         // Ensure we always request some data
         if (!url.contains("INDU"))
             url = url.replace("&s=", "&s=INDU+");
-
         // Grab the data from the source
         String response = null;
         try {
@@ -51,7 +47,6 @@ class URLData {
             connection.setConnectTimeout(30000);
             connection.setReadTimeout(60000);
             InputStream stream = connection.getInputStream();
-
             // Read information out of input stream
             BufferedReader r = new BufferedReader(new InputStreamReader(stream));
             StringBuilder builder = new StringBuilder();
@@ -59,7 +54,6 @@ class URLData {
             while ((line = r.readLine()) != null)
                 builder.append(line).append("\n");
             response = builder.toString();
-
         } catch (MalformedURLException ignored) {
         } catch (IOException ignored) {
         }
@@ -70,14 +64,12 @@ class URLData {
     public static String getURLData(Context context, String url, Integer ttl) {
         PreferenceCache cache = new PreferenceCache(context);
         String data;
-
         // Return cached data if we have it
         if (ttl != null) {
             data = cache.get(url);
             if (data != null)
                 return data;
         }
-
         // Get the data and update the cache
         data = getURLData2(url);
         if (data != null) {

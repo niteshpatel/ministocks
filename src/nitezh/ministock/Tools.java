@@ -21,7 +21,6 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  */
-
 package nitezh.ministock;
 
 import android.app.AlertDialog;
@@ -43,7 +42,6 @@ import java.util.HashMap;
 import java.util.concurrent.Callable;
 
 public class Tools {
-
     public static final String BUILD = "53";
     private static final HashMap<String, String> mCurrencyCodeMap = new HashMap<String, String>();
     private static final HashMap<String, String> mCurrencyCharMap = new HashMap<String, String>();
@@ -101,7 +99,6 @@ public class Tools {
         mCurrencyCodeMap.put(".TWO", "TWD");
         mCurrencyCodeMap.put(".V", "CAD");
         mCurrencyCodeMap.put(".VI", "EUR");
-
         // Populate currency char map
         mCurrencyCharMap.put("EUR", "€");
         mCurrencyCharMap.put("AUD", "$");
@@ -129,10 +126,8 @@ public class Tools {
 
     // Determine currency symbol from exchange
     private static String getCurrencySymbol(String symbol) {
-
         // Now add the currency symbol
         String currencyChar = null;
-
         // Extract the suffix and determine currency char
         int indexOfCode = symbol.indexOf(".");
         if (indexOfCode > -1) {
@@ -140,35 +135,28 @@ public class Tools {
             String currencyCode = mCurrencyCodeMap.get(exchangeCode);
             currencyChar = mCurrencyCharMap.get(currencyCode);
         }
-
         // Default symbol is $
         if (currencyChar == null)
             currencyChar = "$";
-
         return currencyChar;
     }
 
     // Format as currency based on the stock exchange
     public static String addCurrencySymbol(String value, String symbol) {
-
         // Get currency symbol
         String currencySymbol = getCurrencySymbol(symbol);
-
         // Divide by 100 if needed
         if (currencySymbol.equals("£"))
             try {
                 value = String.format("%.0f", Tools.parseDouble(value) / 100);
-
             } catch (Exception ignored) {
             }
-
         // Move minus sign to front if we have one
         String prefix = "";
         if (value.contains("-")) {
             prefix = "-";
             value = value.substring(1);
         }
-
         // Add minus sign to front if we have one
         return prefix + currencySymbol + value;
     }
@@ -179,34 +167,23 @@ public class Tools {
 
     public static Double parseDouble(String value, Double defaultValue) {
         try {
-
             // First replace decimal points with the local separator
             char separator = new DecimalFormatSymbols().getDecimalSeparator();
             value = value.replace('.', separator);
             return NumberFormat.getInstance().parse(value).doubleValue();
-
         } catch (Exception e) {
             return defaultValue;
         }
     }
 
     public static SharedPreferences getAppPreferences(Context context) {
-        return context.getSharedPreferences(
-                context.getString(R.string.prefs_name),
-                0);
+        return context.getSharedPreferences(context.getString(R.string.prefs_name), 0);
     }
 
-    public static SharedPreferences getWidgetPreferences(
-            Context context,
-            int appWidgetId) {
+    public static SharedPreferences getWidgetPreferences(Context context, int appWidgetId) {
         SharedPreferences widgetPreferences = null;
         try {
-            widgetPreferences =
-                    context.getSharedPreferences(
-                            context.getString(R.string.prefs_name)
-                                    + appWidgetId,
-                            0);
-
+            widgetPreferences = context.getSharedPreferences(context.getString(R.string.prefs_name) + appWidgetId, 0);
         } catch (NotFoundException ignored) {
         }
         return widgetPreferences;
@@ -220,62 +197,40 @@ public class Tools {
     }
 
     public static String decimalPlaceFormat(String s) {
-
         // Format to two decimal places
         try {
             return String.format("%." + 2 + "f", Double.parseDouble(s));
-
         } catch (Exception ignored) {
         }
         return s;
     }
 
-    public static void showSimpleDialog(
-            Context context,
-            String title,
-            String body) {
-
+    public static void showSimpleDialog(Context context, String title, String body) {
         alertWithCallback(context, title, body, "Close", null, null);
     }
 
-    public static void alertWithCallback(
-            Context context,
-            String title,
-            String body,
-            String positiveButtonText,
-            String negativeButtonText,
-            final Callable<?> callable) {
-
+    public static void alertWithCallback(Context context, String title, String body, String positiveButtonText, String negativeButtonText, final Callable<?> callable) {
         // Create dialog
         AlertDialog alertDialog = new AlertDialog.Builder(context).create();
         alertDialog.setTitle(title);
-
         // Use HTML so we can stick bold in here
         Spanned html = Html.fromHtml(body);
-
         TextView text = new TextView(context);
         text.setPadding(10, 10, 10, 10);
         text.setTextSize(16);
         text.setText(html);
-
         // Scroll view to handle longer text
         ScrollView scroll = new ScrollView(context);
         scroll.setPadding(0, 0, 0, 0);
         scroll.addView(text);
         alertDialog.setView(scroll);
-
         // Set the close button text
-        alertDialog.setButton(
-                DialogInterface.BUTTON_POSITIVE,
-                positiveButtonText,
-                new DialogInterface.OnClickListener() {
-
+        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, positiveButtonText, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (callable != null) {
                             try {
                                 callable.call();
-
                             } catch (Exception e) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
@@ -283,28 +238,19 @@ public class Tools {
                         }
                     }
                 });
-
         // Optional negative button
         if (negativeButtonText != null) {
-            alertDialog.setButton(
-                    DialogInterface.BUTTON_NEGATIVE,
-                    negativeButtonText,
-                    new DialogInterface.OnClickListener() {
-
+            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, negativeButtonText, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                         }
                     });
         }
-
-        alertDialog
-                .setOnDismissListener(new DialogInterface.OnDismissListener() {
-
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                    }
-                });
-
+        alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+            }
+        });
         alertDialog.show();
     }
 
@@ -314,28 +260,23 @@ public class Tools {
 
     public static String getTrimmedDouble2(double number, int digits) {
         String numberAsString = Double.toString(number);
-
         // Find the position of the decimal point
         int decimalPos = numberAsString.indexOf(".");
-
         // If there is no decimal point, return immediately since there is
         // no work to do.
         if (decimalPos == -1) {
             return numberAsString;
         }
-
         // If there are more digits before the decimal place than the space
         // available then do the best we can and return with 0 dp.
         if (digits < decimalPos) {
             return String.format("%.0f", number);
         }
-
         // If we have space to show the whole number, and the max precision
         // is null OR the number is greater than one then we always use 2 dp.
         if (Math.abs(number) >= 100 && (numberAsString.length() - 1 < digits)) {
             return String.format("%.2f", number);
         }
-
         // If the number is greater than zero than the max precision is 2
         int precision = digits - decimalPos;
         if (Math.abs(number) >= 100) {
@@ -344,69 +285,49 @@ public class Tools {
         if (Math.abs(number) >= 10) {
             precision = Math.min(precision, 3);
         }
-
         // Trim precision as necessary (max precision 4)
         return String.format("%." + Math.min(precision, 4) + "f", number);
     }
 
-    public static String getTrimmedDouble(
-            double number,
-            int digits,
-            Integer maxPrecision) {
+    public static String getTrimmedDouble(double number, int digits, Integer maxPrecision) {
         String numberAsString = Double.toString(number);
-
         // Find the position of the decimal point
         int decimalPos = numberAsString.indexOf(".");
-
         // If there is no decimal point, return immediately since there is
         // no work to do.
         if (decimalPos == -1) {
             return numberAsString;
         }
-
         // If there are more digits before the decimal place than the space
         // available then do the best we can and return with 0 dp.
         if (digits < decimalPos) {
             return String.format("%.0f", number);
         }
-
         // If we have space to show the whole number, and the max precision
         // is null OR the number is greater than one then we always use 2 dp.
-        if ((Math.abs(number) >= 10 || maxPrecision == null)
-                && (numberAsString.length() - 1 < digits)) {
+        if ((Math.abs(number) >= 10 || maxPrecision == null) && (numberAsString.length() - 1 < digits)) {
             return String.format("%.2f", number);
         }
-
         // If the number is greater than zero than the max precision is 2
         int precision = digits - decimalPos;
         if (Math.abs(number) >= 10 || maxPrecision == null) {
             precision = Math.min(precision, 2);
         }
-
         // Ignore maxPrecision = 0
         if (maxPrecision == null)
             maxPrecision = precision;
-
         // Trim precision as necessary (max precision 4)
-        return String.format(
-                "%." + Math.min(precision, maxPrecision) + "f",
-                number);
+        return String.format("%." + Math.min(precision, maxPrecision) + "f", number);
     }
 
     /* Number of days elapsed from given date */
     public static double elapsedDays(String dateString) {
-
         double daysElapsed = 0;
         if (dateString != null) {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-
             try {
-                double elapsed =
-                        (new Date().getTime() - formatter
-                                .parse(dateString)
-                                .getTime()) / 1000;
+                double elapsed = (new Date().getTime() - formatter.parse(dateString).getTime()) / 1000;
                 daysElapsed = elapsed / 86400;
-
             } catch (ParseException ignored) {
             }
         }
@@ -415,16 +336,11 @@ public class Tools {
 
     /* Number of milliseconds elapsed from given date */
     public static double elapsedTime(String dateString) {
-
         double daysElapsed = 0;
         if (dateString != null) {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
             try {
-                daysElapsed = (new Date().getTime() - formatter
-                        .parse(dateString)
-                        .getTime());
-
+                daysElapsed = (new Date().getTime() - formatter.parse(dateString).getTime());
             } catch (ParseException ignored) {
             }
         }
@@ -442,14 +358,11 @@ public class Tools {
 
     /* Compare a date to now */
     public static int compareToNow(Date date) {
-
         Long now = new Date().getTime();
         if (date.getTime() > now) {
             return 1;
-
         } else if (date.getTime() < now) {
             return -1;
-
         } else {
             return 0;
         }
@@ -458,7 +371,6 @@ public class Tools {
     public static int getField(String name) {
         try {
             return R.id.class.getField(name).getInt(R.class);
-
         } catch (Exception e) {
             return 0;
         }

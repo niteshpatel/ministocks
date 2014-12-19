@@ -21,7 +21,6 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  */
-
 package nitezh.ministock;
 
 import android.app.SearchManager;
@@ -41,14 +40,10 @@ import java.util.Map;
  * Provides search suggestions for a list of words and their definitions.
  */
 public class SymbolProvider extends ContentProvider {
-
-    private static final String AUTHORITY =
-            "nitezh.ministocks.stocksymbols";
-
+    private static final String AUTHORITY = "nitezh.ministocks.stocksymbols";
     private static final int SEARCH_SUGGEST = 0;
     private static final int SHORTCUT_REFRESH = 1;
     private static final UriMatcher sURIMatcher = buildUriMatcher();
-
     /**
      * The columns we'll include in our search suggestions. There are others
      * that could be used to further customise the suggestions, see the docs in
@@ -56,51 +51,30 @@ public class SymbolProvider extends ContentProvider {
      * supported.
      */
     private static final String[] COLUMNS = {"_id", // must include this column
-            SearchManager.SUGGEST_COLUMN_TEXT_1,
-            SearchManager.SUGGEST_COLUMN_TEXT_2,
-            SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA,
-            SearchManager.SUGGEST_COLUMN_INTENT_DATA,};
+            SearchManager.SUGGEST_COLUMN_TEXT_1, SearchManager.SUGGEST_COLUMN_TEXT_2, SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA, SearchManager.SUGGEST_COLUMN_INTENT_DATA,};
 
     /**
      * Sets up a uri matcher for search suggestion and shortcut refresh queries.
      */
     private static UriMatcher buildUriMatcher() {
         UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
-        matcher.addURI(
-                AUTHORITY,
-                SearchManager.SUGGEST_URI_PATH_QUERY,
-                SEARCH_SUGGEST);
-        matcher.addURI(
-                AUTHORITY,
-                SearchManager.SUGGEST_URI_PATH_QUERY + "/*",
-                SEARCH_SUGGEST);
-        matcher.addURI(
-                AUTHORITY,
-                SearchManager.SUGGEST_URI_PATH_SHORTCUT,
-                SHORTCUT_REFRESH);
-        matcher.addURI(AUTHORITY, SearchManager.SUGGEST_URI_PATH_SHORTCUT
-                + "/*", SHORTCUT_REFRESH);
+        matcher.addURI(AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY, SEARCH_SUGGEST);
+        matcher.addURI(AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY + "/*", SEARCH_SUGGEST);
+        matcher.addURI(AUTHORITY, SearchManager.SUGGEST_URI_PATH_SHORTCUT, SHORTCUT_REFRESH);
+        matcher.addURI(AUTHORITY, SearchManager.SUGGEST_URI_PATH_SHORTCUT + "/*", SHORTCUT_REFRESH);
         return matcher;
     }
 
     @Override
-    public Cursor query(
-            Uri uri,
-            String[] projection,
-            String selection,
-            String[] selectionArgs,
-            String sortOrder) {
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         if (!TextUtils.isEmpty(selection)) {
-            throw new IllegalArgumentException("selection not allowed for "
-                    + uri);
+            throw new IllegalArgumentException("selection not allowed for " + uri);
         }
         if (selectionArgs != null && selectionArgs.length != 0) {
-            throw new IllegalArgumentException("selectionArgs not allowed for "
-                    + uri);
+            throw new IllegalArgumentException("selectionArgs not allowed for " + uri);
         }
         if (!TextUtils.isEmpty(sortOrder)) {
-            throw new IllegalArgumentException("sortOrder not allowed for "
-                    + uri);
+            throw new IllegalArgumentException("sortOrder not allowed for " + uri);
         }
         switch (sURIMatcher.match(uri)) {
             case SEARCH_SUGGEST:
@@ -118,23 +92,16 @@ public class SymbolProvider extends ContentProvider {
 
     private Cursor getSuggestions(String query) {
         query = query == null ? "" : query.toLowerCase().trim();
-
-        List<Map<String, String>> suggestions =
-                StockSuggestions.getSuggestions(query);
-
+        List<Map<String, String>> suggestions = StockSuggestions.getSuggestions(query);
         // Check whether an exact match is found in the symbol
         if (!query.equals("")) {
-
             boolean symbolFound = false;
             for (Map<String, String> suggestion1 : suggestions) {
-                if (suggestion1
-                        .get("symbol")
-                        .equals(query.toUpperCase())) {
+                if (suggestion1.get("symbol").equals(query.toUpperCase())) {
                     symbolFound = true;
                     break;
                 }
             }
-
             // If we didn't find the symbol add it as a manual match
             if (!symbolFound) {
                 Map<String, String> suggestion = new HashMap<String, String>();
@@ -143,26 +110,18 @@ public class SymbolProvider extends ContentProvider {
                 suggestions.add(0, suggestion);
             }
         }
-
         // Add an entry to remove the symbol
         Map<String, String> cancelSuggestion = new HashMap<String, String>();
         cancelSuggestion.put("symbol", "Remove symbol and close");
         cancelSuggestion.put("name", "");
         suggestions.add(cancelSuggestion);
-
         // Now populate the cursor
         MatrixCursor cursor = new MatrixCursor(COLUMNS);
         for (int i = 0; i < suggestions.size(); i++) {
             Map<String, String> item = suggestions.get(i);
             String symbol = item.get("symbol");
-            cursor.addRow(new Object[]{
-                    i,
-                    symbol,
-                    item.get("name"),
-                    item.get("name"),
-                    symbol});
+            cursor.addRow(new Object[]{i, symbol, item.get("name"), item.get("name"), symbol});
         }
-
         return cursor;
     }
 
@@ -193,11 +152,7 @@ public class SymbolProvider extends ContentProvider {
     }
 
     @Override
-    public int update(
-            Uri uri,
-            ContentValues values,
-            String selection,
-            String[] selectionArgs) {
+    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         throw new UnsupportedOperationException();
     }
 

@@ -21,16 +21,13 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  */
-
 package nitezh.ministock.configure;
 
 import android.os.Bundle;
 
 public class Configure_1x4 extends ConfigureBase {
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         mWidgetSize = 1;
         super.onCreate(savedInstanceState);
     }
