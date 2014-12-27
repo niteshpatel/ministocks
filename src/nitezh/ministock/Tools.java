@@ -99,6 +99,7 @@ public class Tools {
         mCurrencyCodeMap.put(".TWO", "TWD");
         mCurrencyCodeMap.put(".V", "CAD");
         mCurrencyCodeMap.put(".VI", "EUR");
+
         // Populate currency char map
         mCurrencyCharMap.put("EUR", "€");
         mCurrencyCharMap.put("AUD", "$");
@@ -128,6 +129,7 @@ public class Tools {
     private static String getCurrencySymbol(String symbol) {
         // Now add the currency symbol
         String currencyChar = null;
+
         // Extract the suffix and determine currency char
         int indexOfCode = symbol.indexOf(".");
         if (indexOfCode > -1) {
@@ -145,6 +147,7 @@ public class Tools {
     public static String addCurrencySymbol(String value, String symbol) {
         // Get currency symbol
         String currencySymbol = getCurrencySymbol(symbol);
+
         // Divide by 100 if needed
         if (currencySymbol.equals("£"))
             try {
@@ -213,17 +216,20 @@ public class Tools {
         // Create dialog
         AlertDialog alertDialog = new AlertDialog.Builder(context).create();
         alertDialog.setTitle(title);
+
         // Use HTML so we can stick bold in here
         Spanned html = Html.fromHtml(body);
         TextView text = new TextView(context);
         text.setPadding(10, 10, 10, 10);
         text.setTextSize(16);
         text.setText(html);
+
         // Scroll view to handle longer text
         ScrollView scroll = new ScrollView(context);
         scroll.setPadding(0, 0, 0, 0);
         scroll.addView(text);
         alertDialog.setView(scroll);
+
         // Set the close button text
         alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, positiveButtonText, new DialogInterface.OnClickListener() {
                     @Override
@@ -260,8 +266,10 @@ public class Tools {
 
     public static String getTrimmedDouble2(double number, int digits) {
         String numberAsString = Double.toString(number);
+
         // Find the position of the decimal point
         int decimalPos = numberAsString.indexOf(".");
+
         // If there is no decimal point, return immediately since there is
         // no work to do.
         if (decimalPos == -1) {
@@ -291,8 +299,10 @@ public class Tools {
 
     public static String getTrimmedDouble(double number, int digits, Integer maxPrecision) {
         String numberAsString = Double.toString(number);
+
         // Find the position of the decimal point
         int decimalPos = numberAsString.indexOf(".");
+
         // If there is no decimal point, return immediately since there is
         // no work to do.
         if (decimalPos == -1) {

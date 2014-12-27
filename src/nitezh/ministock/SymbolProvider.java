@@ -93,6 +93,7 @@ public class SymbolProvider extends ContentProvider {
     private Cursor getSuggestions(String query) {
         query = query == null ? "" : query.toLowerCase().trim();
         List<Map<String, String>> suggestions = StockSuggestions.getSuggestions(query);
+
         // Check whether an exact match is found in the symbol
         if (!query.equals("")) {
             boolean symbolFound = false;
@@ -115,6 +116,7 @@ public class SymbolProvider extends ContentProvider {
         cancelSuggestion.put("symbol", "Remove symbol and close");
         cancelSuggestion.put("name", "");
         suggestions.add(cancelSuggestion);
+
         // Now populate the cursor
         MatrixCursor cursor = new MatrixCursor(COLUMNS);
         for (int i = 0; i < suggestions.size(); i++) {

@@ -46,12 +46,15 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     private static final int STRING_TYPE = 0;
     private static final int LIST_TYPE = 1;
     private static final int CHECKBOX_TYPE = 2;
+
     // Public variables
     public static int mAppWidgetId = 0;
+
     // Private
     private static boolean mStocksDirty = false;
     private static String mSymbolSearchKey = "";
     private final String CHANGE_LOG = "• Bug-fixes and optimisations.<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>";
+
     // Fields for time pickers
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
     private String mTimePickerKey = null;
@@ -122,6 +125,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
                 SharedPreferences preferences = getAppPreferences();
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("change_log_viewed", Tools.BUILD);
+
                 // Set first install if not set
                 if (preferences.getString("install_date", "").equals("")) {
                     editor.putString("install_date", new SimpleDateFormat("yyyyMMdd").format(new Date()).toUpperCase());
@@ -139,14 +143,17 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         showRecentChanges();
         PreferenceScreen screen = getPreferenceScreen();
         SharedPreferences sharedPreferences = screen.getSharedPreferences();
+
         // Add this widgetId if we don't have it
         Set<Integer> appWidgetIds = new HashSet<Integer>();
         for (int i : UserData.getAppWidgetIds2(getBaseContext()))
             appWidgetIds.add(i);
         if (!appWidgetIds.contains(mAppWidgetId))
             UserData.addAppWidgetId(getBaseContext(), mAppWidgetId, null);
+
         // Hide preferences for certain widget sizes
         int widgetSize = sharedPreferences.getInt("widgetSize", 0);
+
         // Remove extra stocks
         if (widgetSize == 0 || widgetSize == 1) {
             PreferenceScreen stock_setup = (PreferenceScreen) findPreference("stock_setup");
@@ -165,12 +172,15 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         String install_date = getAppPreferences().getString("install_date", null);
         if (Tools.elapsedDays(install_date) < 30)
             removePref("about_menu", "rate_app");
+
         // Initialise the summaries when the preferences screen loads
         Map<String, ?> map = sharedPreferences.getAll();
         for (String key : map.keySet())
             updateSummaries(sharedPreferences, key);
+
         // Update version number
         findPreference("version").setSummary("BUILD " + Tools.BUILD);
+
         // Force update of global preferences
         // TODO Ensure the items below are included in the above list
         // rather than updating these items twice (potentially)
@@ -178,6 +188,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         updateSummaries(sharedPreferences, "update_start");
         updateSummaries(sharedPreferences, "update_end");
         updateSummaries(sharedPreferences, "update_weekend");
+
         // Set up a listener whenever a key changes
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
@@ -187,10 +198,12 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         // Perform some custom handling of some values
         if (key.startsWith("Stock") && !key.endsWith("_summary")) {
             updateStockValue(sharedPreferences, key);
+
             // Mark stock changed as dirty
             mStocksDirty = true;
         } else if (key.equals("update_interval")) {
             updateGlobalPref(sharedPreferences, key, LIST_TYPE);
+
             // Warning massage if necessary
             if (sharedPreferences.getString(key, "").equals("900000") || sharedPreferences.getString(key, "").equals("300000")) {
                 String title = "Short update interval";
@@ -209,6 +222,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     void updateStockValue(SharedPreferences sharedPreferences, String key) {
         // Unregister the listener whenever a key changes
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+
         // Massages the value: remove whitespace and upper-case
         String value = sharedPreferences.getString(key, "");
         value = value.replace(" ", "");
@@ -216,9 +230,11 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(key, value);
         editor.commit();
+
         // Also update the UI
         EditTextPreference preference = (EditTextPreference) findPreference(key);
         preference.setText(value);
+
         // Set up a listener whenever a key changes
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
@@ -226,6 +242,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     void updateFromGlobal(SharedPreferences sharedPreferences, String key, int valType) {
         // Unregister the listener whenever a key changes
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+
         // Update the widget preferences with the interval
         SharedPreferences.Editor editor = sharedPreferences.edit();
         if (valType == STRING_TYPE) {
@@ -245,6 +262,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
             ((CheckBoxPreference) findPreference(key)).setChecked(value);
         }
         editor.commit();
+
         // Set up a listener whenever a key changes
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
@@ -252,6 +270,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     void updateGlobalPref(SharedPreferences sharedPreferences, String key, int valType) {
         // Unregister the listener whenever a key changes
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+
         // Update the global preferences with the widget update interval
         SharedPreferences.Editor editor = getAppPreferences().edit();
         if (valType == STRING_TYPE || valType == LIST_TYPE)
@@ -259,6 +278,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         else if (valType == CHECKBOX_TYPE)
             editor.putBoolean(key, sharedPreferences.getBoolean(key, false));
         editor.commit();
+
         // Set up a listener whenever a key changes
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
@@ -308,6 +328,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(mTimePickerKey, String.valueOf(hourOfDay) + ":" + String.valueOf(minute));
         editor.commit();
+
         // Also update the UI
         updateSummaries(getPreferenceScreen().getSharedPreferences(), mTimePickerKey);
     }
@@ -319,6 +340,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         }
         // Set the stock value
         SharedPreferences preferences = getPreferenceScreen().getSharedPreferences();
+
         // Ignore the remove and manual entry options
         if (value.endsWith("and close")) {
             value = "";
@@ -337,6 +359,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
+
         // Hook the About preference to the About (Ministocks) activity
         Preference about = findPreference("about");
         about.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -362,6 +385,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
                         @Override
                         public boolean onPreferenceClick(Preference preference) {
                             mSymbolSearchKey = preference.getKey();
+
                             // Start search with current value as query
                             String query = preference.getSharedPreferences().getString(mSymbolSearchKey, "");
                             startSearch(query, false, null, false);
@@ -460,6 +484,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
                 intent.putExtra(Intent.EXTRA_EMAIL, toAddress);
                 intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + " BUILD " + Tools.BUILD);
                 intent.setType("message/rfc822");
+
                 // In case we can't launch e-mail, show a dialog
                 try {
                     startActivity(intent);
@@ -517,6 +542,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
             // Update the summary based on the stock value
             String value = sharedPreferences.getString(key, "");
             String summary = sharedPreferences.getString(key + "_summary", "");
+
             // Set the title
             if (value.equals("")) {
                 value = key.replace("Stock", "Stock ");
@@ -528,8 +554,9 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
             }
             findPreference(key).setTitle(value);
             findPreference(key).setSummary(summary);
-            // Initialise the ListPreference summaries
-        } else if (key.startsWith("background") || key.startsWith("updated_colour") || key.startsWith("updated_display") || key.startsWith("text_style")) {
+        }
+        // Initialise the ListPreference summaries
+        else if (key.startsWith("background") || key.startsWith("updated_colour") || key.startsWith("updated_display") || key.startsWith("text_style")) {
             String value = sharedPreferences.getString(key, "");
             findPreference(key).setSummary("Selected: " + value.substring(0, 1).toUpperCase() + value.substring(1));
         }
@@ -552,6 +579,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
                 displayValue = "Daily";
             }
             findPreference(key).setSummary("Selected: " + displayValue);
+
             // Update the value of the update interval
             updateFromGlobal(sharedPreferences, "update_interval", LIST_TYPE);
         }
@@ -566,6 +594,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
                 mMinute = Integer.parseInt(items[1]);
             }
             findPreference(key).setSummary("Time set: " + Tools.timeDigitPad(mHour) + ":" + Tools.timeDigitPad(mMinute));
+
             // Update the value of the update limits
             updateFromGlobal(sharedPreferences, key, STRING_TYPE);
         } else if (key.equals("update_weekend")) {
@@ -576,6 +605,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     @Override
     protected void onStop() {
         super.onStop();
+
         // Update the widget when we quit the preferences, and if the dirty,
         // flag is true then do a web update, otherwise do a regular update
         if (mStocksDirty) {

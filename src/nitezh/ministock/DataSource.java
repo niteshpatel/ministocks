@@ -38,12 +38,14 @@ public class DataSource {
 
     public HashMap<String, HashMap<StockField, String>> getStockData(Context context, String[] symbols, boolean noCache) {
         HashMap<String, HashMap<StockField, String>> allQuotes = new HashMap<String, HashMap<StockField, String>>();
+
         // If fresh data is request, retrieve from the stock data provider
         if (noCache) {
             // Retrieve all widget symbols and additionally add ^DJI
             Set<String> widgetSymbols = UserData.getWidgetsStockSymbols(context);
             widgetSymbols.add("^DJI");
             widgetSymbols.addAll(UserData.getPortfolioStockMap(context).keySet());
+
             // Retrieve the data from the stock data provider
             allQuotes = StockQuotes.getQuotes(context, widgetSymbols.toArray(new String[widgetSymbols.size()]));
         }
@@ -69,12 +71,15 @@ public class DataSource {
         // If we have cached data on the class use that for efficiency
         if ((mCachedQuotes) != null)
             return mCachedQuotes;
+
         // Create empty HashMap to store the results
         HashMap<String, HashMap<StockField, String>> quotes = new HashMap<String, HashMap<StockField, String>>();
+
         // Load the saved quotes
         SharedPreferences preferences = Tools.getAppPreferences(context);
         String savedQuotes = preferences.getString("savedQuotes", "");
         String timeStamp = preferences.getString("savedQuotesTime", "");
+
         // Parse the string and convert to a hash map
         if (!savedQuotes.equals("")) {
             try {
@@ -117,6 +122,7 @@ public class DataSource {
         // Update the class cache and quotes timestamp
         mCachedQuotes = quotes;
         mTimeStamp = timeStamp;
+
         // Save preferences
         Editor editor = Tools.getAppPreferences(context).edit();
         editor.putString("savedQuotes", savedQuotes.toString());

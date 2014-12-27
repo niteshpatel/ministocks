@@ -67,6 +67,7 @@ class StockQuotes {
         }
         // Create empty HashMap to store the results
         HashMap<String, HashMap<StockField, String>> quotes = new HashMap<String, HashMap<StockField, String>>();
+
         // Convert the list of stock symbols into a url-encoded parameter
         StringBuilder sQuery = new StringBuilder();
         for (String s : symbols) {
@@ -80,6 +81,7 @@ class StockQuotes {
         // Build the data source url and get the data
         String url = BASE_URL + "?f=" + FORMAT + "&s=" + sQuery.toString();
         String response = URLData.getURLData(context, url, 300);
+
         // If the symbols list was invalid return empty
         if (response.equals("Missing Symbols List.") || response.equals("")) {
             return quotes;
@@ -92,6 +94,7 @@ class StockQuotes {
         for (String line : response.split("\n")) {
             // Replace quotes and split values into an array
             String[] values = line.replace("\"", "").split(",", COUNT_FIELDS);
+
             // If we do not have at least 6 elements continue
             if (values.length < COUNT_FIELDS) {
                 continue;
@@ -131,6 +134,7 @@ class StockQuotes {
             }
             // Are we FX item
             Boolean isFX = values[0].contains("=");
+
             // Get additional FX data if applicable
             Double yesterdayPrice = null;
             if (isFX) {

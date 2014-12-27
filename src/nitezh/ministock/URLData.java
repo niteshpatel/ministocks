@@ -47,6 +47,7 @@ class URLData {
             connection.setConnectTimeout(30000);
             connection.setReadTimeout(60000);
             InputStream stream = connection.getInputStream();
+
             // Read information out of input stream
             BufferedReader r = new BufferedReader(new InputStreamReader(stream));
             StringBuilder builder = new StringBuilder();
@@ -64,6 +65,7 @@ class URLData {
     public static String getURLData(Context context, String url, Integer ttl) {
         PreferenceCache cache = new PreferenceCache(context);
         String data;
+
         // Return cached data if we have it
         if (ttl != null) {
             data = cache.get(url);
