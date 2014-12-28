@@ -37,6 +37,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
@@ -232,25 +233,25 @@ public class Tools {
 
         // Set the close button text
         alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, positiveButtonText, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (callable != null) {
-                            try {
-                                callable.call();
-                            } catch (Exception e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                        }
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (callable != null) {
+                    try {
+                        callable.call();
+                    } catch (Exception e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
                     }
-                });
+                }
+            }
+        });
         // Optional negative button
         if (negativeButtonText != null) {
             alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, negativeButtonText, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
         }
         alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
@@ -360,10 +361,11 @@ public class Tools {
     /* Parse simple hh:mm string into date */
     public static Date parseSimpleDate(String dateString) {
         String[] items = dateString.split(":");
-        Date date = new Date();
-        date.setHours(Integer.parseInt(items[0]));
-        date.setMinutes(Integer.parseInt(items[1]));
-        return date;
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(items[0]));
+        cal.set(Calendar.MINUTE, Integer.parseInt(items[1]));
+        return cal.getTime();
     }
 
     /* Compare a date to now */

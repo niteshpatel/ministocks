@@ -65,7 +65,7 @@ class PreferenceCache {
         if (preferences != null) {
             Editor editor = preferences.edit();
             editor.putString(key, mCache);
-            editor.commit();
+            editor.apply();
         }
     }
 

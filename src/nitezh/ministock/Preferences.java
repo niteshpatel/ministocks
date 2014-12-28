@@ -130,7 +130,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
                 if (preferences.getString("install_date", "").equals("")) {
                     editor.putString("install_date", new SimpleDateFormat("yyyyMMdd").format(new Date()).toUpperCase());
                 }
-                editor.commit();
+                editor.apply();
                 return new Object();
             }
         };
@@ -229,7 +229,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         value = value.toUpperCase();
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(key, value);
-        editor.commit();
+        editor.apply();
 
         // Also update the UI
         EditTextPreference preference = (EditTextPreference) findPreference(key);
@@ -261,7 +261,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
             editor.putBoolean(key, value);
             ((CheckBoxPreference) findPreference(key)).setChecked(value);
         }
-        editor.commit();
+        editor.apply();
 
         // Set up a listener whenever a key changes
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
@@ -277,7 +277,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
             editor.putString(key, sharedPreferences.getString(key, ""));
         else if (valType == CHECKBOX_TYPE)
             editor.putBoolean(key, sharedPreferences.getBoolean(key, false));
-        editor.commit();
+        editor.apply();
 
         // Set up a listener whenever a key changes
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
@@ -327,7 +327,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         SharedPreferences preferences = getPreferenceScreen().getSharedPreferences();
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(mTimePickerKey, String.valueOf(hourOfDay) + ":" + String.valueOf(minute));
-        editor.commit();
+        editor.apply();
 
         // Also update the UI
         updateSummaries(getPreferenceScreen().getSharedPreferences(), mTimePickerKey);
@@ -352,7 +352,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(key, value);
         editor.putString(key + "_summary", summary);
-        editor.commit();
+        editor.apply();
     }
 
     @Override

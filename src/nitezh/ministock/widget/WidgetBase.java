@@ -590,7 +590,7 @@ public class WidgetBase extends AppWidgetProvider {
             SharedPreferences.Editor editor;
             editor = prefs.edit();
             editor.putInt("widgetView", widgetView);
-            editor.commit();
+            editor.apply();
         }
         DataSource dataSource = new DataSource();
         String quotesTimeStamp = dataSource.getTimeStamp();
@@ -807,7 +807,7 @@ public class WidgetBase extends AppWidgetProvider {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Editor editor = prefs.edit();
         editor.putString("last_update1", formatter.format(new Date()));
-        editor.commit();
+        editor.apply();
         // Reset the alarm
         updateAlarmManager(context);
     }

@@ -64,7 +64,7 @@ abstract class ConfigureBase extends Activity {
                 editor.putBoolean("show_percent_change", true);
             editor.putString("Stock1", "^DJI");
             editor.putString("Stock1_summary", "Dow Jones Industrial Average");
-            editor.commit();
+            editor.apply();
             // Finally update
             WidgetBase.update(getApplicationContext(), appWidgetId, WidgetBase.VIEW_UPDATE);
         }

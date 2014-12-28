@@ -127,7 +127,7 @@ public class DataSource {
         Editor editor = Tools.getAppPreferences(context).edit();
         editor.putString("savedQuotes", savedQuotes.toString());
         editor.putString("savedQuotesTime", timeStamp);
-        editor.commit();
+        editor.apply();
     }
 
     public enum StockField {

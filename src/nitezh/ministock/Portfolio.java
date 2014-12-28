@@ -61,9 +61,11 @@ public class Portfolio extends Activity {
         // portfolio stocks map
         mPortfolioStockMap = UserData.getPortfolioStockMap(this);
         mWidgetsStockMap = UserData.getWidgetsStockSymbols(this);
-        for (String symbol : mWidgetsStockMap)
-            if (!mPortfolioStockMap.containsKey(symbol))
+        for (String symbol : mWidgetsStockMap) {
+            if (!mPortfolioStockMap.containsKey(symbol)) {
                 mPortfolioStockMap.put(symbol, new HashMap<PortfolioField, String>());
+            }
+        }
 
         // Get current prices
         Set<String> symbolSet = mPortfolioStockMap.keySet();
@@ -164,12 +166,14 @@ public class Portfolio extends Activity {
                 // Calculate last change, including percentage
                 String lastChange = "";
                 try {
-                    lastChange = data.get(StockField.PERCENT);
-                    try {
-                        Double change = numberFormat.parse(data.get(StockField.CHANGE)).doubleValue();
-                        Double totalChange = Tools.parseDouble(stockInfoMap.get(PortfolioField.QUANTITY)) * change;
-                        lastChange += " / " + Tools.addCurrencySymbol(String.format("%.0f", (totalChange)), symbol);
-                    } catch (Exception ignored) {
+                    if (data != null) {
+                        lastChange = data.get(StockField.PERCENT);
+                        try {
+                            Double change = numberFormat.parse(data.get(StockField.CHANGE)).doubleValue();
+                            Double totalChange = Tools.parseDouble(stockInfoMap.get(PortfolioField.QUANTITY)) * change;
+                            lastChange += " / " + Tools.addCurrencySymbol(String.format("%.0f", (totalChange)), symbol);
+                        } catch (Exception ignored) {
+                        }
                     }
                 } catch (Exception ignored) {
                 }
@@ -414,9 +418,8 @@ public class Portfolio extends Activity {
         super.onStop();
 
         // Remove any items that are empty and not in any widgets and then
-        // update the portfolio stocks in the preferences
-        Object[] keySet = mPortfolioStockMap.keySet().toArray();
-        for (Object symbol : keySet) {
+        // update the portfolio stocks in the preferences;
+        for (String symbol : mPortfolioStockMap.keySet()) {
             String price = mPortfolioStockMap.get(symbol).get(PortfolioField.PRICE);
             if ((price == null || price.equals("")) && !mWidgetsStockMap.contains(symbol)) {
                 mPortfolioStockMap.remove(symbol);

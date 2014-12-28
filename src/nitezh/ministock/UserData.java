@@ -41,7 +41,7 @@ public class UserData {
         // Record widgetSize
         Editor editor = Tools.getWidgetPreferences(context, appWidgetId).edit();
         editor.putInt("widgetSize", widgetSize);
-        editor.commit();
+        editor.apply();
     }
 
     public static void addAppWidgetId(Context context, int appWidgetId, Integer widgetSize) {
@@ -58,7 +58,7 @@ public class UserData {
         // Update the preferences too
         Editor editor = preferences.edit();
         editor.putString("appWidgetIds", rawAppWidgetIds.toString());
-        editor.commit();
+        editor.apply();
 
         // Only add the widget size if provided
         if (widgetSize != null)
@@ -86,7 +86,7 @@ public class UserData {
         // Update the preferences too
         Editor editor = preferences.edit();
         editor.putString("appWidgetIds", appWidgetIds.toString());
-        editor.commit();
+        editor.apply();
     }
 
     public static int[] getAppWidgetIds2(Context context) {
@@ -167,30 +167,32 @@ public class UserData {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
             // Parse the stock info from the raw string
-            Iterator keys = json.keys();
-            while (keys.hasNext()) {
-                String key = keys.next().toString();
-                JSONObject itemData = new JSONObject();
-                try {
-                    itemData = json.getJSONObject(key);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                HashMap<PortfolioField, String> stockInfoMap = new HashMap<PortfolioField, String>();
-                for (PortfolioField f : PortfolioField.values()) {
-                    String data = "";
+            Iterator keys;
+            if (json != null) {
+                keys = json.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next().toString();
+                    JSONObject itemData = new JSONObject();
                     try {
-                        if (!itemData.get(f.name()).equals("empty")) {
-                            data = itemData.get(f.name()).toString();
-                        }
+                        itemData = json.getJSONObject(key);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    stockInfoMap.put(f, data);
+                    HashMap<PortfolioField, String> stockInfoMap = new HashMap<PortfolioField, String>();
+                    for (PortfolioField f : PortfolioField.values()) {
+                        String data = "";
+                        try {
+                            if (!itemData.get(f.name()).equals("empty")) {
+                                data = itemData.get(f.name()).toString();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        stockInfoMap.put(f, data);
+                    }
+                    mPortfolioStockMap.put(key, stockInfoMap);
                 }
-                mPortfolioStockMap.put(key, stockInfoMap);
             }
         }
 
@@ -232,7 +234,7 @@ public class UserData {
         // Commit changes to the preferences
         Editor editor = Tools.getAppPreferences(context).edit();
         editor.putString("portfolioJson", json.toString());
-        editor.commit();
+        editor.apply();
 
         // Set the cache flag as dirty
         mDirtyPortfolioStockMap = true;
@@ -269,6 +271,7 @@ public class UserData {
         if (f_shared_preferences.exists())
             for (File f : f_shared_preferences.listFiles())
                 if (!l.contains(f.getName()))
+                    //noinspection ResultOfMethodCallIgnored
                     f.delete();
     }
 
