@@ -21,6 +21,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  */
+
 package nitezh.ministock.configure;
 
 import android.app.Activity;
@@ -32,11 +33,14 @@ import android.content.Intent;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import nitezh.ministock.Tools;
+
 import nitezh.ministock.UserData;
+import nitezh.ministock.PreferenceTools;
 import nitezh.ministock.widget.WidgetBase;
 
+
 abstract class ConfigureBase extends Activity {
+
     int mWidgetSize = 0;
 
     @Override
@@ -59,7 +63,7 @@ abstract class ConfigureBase extends Activity {
             // and add default preferences (view and Stock1)
             Context context = getBaseContext();
             UserData.addAppWidgetSize(context, appWidgetId, widgetSize);
-            Editor editor = Tools.getWidgetPreferences(context, appWidgetId).edit();
+            Editor editor = PreferenceTools.getWidgetPreferences(context, appWidgetId).edit();
             if (widgetSize == 0 || widgetSize == 2)
                 editor.putBoolean("show_percent_change", true);
             editor.putString("Stock1", "^DJI");

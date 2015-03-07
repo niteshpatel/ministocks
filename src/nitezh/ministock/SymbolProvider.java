@@ -21,6 +21,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  */
+
 package nitezh.ministock;
 
 import android.app.SearchManager;
@@ -36,10 +37,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 /**
  * Provides search suggestions for a list of words and their definitions.
  */
 public class SymbolProvider extends ContentProvider {
+
     private static final String AUTHORITY = "nitezh.ministocks.stocksymbols";
     private static final int SEARCH_SUGGEST = 0;
     private static final int SHORTCUT_REFRESH = 1;
@@ -105,14 +108,14 @@ public class SymbolProvider extends ContentProvider {
             }
             // If we didn't find the symbol add it as a manual match
             if (!symbolFound) {
-                Map<String, String> suggestion = new HashMap<String, String>();
+                Map<String, String> suggestion = new HashMap<>();
                 suggestion.put("symbol", "Use " + query.toUpperCase());
                 suggestion.put("name", "");
                 suggestions.add(0, suggestion);
             }
         }
         // Add an entry to remove the symbol
-        Map<String, String> cancelSuggestion = new HashMap<String, String>();
+        Map<String, String> cancelSuggestion = new HashMap<>();
         cancelSuggestion.put("symbol", "Remove symbol and close");
         cancelSuggestion.put("name", "");
         suggestions.add(cancelSuggestion);

@@ -21,25 +21,30 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  */
+
 package nitezh.ministock;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
 
-class PreferenceCache {
+
+class PreferenceCache implements Cache {
+
     private static String mCache = "";
     private SharedPreferences preferences = null;
 
     public PreferenceCache(Context context) {
         if (context != null)
-            preferences = Tools.getAppPreferences(context);
+            preferences = PreferenceTools.getAppPreferences(context);
     }
 
+    @Override
     public void put(String key, String data, Integer ttl) {
         // Get cache
         JSONObject cache = getCache();
@@ -69,6 +74,7 @@ class PreferenceCache {
         }
     }
 
+    @Override
     public String get(String key) {
         // Get cache
         JSONObject cache = getCache();

@@ -21,9 +21,11 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  */
+
 package nitezh.ministock;
 
 import nitezh.ministock.widget.Widget_1x2;
+
 
 public class Widget extends Widget_1x2 {
 }

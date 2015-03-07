@@ -22,16 +22,18 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock.configure;
+package nitezh.ministock.utils;
 
-import android.os.Bundle;
+import nitezh.ministock.R;
 
 
-public class Configure_1x4 extends ConfigureBase {
+public class ReflectionTools {
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        mWidgetSize = 1;
-        super.onCreate(savedInstanceState);
+    public static int getField(String name) {
+        try {
+            return R.id.class.getField(name).getInt(R.class);
+        } catch (Exception e) {
+            return 0;
+        }
     }
 }

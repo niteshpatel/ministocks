@@ -33,7 +33,10 @@
 
     <application
             android:icon="@drawable/icon"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:backupAgent="BackupAgent">
+        <meta-data android:name="com.google.android.backup.api_key"
+                   android:value="AEdPqrEAAAAIvqCGyN6s856_xlIiI5xKgx_OuXIf7rnLnScumw"/>
         <activity
                 android:name=".Ministocks"
                 android:configChanges="orientation"

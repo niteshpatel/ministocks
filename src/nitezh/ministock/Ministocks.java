@@ -21,6 +21,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  */
+
 package nitezh.ministock;
 
 import android.app.Activity;
@@ -29,10 +30,9 @@ import android.text.Html;
 import android.text.Spanned;
 import android.widget.TextView;
 
+
 public class Ministocks extends Activity {
-    /**
-     * Called when the activity is first created.
-     */
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

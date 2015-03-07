@@ -21,6 +21,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  */
+
 package nitezh.ministock;
 
 import android.content.Context;
@@ -28,16 +29,22 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 
-public class DataSource {
-    private static String mTimeStamp;
-    private static HashMap<String, HashMap<StockField, String>> mCachedQuotes;
+import nitezh.ministock.domain.StockQuote;
+import nitezh.ministock.domain.StockQuoteRepository;
 
-    public HashMap<String, HashMap<StockField, String>> getStockData(Context context, String[] symbols, boolean noCache) {
-        HashMap<String, HashMap<StockField, String>> allQuotes = new HashMap<String, HashMap<StockField, String>>();
+
+public class DataSource {
+
+    private static String mTimeStamp;
+    private static HashMap<String, StockQuote> mCachedQuotes;
+
+    public HashMap<String, StockQuote> getStockData(Context context, String[] symbols, boolean noCache) {
+        HashMap<String, StockQuote> allQuotes = new HashMap<>();
 
         // If fresh data is request, retrieve from the stock data provider
         if (noCache) {
@@ -47,7 +54,7 @@ public class DataSource {
             widgetSymbols.addAll(UserData.getPortfolioStockMap(context).keySet());
 
             // Retrieve the data from the stock data provider
-            allQuotes = StockQuotes.getQuotes(context, widgetSymbols.toArray(new String[widgetSymbols.size()]));
+            allQuotes = new StockQuoteRepository().getQuotes(new PreferenceCache(context), Arrays.asList(widgetSymbols.toArray(new String[widgetSymbols.size()])));
         }
         // If there is no information used the last retrieved info
         if (allQuotes.isEmpty()) {
@@ -60,23 +67,26 @@ public class DataSource {
             saveQuotes(context, allQuotes, timeStamp);
         }
         // Filter out quotes that are not for this widget and return
-        HashMap<String, HashMap<StockField, String>> quotes = new HashMap<String, HashMap<StockField, String>>();
-        for (String s : symbols)
-            if (s != null && !s.equals(""))
+        HashMap<String, StockQuote> quotes = new HashMap<>();
+        for (String s : symbols) {
+            if (s != null && !s.equals("")) {
                 quotes.put(s, allQuotes.get(s));
+            }
+        }
+
         return quotes;
     }
 
-    private HashMap<String, HashMap<StockField, String>> loadQuotes(Context context) {
+    private HashMap<String, StockQuote> loadQuotes(Context context) {
         // If we have cached data on the class use that for efficiency
         if ((mCachedQuotes) != null)
             return mCachedQuotes;
 
         // Create empty HashMap to store the results
-        HashMap<String, HashMap<StockField, String>> quotes = new HashMap<String, HashMap<StockField, String>>();
+        HashMap<String, StockQuote> quotes = new HashMap<>();
 
         // Load the saved quotes
-        SharedPreferences preferences = Tools.getAppPreferences(context);
+        SharedPreferences preferences = PreferenceTools.getAppPreferences(context);
         String savedQuotes = preferences.getString("savedQuotes", "");
         String timeStamp = preferences.getString("savedQuotesTime", "");
 
@@ -85,14 +95,11 @@ public class DataSource {
             try {
                 for (String line : savedQuotes.split("\n")) {
                     String[] values = line.split(";");
-                    quotes.put(values[0], new HashMap<StockField, String>());
-                    for (StockField f : StockField.values())
-                        if (!values[f.ordinal() + 1].equals(""))
-                            quotes.get(values[0]).put(f, values[f.ordinal() + 1]);
+                    quotes.put(values[0], new StockQuote(values[0], values[1], values[2], values[3], values[4], values[5], values[6]));
                 }
             } catch (Exception e) {
                 // Don't do anything if the stored data is dodgy
-                quotes = new HashMap<String, HashMap<StockField, String>>();
+                quotes = new HashMap<>();
             }
         }
         // Update the class cache and quotes timestamp
@@ -105,7 +112,7 @@ public class DataSource {
         return mTimeStamp;
     }
 
-    private void saveQuotes(Context context, HashMap<String, HashMap<StockField, String>> quotes, String timeStamp) {
+    private void saveQuotes(Context context, HashMap<String, StockQuote> quotes, String timeStamp) {
         // Convert the quotes into a string and save in share preferences
         StringBuilder savedQuotes = new StringBuilder();
         for (String symbol : quotes.keySet()) {
@@ -113,18 +120,15 @@ public class DataSource {
             if (!savedQuotes.toString().equals("")) {
                 savedQuotes.append("\n");
             }
-            savedQuotes.append(symbol);
-            for (StockField f : StockField.values()) {
-                savedQuotes.append(";");
-                savedQuotes.append(quotes.get(symbol).get(f));
-            }
+            savedQuotes.append(quotes.get(symbol).serialize());
         }
+
         // Update the class cache and quotes timestamp
         mCachedQuotes = quotes;
         mTimeStamp = timeStamp;
 
         // Save preferences
-        Editor editor = Tools.getAppPreferences(context).edit();
+        Editor editor = PreferenceTools.getAppPreferences(context).edit();
         editor.putString("savedQuotes", savedQuotes.toString());
         editor.putString("savedQuotesTime", timeStamp);
         editor.apply();

@@ -22,16 +22,19 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock.configure;
+package nitezh.ministock.tests.mocks;
 
-import android.os.Bundle;
+import nitezh.ministock.Cache;
 
 
-public class Configure_1x4 extends ConfigureBase {
+public class MockCache implements Cache {
+    @Override
+    public void put(String key, String data, Integer ttl) {
+
+    }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        mWidgetSize = 1;
-        super.onCreate(savedInstanceState);
+    public String get(String key) {
+        return null;
     }
 }

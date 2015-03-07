@@ -21,6 +21,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  */
+
 package nitezh.ministock.widget;
 
 import android.app.AlarmManager;
@@ -40,16 +41,28 @@ import android.text.style.StyleSpan;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.RemoteViews;
-import nitezh.ministock.*;
-import nitezh.ministock.DataSource.StockField;
-import nitezh.ministock.UserData.PortfolioField;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import nitezh.ministock.DataSource;
+import nitezh.ministock.Preferences;
+import nitezh.ministock.R;
+import nitezh.ministock.domain.StockQuote;
+import nitezh.ministock.utils.ReflectionTools;
+import nitezh.ministock.UserData;
+import nitezh.ministock.UserData.PortfolioField;
+import nitezh.ministock.Widget;
+import nitezh.ministock.utils.CurrencyFormatter;
+import nitezh.ministock.utils.DateTools;
+import nitezh.ministock.utils.NumberTools;
+import nitezh.ministock.PreferenceTools;
+
+
 public class WidgetBase extends AppWidgetProvider {
+
     // Update type
     public static final int VIEW_UPDATE = 0;
     public static final int VIEW_NO_UPDATE = 2;
@@ -80,20 +93,24 @@ public class WidgetBase extends AppWidgetProvider {
         // Retrieve background preference and layoutId
         String background = preferences.getString("background", "transparent");
         Integer drawableId;
-        if (background.equals("transparent")) {
-            if (preferences.getBoolean("large_font", false)) {
-                drawableId = R.drawable.ministock_bg_transparent68_large;
-            } else {
-                drawableId = R.drawable.ministock_bg_transparent68;
-            }
-        } else if (background.equals("none")) {
-            drawableId = R.drawable.blank;
-        } else {
-            if (preferences.getBoolean("large_font", false)) {
-                drawableId = R.drawable.ministock_bg_large;
-            } else {
-                drawableId = R.drawable.ministock_bg;
-            }
+        switch (background) {
+            case "transparent":
+                if (preferences.getBoolean("large_font", false)) {
+                    drawableId = R.drawable.ministock_bg_transparent68_large;
+                } else {
+                    drawableId = R.drawable.ministock_bg_transparent68;
+                }
+                break;
+            case "none":
+                drawableId = R.drawable.blank;
+                break;
+            default:
+                if (preferences.getBoolean("large_font", false)) {
+                    drawableId = R.drawable.ministock_bg_large;
+                } else {
+                    drawableId = R.drawable.ministock_bg;
+                }
+                break;
         }
         // Return the matching remote views instance
         RemoteViews views;
@@ -127,18 +144,18 @@ public class WidgetBase extends AppWidgetProvider {
     }
 
     private static int getStockViewId(int line, int col) {
-        return Tools.getField("text" + line + col);
+        return ReflectionTools.getField("text" + line + col);
     }
 
     // Display the correct number of widget rows
     private static void displayRows(RemoteViews views, int arraySize) {
         for (int i = 0; i < 11; i++) {
-            int viewId = Tools.getField("line" + i);
+            int viewId = ReflectionTools.getField("line" + i);
             if (viewId > 0)
-                views.setViewVisibility(Tools.getField("line" + i), View.GONE);
+                views.setViewVisibility(ReflectionTools.getField("line" + i), View.GONE);
         }
         for (int i = 1; i < arraySize + 1; i++)
-            views.setViewVisibility(Tools.getField("line" + i), View.VISIBLE);
+            views.setViewVisibility(ReflectionTools.getField("line" + i), View.VISIBLE);
     }
 
     // Global formatter so we can perform global text formatting in one place
@@ -151,9 +168,9 @@ public class WidgetBase extends AppWidgetProvider {
         return span;
     }
 
-    private static HashMap<String, Object> getFormattedRow(String symbol, HashMap<StockField, String> quoteInfo, HashMap<String, HashMap<PortfolioField, String>> portfolioStockMap, int widgetView, SharedPreferences preferences, int widgetSize) {
+    private static HashMap<String, Object> getFormattedRow(String symbol, StockQuote quoteInfo, HashMap<String, HashMap<PortfolioField, String>> portfolioStockMap, int widgetView, SharedPreferences preferences, int widgetSize) {
         // Create the HashMap for our return values
-        HashMap<String, Object> rowItems = new HashMap<String, Object>();
+        HashMap<String, Object> rowItems = new HashMap<>();
         // Initialise columns
         rowItems.put("COL0_VALUE", symbol);
         rowItems.put("COL0_COLOUR", Color.WHITE);
@@ -174,7 +191,7 @@ public class WidgetBase extends AppWidgetProvider {
             }
         }
         // If there is no quote info return immediately
-        if (quoteInfo == null || quoteInfo.get(StockField.PRICE) == null || quoteInfo.get(StockField.PERCENT) == null) {
+        if (quoteInfo == null || quoteInfo.getPrice() == null || quoteInfo.getPercent() == null) {
             if (widgetSize == 0 || widgetSize == 2) {
                 rowItems.put("COL1_VALUE", "no");
                 rowItems.put("COL1_COLOUR", Color.GRAY);
@@ -189,13 +206,15 @@ public class WidgetBase extends AppWidgetProvider {
             return rowItems;
         }
         // Retrieve quote info
-        String name = quoteInfo.get(StockField.NAME);
-        String price = quoteInfo.get(StockField.PRICE);
-        String change = quoteInfo.get(StockField.CHANGE);
-        String percent = quoteInfo.get(StockField.PERCENT);
-        String volume = quoteInfo.get(StockField.VOLUME);
+        String name = quoteInfo.getName();
+        String price = quoteInfo.getPrice();
+        String change = quoteInfo.getChange();
+        String percent = quoteInfo.getPercent();
+        String volume = quoteInfo.getVolume();
+
         // Get the buy info for this stock from the portfolio
         HashMap<PortfolioField, String> stockInfo = portfolioStockMap.get(symbol);
+
         // Set default values
         if (widgetSize == 1 || widgetSize == 3) {
             rowItems.put("COL0_VALUE", name);
@@ -216,8 +235,8 @@ public class WidgetBase extends AppWidgetProvider {
         // Set the price
         rowItems.put("COL1_VALUE", price);
         // Initialise variables for values
-        String daily_change = quoteInfo.get(StockField.CHANGE);
-        String daily_percent = quoteInfo.get(StockField.PERCENT);
+        String daily_change = quoteInfo.getChange();
+        String daily_percent = quoteInfo.getPercent();
         String total_change = null;
         String total_percent = null;
         String aer_change = null;
@@ -229,26 +248,26 @@ public class WidgetBase extends AppWidgetProvider {
         Double years_elapsed = null;
         Boolean limitHigh_triggered = false;
         Boolean limitLow_triggered = false;
-        Double d_price = Tools.parseDouble(price);
-        Double d_dailyChange = Tools.parseDouble(change);
+        Double d_price = NumberTools.parseDouble(price);
+        Double d_dailyChange = NumberTools.parseDouble(change);
         Double d_buyPrice = null;
         Double d_quantity = null;
         Double d_limitHigh = null;
         Double d_limitLow = null;
         try {
-            d_buyPrice = Tools.parseDouble(stockInfo.get(PortfolioField.PRICE));
+            d_buyPrice = NumberTools.parseDouble(stockInfo.get(PortfolioField.PRICE));
         } catch (Exception ignored) {
         }
         try {
-            d_quantity = Tools.parseDouble(stockInfo.get(PortfolioField.QUANTITY));
+            d_quantity = NumberTools.parseDouble(stockInfo.get(PortfolioField.QUANTITY));
         } catch (Exception ignored) {
         }
         try {
-            d_limitHigh = Tools.parseDouble(stockInfo.get(PortfolioField.LIMIT_HIGH));
+            d_limitHigh = NumberTools.parseDouble(stockInfo.get(PortfolioField.LIMIT_HIGH));
         } catch (Exception ignored) {
         }
         try {
-            d_limitLow = Tools.parseDouble(stockInfo.get(PortfolioField.LIMIT_LOW));
+            d_limitLow = NumberTools.parseDouble(stockInfo.get(PortfolioField.LIMIT_LOW));
         } catch (Exception ignored) {
         }
         Double d_priceChange = null;
@@ -264,13 +283,13 @@ public class WidgetBase extends AppWidgetProvider {
         }
         // total_change
         if (d_priceChange != null)
-            total_change = Tools.getTrimmedDouble(d_priceChange, 5);
+            total_change = NumberTools.getTrimmedDouble(d_priceChange, 5);
         // total_percent
         if (d_priceChange != null)
             total_percent = String.format("%.1f", 100 * (d_priceChange / d_buyPrice)) + "%";
         // aer_change
         if (d_priceChange != null && years_elapsed != null)
-            aer_change = Tools.getTrimmedDouble(d_priceChange / years_elapsed, 5);
+            aer_change = NumberTools.getTrimmedDouble(d_priceChange / years_elapsed, 5);
         // aer_percent
         if (d_priceChange != null && years_elapsed != null)
             aer_percent = String.format("%.1f", (100 * (d_priceChange / d_buyPrice)) / years_elapsed) + "%";
@@ -417,13 +436,13 @@ public class WidgetBase extends AppWidgetProvider {
         }
         // Add currency symbol if we have a holding
         if (column1 != null) {
-            rowItems.put("COL1_VALUE", Tools.addCurrencySymbol(column1, symbol));
+            rowItems.put("COL1_VALUE", CurrencyFormatter.addCurrencyToSymbol(column1, symbol));
         }
         // Set the value and colour for the change values
         if (widgetSize == 1 || widgetSize == 3) {
             if (column3 != null) {
                 if (pl_change) {
-                    rowItems.put("COL3_VALUE", Tools.addCurrencySymbol(column3, symbol));
+                    rowItems.put("COL3_VALUE", CurrencyFormatter.addCurrencyToSymbol(column3, symbol));
                 } else {
                     rowItems.put("COL3_VALUE", column3);
                 }
@@ -436,7 +455,7 @@ public class WidgetBase extends AppWidgetProvider {
         } else {
             if (column2 != null) {
                 if (pl_change) {
-                    rowItems.put("COL2_VALUE", Tools.addCurrencySymbol(column2, symbol));
+                    rowItems.put("COL2_VALUE", CurrencyFormatter.addCurrencyToSymbol(column2, symbol));
                 } else {
                     rowItems.put("COL2_VALUE", column2);
                 }
@@ -450,7 +469,7 @@ public class WidgetBase extends AppWidgetProvider {
     private static String formatVolume(String value) {
         Double volume;
         try {
-            volume = Tools.parseDouble(value);
+            volume = NumberTools.parseDouble(value);
             if (volume > 999999999999D)
                 value = String.format("%.0fT", volume / 1000000000000D);
             else if (volume > 999999999D)
@@ -475,7 +494,7 @@ public class WidgetBase extends AppWidgetProvider {
      * @return Colour for this change value.
      */
     private static int getColourForChange(String value) {
-        double parsedValue = Tools.parseDouble(value, 0d);
+        double parsedValue = NumberTools.parseDouble(value, 0d);
         int colour;
         if (parsedValue < 0) {
             colour = COLOUR_LOSS;
@@ -526,9 +545,9 @@ public class WidgetBase extends AppWidgetProvider {
         return enabledViews;
     }
 
-    private static void updateWidget(Context context, int appWidgetId, int updateMode, HashMap<String, HashMap<StockField, String>> quotes) {
+    private static void updateWidget(Context context, int appWidgetId, int updateMode, HashMap<String, StockQuote> quotes) {
         // Get widget SharedPreferences
-        SharedPreferences prefs = Tools.getWidgetPreferences(context, appWidgetId);
+        SharedPreferences prefs = PreferenceTools.getWidgetPreferences(context, appWidgetId);
         // Choose between two widget sizes
         int widgetSize = prefs.getInt("widgetSize", 0);
         // Get relevant RemoteViews
@@ -617,7 +636,7 @@ public class WidgetBase extends AppWidgetProvider {
                     continue;
                 }
                 // Get the info for this quote
-                HashMap<StockField, String> quoteInfo;
+                StockQuote quoteInfo;
                 quoteInfo = quotes.get(symbol);
                 line_no++;
                 HashMap<String, Object> formattedRow = getFormattedRow(symbol, quoteInfo, portfolioStockMap, widgetView, prefs, widgetSize);
@@ -661,112 +680,116 @@ public class WidgetBase extends AppWidgetProvider {
             }
             // Set footer display
             String updated_display = prefs.getString("updated_display", "visible");
-            if (updated_display.equals("remove")) {
-                views.setViewVisibility(R.id.text_footer, View.GONE);
-            } else if (updated_display.equals("invisible")) {
-                views.setViewVisibility(R.id.text_footer, View.INVISIBLE);
-            } else {
-                views.setViewVisibility(R.id.text_footer, View.VISIBLE);
-                // Set footer text and colour
-                String updated_colour = prefs.getString("updated_colour", "light");
-                int footer_colour = Color.parseColor("#555555");
-                if (updated_colour.equals("light")) {
-                    footer_colour = Color.GRAY;
-                } else if (updated_colour.equals("yellow")) {
-                    footer_colour = Color.parseColor("#cccc77");
-                }
-                // Show short time if specified in prefs
-                if (!prefs.getBoolean("short_time", false)) {
-                    // Get current day and month
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd MMM");
-                    String current_date = formatter.format(new Date()).toUpperCase();
-                    // Set default time as today
-                    if (quotesTimeStamp.equals("")) {
-                        quotesTimeStamp = "NO DATE SET";
+            switch (updated_display) {
+                case "remove":
+                    views.setViewVisibility(R.id.text_footer, View.GONE);
+                    break;
+                case "invisible":
+                    views.setViewVisibility(R.id.text_footer, View.INVISIBLE);
+                    break;
+                default:
+                    views.setViewVisibility(R.id.text_footer, View.VISIBLE);
+                    // Set footer text and colour
+                    String updated_colour = prefs.getString("updated_colour", "light");
+                    int footer_colour = Color.parseColor("#555555");
+                    if (updated_colour.equals("light")) {
+                        footer_colour = Color.GRAY;
+                    } else if (updated_colour.equals("yellow")) {
+                        footer_colour = Color.parseColor("#cccc77");
                     }
-                    // Check if we should use yesterdays date or today's time
-                    String[] split_time = quotesTimeStamp.split(" ");
-                    if ((split_time[0] + " " + split_time[1]).equals(current_date)) {
-                        quotesTimeStamp = split_time[2];
+                    // Show short time if specified in prefs
+                    if (!prefs.getBoolean("short_time", false)) {
+                        // Get current day and month
+                        SimpleDateFormat formatter = new SimpleDateFormat("dd MMM");
+                        String current_date = formatter.format(new Date()).toUpperCase();
+                        // Set default time as today
+                        if (quotesTimeStamp.equals("")) {
+                            quotesTimeStamp = "NO DATE SET";
+                        }
+                        // Check if we should use yesterdays date or today's time
+                        String[] split_time = quotesTimeStamp.split(" ");
+                        if ((split_time[0] + " " + split_time[1]).equals(current_date)) {
+                            quotesTimeStamp = split_time[2];
+                        } else {
+                            quotesTimeStamp = (split_time[0] + " " + split_time[1]);
+                        }
+                    }
+                    // Set time stamp
+                    views.setTextViewText(R.id.text5, makeBold(prefs, quotesTimeStamp));
+                    views.setTextColor(R.id.text5, footer_colour);
+                    // Set the widget view text in the footer
+                    String currentViewText = "";
+                    if (widgetSize == 0 || widgetSize == 2) {
+                        switch (widgetView) {
+                            case VIEW_DAILY_PERCENT:
+                                currentViewText = "";
+                                break;
+                            case VIEW_DAILY_CHANGE:
+                                currentViewText = "DA";
+                                break;
+                            case VIEW_PORTFOLIO_PERCENT:
+                                currentViewText = "PF T%";
+                                break;
+                            case VIEW_PORTFOLIO_CHANGE:
+                                currentViewText = "PF TA";
+                                break;
+                            case VIEW_PORTFOLIO_PERCENT_AER:
+                                currentViewText = "PF AER";
+                                break;
+                            case VIEW_PL_DAILY_PERCENT:
+                                currentViewText = "P/L D%";
+                                break;
+                            case VIEW_PL_DAILY_CHANGE:
+                                currentViewText = "P/L DA";
+                                break;
+                            case VIEW_PL_PERCENT:
+                                currentViewText = "P/L T%";
+                                break;
+                            case VIEW_PL_CHANGE:
+                                currentViewText = "P/L TA";
+                                break;
+                            case VIEW_PL_PERCENT_AER:
+                                currentViewText = "P/L AER";
+                                break;
+                        }
                     } else {
-                        quotesTimeStamp = (split_time[0] + " " + split_time[1]);
+                        switch (widgetView) {
+                            case VIEW_DAILY_PERCENT:
+                                currentViewText = "";
+                                break;
+                            case VIEW_DAILY_CHANGE:
+                                currentViewText = "";
+                                break;
+                            case VIEW_PORTFOLIO_PERCENT:
+                                currentViewText = "PF T";
+                                break;
+                            case VIEW_PORTFOLIO_CHANGE:
+                                currentViewText = "PF T";
+                                break;
+                            case VIEW_PORTFOLIO_PERCENT_AER:
+                                currentViewText = "PF AER";
+                                break;
+                            case VIEW_PL_DAILY_PERCENT:
+                                currentViewText = "P/L D";
+                                break;
+                            case VIEW_PL_DAILY_CHANGE:
+                                currentViewText = "P/L D";
+                                break;
+                            case VIEW_PL_PERCENT:
+                                currentViewText = "P/L T";
+                                break;
+                            case VIEW_PL_CHANGE:
+                                currentViewText = "P/L T";
+                                break;
+                            case VIEW_PL_PERCENT_AER:
+                                currentViewText = "P/L AER";
+                                break;
+                        }
                     }
-                }
-                // Set time stamp
-                views.setTextViewText(R.id.text5, makeBold(prefs, quotesTimeStamp));
-                views.setTextColor(R.id.text5, footer_colour);
-                // Set the widget view text in the footer
-                String currentViewText = "";
-                if (widgetSize == 0 || widgetSize == 2) {
-                    switch (widgetView) {
-                        case VIEW_DAILY_PERCENT:
-                            currentViewText = "";
-                            break;
-                        case VIEW_DAILY_CHANGE:
-                            currentViewText = "DA";
-                            break;
-                        case VIEW_PORTFOLIO_PERCENT:
-                            currentViewText = "PF T%";
-                            break;
-                        case VIEW_PORTFOLIO_CHANGE:
-                            currentViewText = "PF TA";
-                            break;
-                        case VIEW_PORTFOLIO_PERCENT_AER:
-                            currentViewText = "PF AER";
-                            break;
-                        case VIEW_PL_DAILY_PERCENT:
-                            currentViewText = "P/L D%";
-                            break;
-                        case VIEW_PL_DAILY_CHANGE:
-                            currentViewText = "P/L DA";
-                            break;
-                        case VIEW_PL_PERCENT:
-                            currentViewText = "P/L T%";
-                            break;
-                        case VIEW_PL_CHANGE:
-                            currentViewText = "P/L TA";
-                            break;
-                        case VIEW_PL_PERCENT_AER:
-                            currentViewText = "P/L AER";
-                            break;
-                    }
-                } else {
-                    switch (widgetView) {
-                        case VIEW_DAILY_PERCENT:
-                            currentViewText = "";
-                            break;
-                        case VIEW_DAILY_CHANGE:
-                            currentViewText = "";
-                            break;
-                        case VIEW_PORTFOLIO_PERCENT:
-                            currentViewText = "PF T";
-                            break;
-                        case VIEW_PORTFOLIO_CHANGE:
-                            currentViewText = "PF T";
-                            break;
-                        case VIEW_PORTFOLIO_PERCENT_AER:
-                            currentViewText = "PF AER";
-                            break;
-                        case VIEW_PL_DAILY_PERCENT:
-                            currentViewText = "P/L D";
-                            break;
-                        case VIEW_PL_DAILY_CHANGE:
-                            currentViewText = "P/L D";
-                            break;
-                        case VIEW_PL_PERCENT:
-                            currentViewText = "P/L T";
-                            break;
-                        case VIEW_PL_CHANGE:
-                            currentViewText = "P/L T";
-                            break;
-                        case VIEW_PL_PERCENT_AER:
-                            currentViewText = "P/L AER";
-                            break;
-                    }
-                }
-                // Update the view name and view name separator
-                views.setTextViewText(R.id.text6, makeBold(prefs, currentViewText));
-                views.setTextColor(R.id.text6, footer_colour);
+                    // Update the view name and view name separator
+                    views.setTextViewText(R.id.text6, makeBold(prefs, currentViewText));
+                    views.setTextColor(R.id.text6, footer_colour);
+                    break;
             }
             // Finally update the widget with the RemoteViews
             AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views);
@@ -775,7 +798,7 @@ public class WidgetBase extends AppWidgetProvider {
 
     public static void update(Context context, int appWidgetId, int updateMode) {
         // Get widget SharedPreferences
-        SharedPreferences prefs = Tools.getWidgetPreferences(context, appWidgetId);
+        SharedPreferences prefs = PreferenceTools.getWidgetPreferences(context, appWidgetId);
         // Choose between two widget sizes
         int widgetSize = prefs.getInt("widgetSize", 0);
         // Get the array size for widgets
@@ -803,7 +826,7 @@ public class WidgetBase extends AppWidgetProvider {
         for (int appWidgetId : UserData.getAppWidgetIds2(context))
             WidgetBase.update(context, appWidgetId, updateMode);
         // Update last update time
-        SharedPreferences prefs = Tools.getAppPreferences(context);
+        SharedPreferences prefs = PreferenceTools.getAppPreferences(context);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Editor editor = prefs.edit();
         editor.putString("last_update1", formatter.format(new Date()));
@@ -817,17 +840,17 @@ public class WidgetBase extends AppWidgetProvider {
          * Update the widget if allowed by the update schedule
 		 */
         boolean doUpdates = true;
-        SharedPreferences sharedPreferences = Tools.getAppPreferences(context);
+        SharedPreferences sharedPreferences = PreferenceTools.getAppPreferences(context);
         // Only update after start time
         String startTime = sharedPreferences.getString("update_start", null);
         if (startTime != null && !startTime.equals("")) {
-            if (Tools.compareToNow(Tools.parseSimpleDate(startTime)) == 1)
+            if (DateTools.compareToNow(DateTools.parseSimpleDate(startTime)) == 1)
                 doUpdates = false;
         }
         // Only update before end time
         String endTime = sharedPreferences.getString("update_end", null);
         if (endTime != null && !endTime.equals("")) {
-            if (Tools.compareToNow(Tools.parseSimpleDate(endTime)) == -1)
+            if (DateTools.compareToNow(DateTools.parseSimpleDate(endTime)) == -1)
                 doUpdates = false;
         }
         // Do not update on weekends
@@ -852,13 +875,13 @@ public class WidgetBase extends AppWidgetProvider {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, intent, 0);
         alarmManager.cancel(pendingIntent);
         // Get the configured update interval (default 30 minutes)
-        SharedPreferences preferences = Tools.getAppPreferences(context);
+        SharedPreferences preferences = PreferenceTools.getAppPreferences(context);
         Long interval = Long.parseLong((preferences.getString("update_interval", Long.toString(AlarmManager.INTERVAL_HALF_HOUR))));
         // First update delay
         Double firstInterval = interval.doubleValue();
         // Get the last update time
         String lastUpdate = preferences.getString("last_update1", null);
-        Double elapsed = Tools.elapsedTime(lastUpdate);
+        Double elapsed = DateTools.elapsedTime(lastUpdate);
         // If the elapsed time is greater than the interval, then update now
         // otherwise, work out how much longer until the next update
         if (elapsed > 0)
@@ -944,7 +967,7 @@ public class WidgetBase extends AppWidgetProvider {
             int updateMode = (Integer) params[2];
             String[] symbols = (String[]) params[3];
             DataSource dataSource = new DataSource();
-            HashMap<String, HashMap<StockField, String>> quotes = dataSource.getStockData(context, symbols, updateMode == VIEW_UPDATE);
+            HashMap<String, StockQuote> quotes = dataSource.getStockData(context, symbols, updateMode == VIEW_UPDATE);
             updateWidget(context, appWidgetId, updateMode, quotes);
             return null;
         }

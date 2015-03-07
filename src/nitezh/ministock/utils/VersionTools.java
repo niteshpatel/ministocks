@@ -22,16 +22,10 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock.configure;
-
-import android.os.Bundle;
+package nitezh.ministock.utils;
 
 
-public class Configure_1x4 extends ConfigureBase {
+public class VersionTools {
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        mWidgetSize = 1;
-        super.onCreate(savedInstanceState);
-    }
+    public static final String BUILD = "53";
 }

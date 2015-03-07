@@ -21,6 +21,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  */
+
 package nitezh.ministock;
 
 import android.app.SearchManager;
@@ -29,10 +30,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.*;
+import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
+import android.preference.ListPreference;
+import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceScreen;
 import android.widget.TimePicker;
-import nitezh.ministock.widget.WidgetBase;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,20 +46,23 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import nitezh.ministock.utils.DateTools;
+import nitezh.ministock.utils.VersionTools;
+import nitezh.ministock.widget.WidgetBase;
+
+
 public class Preferences extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+
     // Constants
     private static final int STRING_TYPE = 0;
     private static final int LIST_TYPE = 1;
     private static final int CHECKBOX_TYPE = 2;
-
     // Public variables
     public static int mAppWidgetId = 0;
-
     // Private
     private static boolean mStocksDirty = false;
     private static String mSymbolSearchKey = "";
     private final String CHANGE_LOG = "• Bug-fixes and optimisations.<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>";
-
     // Fields for time pickers
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
     private String mTimePickerKey = null;
@@ -113,7 +121,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 
     private void showRecentChanges() {
         // Return if the change log has already been viewed
-        if (getAppPreferences().getString("change_log_viewed", "").equals(Tools.BUILD)) {
+        if (getAppPreferences().getString("change_log_viewed", "").equals(VersionTools.BUILD)) {
             return;
         }
         // Cleanup preferences files
@@ -124,7 +132,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
                 // Ensure we don't show this again
                 SharedPreferences preferences = getAppPreferences();
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putString("change_log_viewed", Tools.BUILD);
+                editor.putString("change_log_viewed", VersionTools.BUILD);
 
                 // Set first install if not set
                 if (preferences.getString("install_date", "").equals("")) {
@@ -134,7 +142,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
                 return new Object();
             }
         };
-        Tools.alertWithCallback(this, "BUILD " + Tools.BUILD, getChangeLog(), "Close", null, callable);
+        DialogTools.alertWithCallback(this, "BUILD " + VersionTools.BUILD, getChangeLog(), "Close", null, callable);
     }
 
     @Override
@@ -170,7 +178,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         }
         // Hide Feedback option if not relevant
         String install_date = getAppPreferences().getString("install_date", null);
-        if (Tools.elapsedDays(install_date) < 30)
+        if (DateTools.elapsedDays(install_date) < 30)
             removePref("about_menu", "rate_app");
 
         // Initialise the summaries when the preferences screen loads
@@ -179,7 +187,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
             updateSummaries(sharedPreferences, key);
 
         // Update version number
-        findPreference("version").setSummary("BUILD " + Tools.BUILD);
+        findPreference("version").setSummary("BUILD " + VersionTools.BUILD);
 
         // Force update of global preferences
         // TODO Ensure the items below are included in the above list
@@ -208,7 +216,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
             if (sharedPreferences.getString(key, "").equals("900000") || sharedPreferences.getString(key, "").equals("300000")) {
                 String title = "Short update interval";
                 String body = "Note that choosing a short update interval may drain your battery faster.";
-                Tools.showSimpleDialog(this, title, body);
+                DialogTools.showSimpleDialog(this, title, body);
             }
         } else if (key.equals("update_start") || key.equals("update_end")) {
             updateGlobalPref(sharedPreferences, key, STRING_TYPE);
@@ -286,19 +294,19 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     void showDisclaimer() {
         String title = "License";
         String body = "The MIT License (MIT)<br/><br/>Copyright © 2013 Nitesh Patel<br/><br />Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:<br /><br />The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.<br/><br/>THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.";
-        Tools.showSimpleDialog(this, title, body);
+        DialogTools.showSimpleDialog(this, title, body);
     }
 
     void showHelp() {
         String title = "Entering stocks";
         String body = "<b>Entering stock symbols</b><br/><br />Stock symbols must be in the Yahoo format, which you can look up on the Yahoo Finance website.";
-        Tools.showSimpleDialog(this, title, body);
+        DialogTools.showSimpleDialog(this, title, body);
     }
 
     void showHelpPrices() {
         String title = "Updating prices";
         String body = "You can set how often, and when the widget updates in the Advanced settings menu.  The setting applies globally to all the widgets.<br /><br />Stock price information is provided by Yahoo Finance, and there may be a delay (from real-time prices, to up to 30 minutes) for some exchanges.<br /><br />Note that the time in the lower-left of the widget is the time that the data was retrieved from Yahoo, not the time of the live price.<br /><br />If an internet connection is not present when an update occurs, the widget will just use the last shown data, and the time for that data.<br /><br /><b>Update prices now feature</b><br /><br />This will update the prices in all your widgets, if there is an internet connection available.";
-        Tools.showSimpleDialog(this, title, body);
+        DialogTools.showSimpleDialog(this, title, body);
     }
 
     void showTimePickerDialog(Preference preference, String defaultValue) {
@@ -382,16 +390,16 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         for (int i = 1; i < 11; i++) {
             String key = "Stock" + i;
             findPreference(key).setOnPreferenceClickListener(new OnPreferenceClickListener() {
-                        @Override
-                        public boolean onPreferenceClick(Preference preference) {
-                            mSymbolSearchKey = preference.getKey();
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    mSymbolSearchKey = preference.getKey();
 
-                            // Start search with current value as query
-                            String query = preference.getSharedPreferences().getString(mSymbolSearchKey, "");
-                            startSearch(query, false, null, false);
-                            return true;
-                        }
-                    });
+                    // Start search with current value as query
+                    String query = preference.getSharedPreferences().getString(mSymbolSearchKey, "");
+                    startSearch(query, false, null, false);
+                    return true;
+                }
+            });
         }
         // Hook up the help preferences
         Preference help_usage = findPreference("help_usage");
@@ -442,27 +450,68 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
             }
         });
 
-		/*
-         * // Hook the Backup portfolio option to the backup portfolio method
-		 * Preference backup = findPreference("backup_portfolio");
-		 * backup.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-		 * 
-		 * @Override public boolean onPreferenceClick(Preference preference) {
-		 * UserData.backupPortfolio(getApplicationContext());
-		 * 
-		 * Intent intent = new Intent(Preferences.this, Portfolio.class);
-		 * startActivity(intent); return true; } }); // Hook the Restore
-		 * portfolio option to the restore portfolio method Preference restore =
-		 * findPreference("restore_portfolio");
-		 * restore.setOnPreferenceClickListener(new OnPreferenceClickListener()
-		 * {
-		 * 
-		 * @Override public boolean onPreferenceClick(Preference preference) {
-		 * UserData.restorePortfolio(getApplicationContext());
-		 * 
-		 * Intent intent = new Intent(Preferences.this, Portfolio.class);
-		 * startActivity(intent); return true; } });
-		 */
+        // Hook the Backup portfolio option to the backup portfolio method
+        Preference backup_portfolio = findPreference("backup_portfolio");
+        backup_portfolio.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                UserData.backupPortfolio(Preferences.this);
+                return true;
+            }
+        });
+
+        // Hook the Restore portfolio option to the restore portfolio method
+        Preference restore_portfolio = findPreference("restore_portfolio");
+        restore_portfolio.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                UserData.restorePortfolio(Preferences.this);
+                return true;
+            }
+        });
+
+        // Hook the Backup widget option to the backup widget method
+        Preference backup_widget = findPreference("backup_widget");
+        backup_widget.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                DialogTools.InputAlertCallable callable = new DialogTools.InputAlertCallable() {
+                    @Override
+                    public Object call() throws Exception {
+                        UserData.backupWidget(Preferences.this, mAppWidgetId, this.getInputValue());
+                        return new Object();
+                    }
+                };
+                DialogTools.inputWithCallback(Preferences.this, "Backup this widget", "Please enter a name for this backup:", "OK", "Cancel", "Widget backup from " + DateTools.getNowAsString(), callable);
+                return true;
+            }
+        });
+
+        // Hook the Restore widget option to the restore widget method
+        Preference restore_widget = findPreference("restore_widget");
+        restore_widget.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                CharSequence[] backupNames = UserData.getWidgetBackupNames(Preferences.this);
+                // If there are no backups show an appropriate dialog
+                if (backupNames == null) {
+                    DialogTools.showSimpleDialog(Preferences.this, "No backups available", "There were no widget backups to restore.");
+                    return true;
+                }
+
+                // If there are backups then show the list
+                DialogTools.InputAlertCallable callable = new DialogTools.InputAlertCallable() {
+                    @Override
+                    public Object call() throws Exception {
+                        UserData.restoreWidget(Preferences.this, mAppWidgetId, this.getInputValue());
+                        return new Object();
+                    }
+                };
+                DialogTools.choiceWithCallback(Preferences.this, "Select a widget backup to restore", "Cancel", backupNames, callable);
+                return true;
+            }
+        });
+
         // Hook Rate Ministocks preference to the market link
         Preference rate_app = findPreference("rate_app");
         rate_app.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -472,6 +521,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
                 return true;
             }
         });
+
         // Hook the Feedback preference to the Portfolio activity
         Preference feedback = findPreference("feedback");
         feedback.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -482,7 +532,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
                 intent.setType("message/rfc822");
                 String[] toAddress = {"nitezh@gmail.com"};
                 intent.putExtra(Intent.EXTRA_EMAIL, toAddress);
-                intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + " BUILD " + Tools.BUILD);
+                intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + " BUILD " + VersionTools.BUILD);
                 intent.setType("message/rfc822");
 
                 // In case we can't launch e-mail, show a dialog
@@ -497,7 +547,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
                     e.printStackTrace();
                 }
                 // Show dialog if launching e-mail fails
-                Tools.showSimpleDialog(getApplicationContext(), "Launching e-mail failed", "We were unable to launch your e-mail client automatically.<br /><br />Our e-mail address for support and feedback is nitezh@gmail.com");
+                DialogTools.showSimpleDialog(getApplicationContext(), "Launching e-mail failed", "We were unable to launch your e-mail client automatically.<br /><br />Our e-mail address for support and feedback is nitezh@gmail.com");
                 return true;
             }
         });
@@ -593,7 +643,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
                 mHour = Integer.parseInt(items[0]);
                 mMinute = Integer.parseInt(items[1]);
             }
-            findPreference(key).setSummary("Time set: " + Tools.timeDigitPad(mHour) + ":" + Tools.timeDigitPad(mMinute));
+            findPreference(key).setSummary("Time set: " + DateTools.timeDigitPad(mHour) + ":" + DateTools.timeDigitPad(mMinute));
 
             // Update the value of the update limits
             updateFromGlobal(sharedPreferences, key, STRING_TYPE);
@@ -620,19 +670,19 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
     private void showHelpUsage() {
         String title = "Selecting widget views";
         String body = "The widget has multiple views that display different information.<br /><br />These views can be turned on from the Widget views menu in settings.<br /><br />Once selected, the views can be changed on your home screen by touching the right-side of the widget.<br /><br />If a stock does not have information for a particular view, then the daily percentage change will instead be displayed for that stock in blue.<br /><br /><b>Daily change %</b><br /><br />Shows the current stock price with the daily percentage change.<br /><br /><b>Daily change (DA)</b><br /><br />Shows the current stock price with the daily price change.<br /><br /><b>Total change % (PF T%)</b><br /><br />Shows the current stock price with the total percentage change from the buy price in the portfolio.<br /><br /><b>Total change (PF TA)</b><br /><br />Shows the current stock price with the total price change from the buy price in the portfolio.<br /><br /><b>Total change AER % (PF AER)</b><br /><br />Shows the current stock price with the annualised percentage change using the buy price in the portfolio.<br /><br /><b>P/L daily change % (P/L D%)</b><br /><br />Shows your current holding value with the daily percentage change.<br /><br /><b>P/L daily change (P/L DA)</b><br /><br />Shows your current holding value with the daily price change.<br /><br /><b>P/L total change % (P/L T%)</b><br /><br />Shows your current holding value with the total percentage change from the buy cost in the portfolio.<br /><br /><b>P/L total change (P/L TA)</b><br /><br />Shows your current holding value with the total value change from the buy cost in the portfolio.<br /><br /><b>P/L total change AER (P/L AER)</b><br /><br />Shows your current holding value with the annualised percentage change using the buy cost in the portfolio.";
-        Tools.showSimpleDialog(this, title, body);
+        DialogTools.showSimpleDialog(this, title, body);
     }
 
     private void showHelpPortfolio() {
         String title = "Using the portfolio";
         String body = "On the portfolio screen you will see all the stocks that you have entered in your widgets in one list.<br /><br />You can touch an item to enter your stock purchase details.<br /><br /><b>Entering purchase details</b><br /><br />Enter the price that you bought the stock for, this will then be used for the Portfolio and Profit and loss widget views.<br /><br />The Date is optional, and will be used for the AER rate on the portfolio AER and profit and loss AER views.<br /><br />The Quantity is optional, and will be used to calculate your holdings for the profit and loss views.  You may use negative values to simulate a short position.<br /><br />The High price limit and Low price limit are optional.  When the current price hits these limits, the price color will change in the widget.<br /><br /><b>Removing purchase details</b><br /><br />To remove purchase and alert details, long press the portfolio item and then choose the Clear details option.";
-        Tools.showSimpleDialog(this, title, body);
+        DialogTools.showSimpleDialog(this, title, body);
     }
 
     private void showChangeLog() {
-        String title = "BUILD " + Tools.BUILD;
+        String title = "BUILD " + VersionTools.BUILD;
         String body = CHANGE_LOG;
-        Tools.showSimpleDialog(this, title, body);
+        DialogTools.showSimpleDialog(this, title, body);
     }
 
     private void showFeedbackOption() {
@@ -643,6 +693,6 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
                 return new Object();
             }
         };
-        Tools.alertWithCallback(this, "Rate Ministocks", "Please support Ministocks by giving the application a 5 star rating in the android market.<br /><br />Motivation to continue to improve the product and add new features comes from positive feedback and ratings.", "Rate it!", "Close", callable);
+        DialogTools.alertWithCallback(this, "Rate Ministocks", "Please support Ministocks by giving the application a 5 star rating in the android market.<br /><br />Motivation to continue to improve the product and add new features comes from positive feedback and ratings.", "Rate it!", "Close", callable);
     }
 }

@@ -22,16 +22,32 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock.configure;
+package nitezh.ministock.tests;
 
-import android.os.Bundle;
+import junit.framework.TestCase;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import nitezh.ministock.dataaccess.FxChangeRepository;
+import nitezh.ministock.tests.mocks.MockCache;
 
 
-public class Configure_1x4 extends ConfigureBase {
+public class FxChangeRepositoryTests extends TestCase {
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        mWidgetSize = 1;
-        super.onCreate(savedInstanceState);
+    private FxChangeRepository fxRepository;
+
+    public void setUp() {
+        this.fxRepository = new FxChangeRepository();
+    }
+
+    public void testRetrieveChangesAsJson() {
+        JSONObject json = null;
+        try {
+            json = this.fxRepository.retrieveChangesAsJson(new MockCache());
+        } catch (JSONException ignored) {
+        }
+
+        assertNotNull(json);
     }
 }

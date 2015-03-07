@@ -21,32 +21,53 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  */
+
 package nitezh.ministock;
 
+import android.app.Activity;
+import android.app.backup.BackupManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 
 public class UserData {
-    private static final HashMap<String, HashMap<PortfolioField, String>> mPortfolioStockMap = new HashMap<String, HashMap<PortfolioField, String>>();
+
+    public static final String PORTFOLIO_JSON = "portfolioJson";
+    public static final String WIDGET_JSON = "widgetJson";
+    // Object for intrinsic lock
+    public static final Object sFileBackupLock = new Object();
+    private static final HashMap<String, HashMap<PortfolioField, String>> mPortfolioStockMap = new HashMap<>();
     // Cache markers
     private static boolean mDirtyPortfolioStockMap = true;
 
     public static void addAppWidgetSize(Context context, int appWidgetId, int widgetSize) {
         // Record widgetSize
-        Editor editor = Tools.getWidgetPreferences(context, appWidgetId).edit();
+        Editor editor = PreferenceTools.getWidgetPreferences(context, appWidgetId).edit();
         editor.putInt("widgetSize", widgetSize);
         editor.apply();
     }
 
     public static void addAppWidgetId(Context context, int appWidgetId, Integer widgetSize) {
         // Get the existing widgetIds from the preferences
-        SharedPreferences preferences = Tools.getAppPreferences(context);
+        SharedPreferences preferences = PreferenceTools.getAppPreferences(context);
 
         // Add the new appWidgetId
         StringBuilder rawAppWidgetIds = new StringBuilder();
@@ -67,8 +88,8 @@ public class UserData {
 
     public static void delAppWidgetId(Context context, int appWidgetId) {
         // Get the existing widgetIds from the preferences
-        SharedPreferences preferences = Tools.getAppPreferences(context);
-        ArrayList<String> newAppWidgetIds = new ArrayList<String>();
+        SharedPreferences preferences = PreferenceTools.getAppPreferences(context);
+        ArrayList<String> newAppWidgetIds = new ArrayList<>();
         Collections.addAll(newAppWidgetIds, preferences.getString("appWidgetIds", "").split(","));
 
         // Remove the one to remove
@@ -91,7 +112,7 @@ public class UserData {
 
     public static int[] getAppWidgetIds2(Context context) {
         // Get the widgetIds from the preferences
-        SharedPreferences prefs = Tools.getAppPreferences(context);
+        SharedPreferences prefs = PreferenceTools.getAppPreferences(context);
         StringBuilder rawAppWidgetIds = new StringBuilder();
         rawAppWidgetIds.append(prefs.getString("appWidgetIds", ""));
 
@@ -108,12 +129,12 @@ public class UserData {
     }
 
     public static Set<String> getWidgetsStockSymbols(Context context) {
-        Set<String> widgetStockSymbols = new HashSet<String>();
+        Set<String> widgetStockSymbols = new HashSet<>();
         SharedPreferences widgetPreferences;
 
         // Add the stock symbols from the widget preferences
         for (int appWidgetId : getAppWidgetIds2(context)) {
-            widgetPreferences = Tools.getWidgetPreferences(context, appWidgetId);
+            widgetPreferences = PreferenceTools.getWidgetPreferences(context, appWidgetId);
             if (widgetPreferences == null)
                 continue;
 
@@ -136,10 +157,10 @@ public class UserData {
         mPortfolioStockMap.clear();
 
         // Use the Json data if present
-        String rawJson = Tools.getAppPreferences(context).getString("portfolioJson", "");
+        String rawJson = PreferenceTools.getAppPreferences(context).getString(PORTFOLIO_JSON, "");
         if (rawJson.equals("")) {
             // If there is no Json data then use the old style data
-            for (String rawStock : Tools.getAppPreferences(context).getString("portfolio", "").split(",")) {
+            for (String rawStock : PreferenceTools.getAppPreferences(context).getString("portfolio", "").split(",")) {
                 String[] stockArray = rawStock.split(":");
 
                 // Skip empties and invalid formatted stocks
@@ -149,7 +170,7 @@ public class UserData {
                 // Create stock map, ignoring any items with nulls
                 String[] stockInfo = stockArray[1].split("\\|");
                 if (stockInfo.length > 0 && stockInfo[0] != null) {
-                    HashMap<PortfolioField, String> stockInfoMap = new HashMap<PortfolioField, String>();
+                    HashMap<PortfolioField, String> stockInfoMap = new HashMap<>();
                     for (PortfolioField f : PortfolioField.values()) {
                         String data = "";
                         if (stockInfo.length > f.ordinal() && !stockInfo[f.ordinal()].equals("empty")) {
@@ -179,7 +200,7 @@ public class UserData {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    HashMap<PortfolioField, String> stockInfoMap = new HashMap<PortfolioField, String>();
+                    HashMap<PortfolioField, String> stockInfoMap = new HashMap<>();
                     for (PortfolioField f : PortfolioField.values()) {
                         String data = "";
                         try {
@@ -232,8 +253,8 @@ public class UserData {
         }
 
         // Commit changes to the preferences
-        Editor editor = Tools.getAppPreferences(context).edit();
-        editor.putString("portfolioJson", json.toString());
+        Editor editor = PreferenceTools.getAppPreferences(context).edit();
+        editor.putString(PORTFOLIO_JSON, json.toString());
         editor.apply();
 
         // Set the cache flag as dirty
@@ -241,7 +262,7 @@ public class UserData {
     }
 
     public static HashMap<String, HashMap<PortfolioField, String>> getPortfolioStockMapForWidget(Context context, String[] symbols) {
-        HashMap<String, HashMap<PortfolioField, String>> portfolioStockMapForWidget = new HashMap<String, HashMap<PortfolioField, String>>();
+        HashMap<String, HashMap<PortfolioField, String>> portfolioStockMapForWidget = new HashMap<>();
         HashMap<String, HashMap<PortfolioField, String>> portfolioStockMap = getPortfolioStockMap(context);
 
         // Add stock details for any symbols that exist in the widget
@@ -255,7 +276,7 @@ public class UserData {
 
     public static void cleanupPreferenceFiles(Context context) {
         // Remove old preferences if we are upgrading
-        ArrayList<String> l = new ArrayList<String>();
+        ArrayList<String> l = new ArrayList<>();
 
         // Shared preferences is never deleted
         l.add(context.getString(R.string.prefs_name) + ".xml");
@@ -273,6 +294,120 @@ public class UserData {
                 if (!l.contains(f.getName()))
                     //noinspection ResultOfMethodCallIgnored
                     f.delete();
+    }
+
+    public static void backupPortfolio(Context context) {
+        // Get current portfolio from preferences
+        String rawJson = PreferenceTools.getAppPreferences(context).getString(PORTFOLIO_JSON, "");
+
+        // Store portfolio in internal storage
+        writeInternalStorage(context, rawJson, PORTFOLIO_JSON);
+
+        // Show confirmation to user
+        DialogTools.showSimpleDialog(context, "Portfolio backed up", "Your portfolio settings have been backed up to internal storage.");
+    }
+
+    public static void restorePortfolio(Context context) {
+        // Get portfolio from internal storage
+        String rawJson = readInternalStorage(context, PORTFOLIO_JSON);
+
+        // Store portfolio in preferences
+        Editor editor = PreferenceTools.getAppPreferences(context).edit();
+        editor.putString(PORTFOLIO_JSON, rawJson);
+        editor.apply();
+        mDirtyPortfolioStockMap = true;
+
+        // Show confirmation to user
+        DialogTools.showSimpleDialog(context, "Portfolio restored", "Your portfolio settings have been restored from internal storage.");
+    }
+
+    public static void backupWidget(Context context, int appWidgetId, String backupName) {
+        try {
+            // Get existing data collection from storage if present
+            JSONObject backupContainer = new JSONObject();
+            String rawJson = readInternalStorage(context, WIDGET_JSON);
+            if (rawJson != null) {
+                backupContainer = new JSONObject(rawJson);
+            }
+            // Now get data for current widget, append to existing data and write to storage
+            JSONObject backupJson = PreferenceTools.getWidgetPreferencesAsJson(context, appWidgetId);
+            backupContainer.put(backupName, backupJson);
+            writeInternalStorage(context, backupContainer.toString(), WIDGET_JSON);
+        } catch (JSONException ignored) {
+        }
+    }
+
+    public static void restoreWidget(Context context, int appWidgetId, String backupName) {
+        try {
+            // Get existing data collection from storage
+            JSONObject backupContainer = new JSONObject(readInternalStorage(context, WIDGET_JSON));
+
+            // Update widget with preferences from backup
+            PreferenceTools.setWidgetPreferencesFromJson(context, appWidgetId, backupContainer.getJSONObject(backupName));
+
+            // Show confirmation to user
+            DialogTools.showSimpleDialog(context, "Widget restored", "The current widget preferences have been restored from your selected backup.");
+
+            // restart activity to force reload of preferences
+            Activity activity = ((Activity) context);
+            Intent intent = activity.getIntent();
+            activity.finish();
+            activity.startActivity(intent);
+        } catch (JSONException ignored) {
+        }
+    }
+
+    public static CharSequence[] getWidgetBackupNames(Context context) {
+        // Get existing data collection from storage
+        try {
+            String rawJson = readInternalStorage(context, WIDGET_JSON);
+            if (rawJson == null) {
+                return null;
+            }
+            JSONObject backupContainer = new JSONObject(readInternalStorage(context, WIDGET_JSON));
+            Iterator<String> iterator = backupContainer.keys();
+            ArrayList<String> backupList = new ArrayList<>();
+            while (iterator.hasNext()) {
+                backupList.add(iterator.next());
+            }
+            CharSequence[] backupNames = new String[backupList.size()];
+            return backupList.toArray(backupNames);
+        } catch (JSONException ignored) {
+        }
+        return null;
+    }
+
+    private static void writeInternalStorage(Context context, String stringData, String filename) {
+        try {
+            synchronized (UserData.sFileBackupLock) {
+                FileOutputStream fos;
+                fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
+                fos.write(stringData.getBytes());
+                fos.close();
+            }
+            BackupManager backupManager = new BackupManager(context);
+            backupManager.dataChanged();
+        } catch (FileNotFoundException ignored) {
+        } catch (IOException ignored) {
+        }
+    }
+
+    private static String readInternalStorage(Context context, String filename) {
+        try {
+            StringBuffer fileContent = new StringBuffer();
+            synchronized (UserData.sFileBackupLock) {
+                FileInputStream fis;
+                fis = context.openFileInput(filename);
+                byte[] buffer = new byte[1024];
+                while (fis.read(buffer) != -1) {
+                    fileContent.append(new String(buffer));
+                }
+            }
+            return new String(fileContent);
+        } catch (FileNotFoundException ignored) {
+        } catch (IOException ignored) {
+        }
+        return null;
     }
 
     public enum PortfolioField {
