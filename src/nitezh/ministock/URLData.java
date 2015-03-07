@@ -32,7 +32,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 
-public class URLData {
+public class UrlData {
 
     private static String inputStreamToString(InputStream stream) throws IOException {
         BufferedReader r = new BufferedReader(new InputStreamReader(stream));
