@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import nitezh.ministock.Cache;
-import nitezh.ministock.URLData;
+import nitezh.ministock.UrlData;
 import nitezh.ministock.domain.StockQuote;
 
 
@@ -90,7 +90,7 @@ public class YahooStockQuoteRepository {
 
     private String getQuotesCsv(Cache cache, List<String> symbols) {
         String url = this.buildRequestUrl(symbols);
-        return URLData.getCachedUrlData(url, cache, 300);
+        return UrlData.getCachedUrlData(url, cache, 300);
     }
 
     private boolean isDataInvalid(String quotesCsv) {

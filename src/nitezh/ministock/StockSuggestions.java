@@ -52,7 +52,7 @@ class StockSuggestions {
         try {
             String url = BASE_URL + URLEncoder.encode(query, "UTF-8");
             Cache cache = new PreferenceCache(null);
-            response = URLData.getCachedUrlData(url, cache, 86400);
+            response = UrlData.getCachedUrlData(url, cache, 86400);
         } catch (UnsupportedEncodingException e1) {
             // TODO Auto-generated catch block
             response = null;

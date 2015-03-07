@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import nitezh.ministock.Cache;
-import nitezh.ministock.URLData;
+import nitezh.ministock.UrlData;
 import nitezh.ministock.domain.StockQuote;
 
 
@@ -80,6 +80,6 @@ public class GoogleStockQuoteRepository {
 
     public JSONArray retrieveQuotesAsJson(Cache cache, List<String> symbols) throws JSONException {
         String url = this.buildRequestUrl(symbols);
-        return new JSONArray(URLData.getCachedUrlData(url, cache, 300).replace("//", ""));
+        return new JSONArray(UrlData.getCachedUrlData(url, cache, 300).replace("//", ""));
     }
 }
