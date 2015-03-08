@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import nitezh.ministock.Cache;
-import nitezh.ministock.UrlData;
+import nitezh.ministock.utils.UrlData;
 import nitezh.ministock.domain.StockQuote;
 
 
