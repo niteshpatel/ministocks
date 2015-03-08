@@ -24,17 +24,19 @@
 
 package nitezh.ministock.tests.mocks;
 
+import org.json.JSONObject;
+
 import nitezh.ministock.Cache;
 
 
-public class MockCache implements Cache {
-    @Override
-    public void put(String key, String data, Integer ttl) {
+public class MockCache extends Cache {
 
+    @Override
+    protected JSONObject loadCache() {
+        return new JSONObject();
     }
 
     @Override
-    public String get(String key) {
-        return null;
+    protected void persistCache(JSONObject cache) {
     }
 }

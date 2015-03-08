@@ -25,9 +25,42 @@
 package nitezh.ministock;
 
 
-public interface Cache {
+import org.json.JSONException;
+import org.json.JSONObject;
 
-    void put(String key, String data, Integer ttl);
+import java.util.Calendar;
 
-    String get(String key);
+
+public abstract class Cache {
+
+    public void put(String key, String data, Integer ttl) {
+        JSONObject item = new JSONObject();
+        try {
+            item.put("value", data);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.SECOND, ttl);
+            item.put("expiry", calendar.getTimeInMillis());
+
+            JSONObject cache = loadCache();
+            cache.put(key, item);
+            persistCache(cache);
+        } catch (JSONException ignored) {
+        }
+    }
+
+    public String get(String key) {
+        try {
+            JSONObject item = loadCache().getJSONObject(key);
+            if (item.getLong("expiry") > Calendar.getInstance().getTimeInMillis()) {
+                return item.getString("value");
+            }
+        } catch (JSONException e) {
+        }
+        return null;
+    }
+
+    protected abstract JSONObject loadCache();
+
+    protected abstract void persistCache(JSONObject cache);
 }

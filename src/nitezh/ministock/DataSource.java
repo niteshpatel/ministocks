@@ -43,7 +43,8 @@ public class DataSource {
     private static String mTimeStamp;
     private static HashMap<String, StockQuote> mCachedQuotes;
 
-    public HashMap<String, StockQuote> getStockData(Context context, String[] symbols, boolean noCache) {
+    public HashMap<String, StockQuote> getStockData(
+            Context context, String[] symbols, boolean noCache) {
         HashMap<String, StockQuote> allQuotes = new HashMap<>();
 
         // If fresh data is request, retrieve from the stock data provider
@@ -54,7 +55,9 @@ public class DataSource {
             widgetSymbols.addAll(UserData.getPortfolioStockMap(context).keySet());
 
             // Retrieve the data from the stock data provider
-            allQuotes = new StockQuoteRepository().getQuotes(new PreferenceCache(context), Arrays.asList(widgetSymbols.toArray(new String[widgetSymbols.size()])));
+            allQuotes = new StockQuoteRepository().getQuotes(
+                    new PreferenceCache(context),
+                    Arrays.asList(widgetSymbols.toArray(new String[widgetSymbols.size()])));
         }
         // If there is no information used the last retrieved info
         if (allQuotes.isEmpty()) {
@@ -95,7 +98,14 @@ public class DataSource {
             try {
                 for (String line : savedQuotes.split("\n")) {
                     String[] values = line.split(";");
-                    quotes.put(values[0], new StockQuote(values[0], values[1], values[2], values[3], values[4], values[5], values[6]));
+                    quotes.put(values[0], new StockQuote(
+                            values[0],
+                            values[1],
+                            values[2],
+                            values[3],
+                            values[4],
+                            values[5],
+                            values[6]));
                 }
             } catch (Exception e) {
                 // Don't do anything if the stored data is dodgy
