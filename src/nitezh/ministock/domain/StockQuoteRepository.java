@@ -59,7 +59,6 @@ public class StockQuoteRepository {
         return filtered;
     }
 
-
     public HashMap<String, StockQuote> getQuotes(Cache cache, List<String> symbols) {
 
         HashMap<String, StockQuote> allQuotes = new HashMap<>();

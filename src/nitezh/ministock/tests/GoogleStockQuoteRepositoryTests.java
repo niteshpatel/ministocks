@@ -76,6 +76,5 @@ public class GoogleStockQuoteRepositoryTests extends TestCase {
         StockQuote ixicQuote = stockQuotes.get(".IXIC");
         assertEquals(".IXIC", ixicQuote.getSymbol());
         assertEquals("NASDAQ", ixicQuote.getExchange());
-        assertEquals(stockQuotes, stockQuotes);
     }
 }

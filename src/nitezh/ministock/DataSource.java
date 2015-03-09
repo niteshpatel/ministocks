@@ -82,8 +82,9 @@ public class DataSource {
 
     private HashMap<String, StockQuote> loadQuotes(Context context) {
         // If we have cached data on the class use that for efficiency
-        if ((mCachedQuotes) != null)
+        if (mCachedQuotes != null) {
             return mCachedQuotes;
+        }
 
         // Create empty HashMap to store the results
         HashMap<String, StockQuote> quotes = new HashMap<>();

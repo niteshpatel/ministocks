@@ -26,61 +26,40 @@ package nitezh.ministock.tests;
 
 import junit.framework.TestCase;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import nitezh.ministock.dataaccess.FxChangeRepository;
 import nitezh.ministock.domain.StockQuote;
-import nitezh.ministock.dataaccess.YahooStockQuoteRepository;
+import nitezh.ministock.domain.StockQuoteRepository;
 import nitezh.ministock.tests.mocks.MockCache;
 
 
-public class YahooStockQuoteRepositoryTests extends TestCase {
+public class StockQuoteRepositoryTests extends TestCase {
 
-    private YahooStockQuoteRepository yahooRepository;
+    private StockQuoteRepository stockRepository;
 
     public void setUp() {
-        FxChangeRepository fxRepository = new FxChangeRepository();
-        this.yahooRepository = new YahooStockQuoteRepository(fxRepository);
-    }
-
-    public void testRetrieveQuotesAsJson() {
-        List<String> symbols = Arrays.asList("AAPL", "GOOG");
-        JSONArray json = null;
-        try {
-            json = this.yahooRepository.retrieveQuotesAsJson(new MockCache(), symbols);
-        } catch (JSONException ignored) {
-        }
-
-        assertNotNull(json);
-        assertEquals(2, json.length());
-        JSONObject aaplJson = json.optJSONObject(0);
-        assertEquals("AAPL", aaplJson.optString("symbol"));
-        assertEquals("NasdaqNM", aaplJson.optString("exchange"));
-        assertEquals("Apple Inc.", aaplJson.optString("name"));
-        JSONObject googJson = json.optJSONObject(1);
-        assertEquals("GOOG", googJson.optString("symbol"));
-        assertEquals("NasdaqNM", googJson.optString("exchange"));
-        assertEquals("Google Inc.", googJson.optString("name"));
+        this.stockRepository = new StockQuoteRepository();
     }
 
     public void testGetQuotes() {
-        List<String> symbols = Arrays.asList("AAPL", "GOOG");
-        HashMap<String, StockQuote> stockQuotes = this.yahooRepository.getQuotes(new MockCache(), symbols);
-
-        assertEquals(2, stockQuotes.size());
-        StockQuote aaplQuote = stockQuotes.get("AAPL");
+        List<String> symbols = Arrays.asList("AAPL", "GOOG", ".DJI", ".IXIC");
+        HashMap<String, StockQuote> quotes = this.stockRepository.getQuotes(new MockCache(), symbols);
+        assertEquals(4, quotes.size());
+        StockQuote aaplQuote = quotes.get("AAPL");
         assertEquals("AAPL", aaplQuote.getSymbol());
         assertEquals("NasdaqNM", aaplQuote.getExchange());
         assertEquals("Apple Inc.", aaplQuote.getName());
-        StockQuote googQuote = stockQuotes.get("GOOG");
+        StockQuote googQuote = quotes.get("GOOG");
         assertEquals("GOOG", googQuote.getSymbol());
         assertEquals("NasdaqNM", googQuote.getExchange());
         assertEquals("Google Inc.", googQuote.getName());
+        StockQuote djiQuote = quotes.get(".DJI");
+        assertEquals(".DJI", djiQuote.getSymbol());
+        assertEquals("DJX", djiQuote.getExchange());
+        StockQuote ixicQuote = quotes.get(".IXIC");
+        assertEquals(".IXIC", ixicQuote.getSymbol());
+        assertEquals("NASDAQ", ixicQuote.getExchange());
     }
 }
