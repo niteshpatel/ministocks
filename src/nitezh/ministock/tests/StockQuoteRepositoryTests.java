@@ -45,7 +45,7 @@ public class StockQuoteRepositoryTests extends TestCase {
 
     public void testGetQuotes() {
         List<String> symbols = Arrays.asList("AAPL", "GOOG", ".DJI", ".IXIC");
-        HashMap<String, StockQuote> quotes = this.stockRepository.getQuotes(new MockCache(), symbols);
+        HashMap<String, StockQuote> quotes = this.stockRepository.getLiveQuotes(new MockCache(), symbols);
         assertEquals(4, quotes.size());
         StockQuote aaplQuote = quotes.get("AAPL");
         assertEquals("AAPL", aaplQuote.getSymbol());

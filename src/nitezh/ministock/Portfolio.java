@@ -56,6 +56,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import nitezh.ministock.UserData.PortfolioField;
+import nitezh.ministock.domain.StockQuoteRepository;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.utils.CurrencyFormatter;
 import nitezh.ministock.utils.NumberTools;
@@ -86,7 +87,7 @@ public class Portfolio extends Activity {
 
         // Get current prices
         Set<String> symbolSet = mPortfolioStockMap.keySet();
-        mStockData = new DataSource().getStockData(this, symbolSet.toArray(new String[symbolSet.size()]), false);
+        mStockData = new StockQuoteRepository().getQuotes(this, symbolSet.toArray(new String[symbolSet.size()]), false);
 
         // Update the list view with the portfolio stock map info
         refreshView();

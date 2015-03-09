@@ -47,7 +47,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
-import nitezh.ministock.DataSource;
+import nitezh.ministock.domain.StockQuoteRepository;
 import nitezh.ministock.Preferences;
 import nitezh.ministock.R;
 import nitezh.ministock.domain.StockQuote;
@@ -611,7 +611,7 @@ public class WidgetBase extends AppWidgetProvider {
             editor.putInt("widgetView", widgetView);
             editor.apply();
         }
-        DataSource dataSource = new DataSource();
+        StockQuoteRepository dataSource = new StockQuoteRepository();
         String quotesTimeStamp = dataSource.getTimeStamp();
         // If we have stock data then update the widget view
         if (!quotes.isEmpty()) {
@@ -966,8 +966,8 @@ public class WidgetBase extends AppWidgetProvider {
             int appWidgetId = (Integer) params[1];
             int updateMode = (Integer) params[2];
             String[] symbols = (String[]) params[3];
-            DataSource dataSource = new DataSource();
-            HashMap<String, StockQuote> quotes = dataSource.getStockData(context, symbols, updateMode == VIEW_UPDATE);
+            StockQuoteRepository dataSource = new StockQuoteRepository();
+            HashMap<String, StockQuote> quotes = dataSource.getQuotes(context, symbols, updateMode == VIEW_UPDATE);
             updateWidget(context, appWidgetId, updateMode, quotes);
             return null;
         }

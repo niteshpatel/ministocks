@@ -32,7 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-class PreferenceCache extends Cache {
+public class PreferenceCache extends Cache {
 
     public static final String JSON_CACHE = "JsonCache";
     private static String mCache = "";
