@@ -51,54 +51,33 @@ public class StockQuoteRepository {
 
     private static String mTimeStamp;
     private static HashMap<String, StockQuote> mCachedQuotes;
+    private final YahooStockQuoteRepository yahooRepository;
+    private final GoogleStockQuoteRepository googleRepository;
 
-    private List<String> filterYahooSymbols(List<String> symbols) {
-        List<String> filtered = new ArrayList<>();
-        for (String symbol : symbols) {
-            if (!StockQuoteRepository.GOOGLE_SYMBOLS.contains(symbol)) {
-                filtered.add(symbol);
-            }
-        }
-        return filtered;
-    }
-
-    private List<String> filterGoogleSymbols(List<String> symbols) {
-        List<String> filtered = new ArrayList<>();
-        for (String symbol : symbols) {
-            if (StockQuoteRepository.GOOGLE_SYMBOLS.contains(symbol)) {
-                filtered.add(symbol);
-            }
-        }
-        return filtered;
+    public StockQuoteRepository() {
+        this.yahooRepository = new YahooStockQuoteRepository(new FxChangeRepository());
+        this.googleRepository = new GoogleStockQuoteRepository();
     }
 
     public HashMap<String, StockQuote> getLiveQuotes(Cache cache, List<String> symbols) {
-
         HashMap<String, StockQuote> allQuotes = new HashMap<>();
 
-        // Get Yahoo data
-        FxChangeRepository fxRepository = new FxChangeRepository();
-        YahooStockQuoteRepository yahooRepository = new YahooStockQuoteRepository(fxRepository);
-        HashMap<String, StockQuote> yahooQuotes = yahooRepository.getQuotes(cache, filterYahooSymbols(symbols));
+        List<String> yahooSymbols = new ArrayList<>(symbols);
+        List<String> googleSymbols = new ArrayList<>(symbols);
+        yahooSymbols.removeAll(GOOGLE_SYMBOLS);
+        googleSymbols.retainAll(GOOGLE_SYMBOLS);
 
-        // Get Google data
-        GoogleStockQuoteRepository googleRepository = new GoogleStockQuoteRepository();
-        HashMap<String, StockQuote> googleQuotes = googleRepository.getQuotes(cache, filterGoogleSymbols(symbols));
-
-        // Combine hashmaps
-        if (yahooQuotes != null) {
-            allQuotes.putAll(yahooQuotes);
-        }
-        if (googleQuotes != null) {
-            allQuotes.putAll(googleQuotes);
-        }
+        HashMap<String, StockQuote> yahooQuotes = this.yahooRepository.getQuotes(cache, yahooSymbols);
+        HashMap<String, StockQuote> googleQuotes = this.googleRepository.getQuotes(cache, googleSymbols);
+        if (yahooQuotes != null) allQuotes.putAll(yahooQuotes);
+        if (googleQuotes != null) allQuotes.putAll(googleQuotes);
 
         return allQuotes;
     }
 
     public HashMap<String, StockQuote> getQuotes(
             Context context, String[] symbols, boolean noCache) {
-        HashMap<String, StockQuote> allQuotes = new HashMap<>();
+        HashMap<String, StockQuote> quotes = new HashMap<>();
 
         // If fresh data is request, retrieve from the stock data provider
         if (noCache) {
@@ -108,28 +87,23 @@ public class StockQuoteRepository {
             widgetSymbols.addAll(UserData.getPortfolioStockMap(context).keySet());
 
             // Retrieve the data from the stock data provider
-            allQuotes = getLiveQuotes(
+            quotes = getLiveQuotes(
                     new PreferenceCache(context),
                     Arrays.asList(widgetSymbols.toArray(new String[widgetSymbols.size()])));
         }
         // If there is no information used the last retrieved info
-        if (allQuotes.isEmpty()) {
-            allQuotes = loadQuotes(context);
+        if (quotes.isEmpty()) {
+            quotes = loadQuotes(context);
         }
         // Otherwise save the info
         else {
             SimpleDateFormat format = new SimpleDateFormat("dd MMM HH:mm");
             String timeStamp = format.format(new Date()).toUpperCase();
-            saveQuotes(context, allQuotes, timeStamp);
-        }
-        // Filter out quotes that are not for this widget and return
-        HashMap<String, StockQuote> quotes = new HashMap<>();
-        for (String s : symbols) {
-            if (s != null && !s.equals("")) {
-                quotes.put(s, allQuotes.get(s));
-            }
+            saveQuotes(context, quotes, timeStamp);
         }
 
+        // Returns only quotes requested
+        quotes.keySet().retainAll(Arrays.asList(symbols));
         return quotes;
     }
 
