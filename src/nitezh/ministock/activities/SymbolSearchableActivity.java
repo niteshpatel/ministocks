@@ -22,7 +22,7 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock;
+package nitezh.ministock.activities;
 
 import android.app.ListActivity;
 import android.app.SearchManager;
@@ -30,6 +30,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
+
+import nitezh.ministock.R;
 
 
 /**

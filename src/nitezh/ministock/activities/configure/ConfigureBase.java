@@ -22,7 +22,7 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock.configure;
+package nitezh.ministock.activities.configure;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -38,7 +38,7 @@ import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.WidgetRepository;
-import nitezh.ministock.widget.WidgetBase;
+import nitezh.ministock.activities.widget.WidgetBase;
 
 
 abstract class ConfigureBase extends Activity {

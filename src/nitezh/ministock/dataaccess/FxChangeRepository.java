@@ -32,7 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import nitezh.ministock.Cache;
-import nitezh.ministock.utils.UrlData;
+import nitezh.ministock.utils.UrlDataTools;
 
 
 public class FxChangeRepository {
@@ -69,6 +69,6 @@ public class FxChangeRepository {
     }
 
     public JSONObject retrieveChangesAsJson(Cache cache) throws JSONException {
-        return new JSONObject(UrlData.getCachedUrlData(BASE_URL, cache, 86400));
+        return new JSONObject(UrlDataTools.getCachedUrlData(BASE_URL, cache, 86400));
     }
 }

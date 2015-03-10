@@ -22,7 +22,7 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock.widget;
+package nitezh.ministock.activities.widget;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -47,7 +47,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import nitezh.ministock.PreferenceTools;
-import nitezh.ministock.Preferences;
+import nitezh.ministock.activities.Preferences;
 import nitezh.ministock.R;
 import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
@@ -57,7 +57,7 @@ import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.domain.StockQuoteRepository;
 import nitezh.ministock.domain.WidgetRepository;
-import nitezh.ministock.utils.CurrencyFormatter;
+import nitezh.ministock.utils.CurrencyTools;
 import nitezh.ministock.utils.DateTools;
 import nitezh.ministock.utils.NumberTools;
 import nitezh.ministock.utils.ReflectionTools;
@@ -438,13 +438,13 @@ public class WidgetBase extends AppWidgetProvider {
         }
         // Add currency symbol if we have a holding
         if (column1 != null) {
-            rowItems.put("COL1_VALUE", CurrencyFormatter.addCurrencyToSymbol(column1, symbol));
+            rowItems.put("COL1_VALUE", CurrencyTools.addCurrencyToSymbol(column1, symbol));
         }
         // Set the value and colour for the change values
         if (widgetSize == 1 || widgetSize == 3) {
             if (column3 != null) {
                 if (pl_change) {
-                    rowItems.put("COL3_VALUE", CurrencyFormatter.addCurrencyToSymbol(column3, symbol));
+                    rowItems.put("COL3_VALUE", CurrencyTools.addCurrencyToSymbol(column3, symbol));
                 } else {
                     rowItems.put("COL3_VALUE", column3);
                 }
@@ -457,7 +457,7 @@ public class WidgetBase extends AppWidgetProvider {
         } else {
             if (column2 != null) {
                 if (pl_change) {
-                    rowItems.put("COL2_VALUE", CurrencyFormatter.addCurrencyToSymbol(column2, symbol));
+                    rowItems.put("COL2_VALUE", CurrencyTools.addCurrencyToSymbol(column2, symbol));
                 } else {
                     rowItems.put("COL2_VALUE", column2);
                 }

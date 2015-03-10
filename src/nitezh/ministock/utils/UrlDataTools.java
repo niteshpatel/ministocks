@@ -34,7 +34,10 @@ import java.net.URLConnection;
 import nitezh.ministock.Cache;
 
 
-public class UrlData {
+public class UrlDataTools {
+
+    private UrlDataTools() {
+    }
 
     private static String inputStreamToString(InputStream stream) throws IOException {
         BufferedReader r = new BufferedReader(new InputStreamReader(stream));

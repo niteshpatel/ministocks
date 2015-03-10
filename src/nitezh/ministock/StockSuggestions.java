@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import nitezh.ministock.utils.UrlData;
+import nitezh.ministock.utils.UrlDataTools;
 
 
 class StockSuggestions {
@@ -54,7 +54,7 @@ class StockSuggestions {
         try {
             String url = BASE_URL + URLEncoder.encode(query, "UTF-8");
             Cache cache = new PreferenceCache(null);
-            response = UrlData.getCachedUrlData(url, cache, 86400);
+            response = UrlDataTools.getCachedUrlData(url, cache, 86400);
         } catch (UnsupportedEncodingException e1) {
             // TODO Auto-generated catch block
             response = null;

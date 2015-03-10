@@ -22,7 +22,7 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock;
+package nitezh.ministock.activities;
 
 import android.app.SearchManager;
 import android.app.TimePickerDialog;
@@ -46,11 +46,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import nitezh.ministock.DialogTools;
+import nitezh.ministock.LocalStorage;
+import nitezh.ministock.R;
+import nitezh.ministock.Storage;
+import nitezh.ministock.UserData;
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.WidgetRepository;
 import nitezh.ministock.utils.DateTools;
 import nitezh.ministock.utils.VersionTools;
-import nitezh.ministock.widget.WidgetBase;
+import nitezh.ministock.activities.widget.WidgetBase;
 
 
 public class Preferences extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {

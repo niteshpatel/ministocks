@@ -32,6 +32,9 @@ import java.util.Date;
 
 public class DateTools {
 
+    private DateTools() {
+    }
+
     public static double elapsedDays(String dateString) {
         double daysElapsed = 0;
         if (dateString != null) {

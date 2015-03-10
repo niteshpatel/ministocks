@@ -29,6 +29,9 @@ import nitezh.ministock.R;
 
 public class ReflectionTools {
 
+    private ReflectionTools() {
+    }
+    
     public static int getField(String name) {
         try {
             return R.id.class.getField(name).getInt(R.class);

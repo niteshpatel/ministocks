@@ -22,8 +22,8 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock.widget;
+package nitezh.ministock.activities.widget;
 
 
-public class Widget_2x2 extends WidgetBase {
+public class Widget_1x4 extends WidgetBase {
 }

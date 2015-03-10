@@ -27,10 +27,13 @@ package nitezh.ministock.utils;
 import java.util.HashMap;
 
 
-public class CurrencyFormatter {
+public class CurrencyTools {
 
     private static final HashMap<String, String> codeMap = new HashMap<>();
     private static final HashMap<String, String> charMap = new HashMap<>();
+
+    private CurrencyTools() {
+    }
 
     static {
         codeMap.put(".AS", "EUR");
@@ -118,6 +121,7 @@ public class CurrencyFormatter {
 
         if (currencyChar == null)
             currencyChar = "$";
+
         return currencyChar;
     }
 

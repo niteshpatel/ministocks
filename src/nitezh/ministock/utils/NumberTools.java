@@ -30,6 +30,9 @@ import java.text.NumberFormat;
 
 public class NumberTools {
 
+    private NumberTools() {
+    }
+
     public static String decimalPlaceFormat(String s) {
         try {
             return String.format("%." + 2 + "f", Double.parseDouble(s));

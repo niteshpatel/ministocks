@@ -22,7 +22,7 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock;
+package nitezh.ministock.activities;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -56,14 +56,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import nitezh.ministock.DialogTools;
+import nitezh.ministock.PreferenceTools;
+import nitezh.ministock.R;
+import nitezh.ministock.Storage;
+import nitezh.ministock.UserData;
 import nitezh.ministock.UserData.PortfolioField;
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.domain.StockQuoteRepository;
 import nitezh.ministock.domain.WidgetRepository;
-import nitezh.ministock.utils.CurrencyFormatter;
+import nitezh.ministock.utils.CurrencyTools;
 import nitezh.ministock.utils.NumberTools;
-import nitezh.ministock.widget.WidgetBase;
+import nitezh.ministock.activities.widget.WidgetBase;
 
 
 public class Portfolio extends Activity {
@@ -194,7 +199,7 @@ public class Portfolio extends Activity {
                         try {
                             Double change = numberFormat.parse(data.getChange()).doubleValue();
                             Double totalChange = NumberTools.parseDouble(stockInfoMap.get(PortfolioField.QUANTITY)) * change;
-                            lastChange += " / " + CurrencyFormatter.addCurrencyToSymbol(String.format("%.0f", (totalChange)), symbol);
+                            lastChange += " / " + CurrencyTools.addCurrencyToSymbol(String.format("%.0f", (totalChange)), symbol);
                         } catch (Exception ignored) {
                         }
                     }
@@ -213,7 +218,7 @@ public class Portfolio extends Activity {
                     // Calculate change
                     try {
                         Double quanta = NumberTools.parseDouble(stockInfoMap.get(PortfolioField.QUANTITY));
-                        totalChange += " / " + CurrencyFormatter.addCurrencyToSymbol(String.format("%.0f", quanta * totalPercentChange), symbol);
+                        totalChange += " / " + CurrencyTools.addCurrencyToSymbol(String.format("%.0f", quanta * totalPercentChange), symbol);
                     } catch (Exception ignored) {
                     }
                 } catch (Exception ignored) {
@@ -225,7 +230,7 @@ public class Portfolio extends Activity {
                 try {
                     Double holdingQuanta = NumberTools.parseDouble(stockInfoMap.get(PortfolioField.QUANTITY));
                     Double holdingPrice = numberFormat.parse(currentPrice).doubleValue();
-                    holdingValue = CurrencyFormatter.addCurrencyToSymbol(String.format("%.0f", (holdingQuanta * holdingPrice)), symbol);
+                    holdingValue = CurrencyTools.addCurrencyToSymbol(String.format("%.0f", (holdingQuanta * holdingPrice)), symbol);
                 } catch (Exception ignored) {
                 }
                 group.put("holdingValue", holdingValue);
