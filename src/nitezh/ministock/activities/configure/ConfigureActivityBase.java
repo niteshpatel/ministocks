@@ -33,7 +33,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 
-import nitezh.ministock.PreferenceTools;
+import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
 import nitezh.ministock.activities.widget.AppWidgetProviderBase;
@@ -65,7 +65,7 @@ abstract class ConfigureActivityBase extends Activity {
             // and add default preferences (view and Stock1)
             Context context = getBaseContext();
             UserData.addAppWidgetSize(context, appWidgetId, widgetSize);
-            Storage appStorage = PreferenceTools.getAppPreferences(context);
+            Storage appStorage = PreferenceStorage.getInstance(context);
             WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
 
             // Get widget SharedPreferences

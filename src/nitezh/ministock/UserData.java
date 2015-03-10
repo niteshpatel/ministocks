@@ -57,7 +57,7 @@ public class UserData {
     private static boolean mDirtyPortfolioStockMap = true;
 
     public static void addAppWidgetSize(Context context, int appWidgetId, int widgetSize) {
-        Storage appStorage = PreferenceTools.getAppPreferences(context);
+        Storage appStorage = PreferenceStorage.getInstance(context);
         WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
         Storage storage = widgetRepository.getWidget(appWidgetId).getStorage();
         storage.putInt("widgetSize", widgetSize);
@@ -66,7 +66,7 @@ public class UserData {
 
     public static void addAppWidgetId(Context context, int appWidgetId, Integer widgetSize) {
         // Get the existing widgetIds from the preferences
-        LocalStorage storage = PreferenceTools.getAppPreferences(context);
+        PreferenceStorage storage = PreferenceStorage.getInstance(context);
 
         // Add the new appWidgetId
         StringBuilder rawAppWidgetIds = new StringBuilder();
@@ -86,7 +86,7 @@ public class UserData {
 
     public static void delAppWidgetId(Context context, int appWidgetId) {
         // Get the existing widgetIds from the storage
-        LocalStorage storage = PreferenceTools.getAppPreferences(context);
+        PreferenceStorage storage = PreferenceStorage.getInstance(context);
         ArrayList<String> newAppWidgetIds = new ArrayList<>();
         Collections.addAll(newAppWidgetIds, storage.getString("appWidgetIds", "").split(","));
 
@@ -212,7 +212,7 @@ public class UserData {
         }
 
         // Commit changes to the preferences
-        LocalStorage editor = PreferenceTools.getAppPreferences(context);
+        PreferenceStorage editor = PreferenceStorage.getInstance(context);
         editor.putString(PORTFOLIO_JSON, json.toString());
         editor.apply();
 
@@ -258,7 +258,7 @@ public class UserData {
 
     public static void backupPortfolio(Context context) {
         // Get current portfolio from preferences
-        String rawJson = PreferenceTools.getAppPreferences(context).getString(PORTFOLIO_JSON, "");
+        String rawJson = PreferenceStorage.getInstance(context).getString(PORTFOLIO_JSON, "");
 
         // Store portfolio in internal storage
         writeInternalStorage(context, rawJson, PORTFOLIO_JSON);
@@ -272,7 +272,7 @@ public class UserData {
         String rawJson = readInternalStorage(context, PORTFOLIO_JSON);
 
         // Store portfolio in preferences
-        LocalStorage storage = PreferenceTools.getAppPreferences(context);
+        PreferenceStorage storage = PreferenceStorage.getInstance(context);
         storage.putString(PORTFOLIO_JSON, rawJson);
         storage.apply();
         mDirtyPortfolioStockMap = true;
@@ -290,7 +290,7 @@ public class UserData {
                 backupContainer = new JSONObject(rawJson);
             }
             // Now get data for current widget, append to existing data and write to storage
-            Storage appStorage = PreferenceTools.getAppPreferences(context);
+            Storage appStorage = PreferenceStorage.getInstance(context);
             WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
             JSONObject backupJson = widgetRepository.getWidget(appWidgetId).getWidgetPreferencesAsJson();
             backupContainer.put(backupName, backupJson);
@@ -305,7 +305,7 @@ public class UserData {
             JSONObject backupContainer = new JSONObject(readInternalStorage(context, WIDGET_JSON));
 
             // Update widget with preferences from backup
-            Storage appStorage = PreferenceTools.getAppPreferences(context);
+            Storage appStorage = PreferenceStorage.getInstance(context);
             WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
             widgetRepository.getWidget(appWidgetId).setWidgetPreferencesFromJson(backupContainer.getJSONObject(backupName));
 

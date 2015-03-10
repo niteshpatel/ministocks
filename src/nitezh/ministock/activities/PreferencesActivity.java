@@ -47,7 +47,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import nitezh.ministock.DialogTools;
-import nitezh.ministock.LocalStorage;
+import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
@@ -132,7 +132,7 @@ public class PreferencesActivity extends PreferenceActivity implements SharedPre
             return;
         }
         // Cleanup preferences files
-        Storage appStorage = new LocalStorage(getAppPreferences());
+        Storage appStorage = new PreferenceStorage(getAppPreferences());
         UserData.cleanupPreferenceFiles(getApplicationContext(), appStorage);
         @SuppressWarnings("rawtypes") Callable callable = new Callable() {
             @Override
@@ -162,7 +162,7 @@ public class PreferencesActivity extends PreferenceActivity implements SharedPre
 
         // Add this widgetId if we don't have it
         Set<Integer> appWidgetIds = new HashSet<Integer>();
-        WidgetRepository repository = new AndroidWidgetRepository(getBaseContext(), new LocalStorage(getAppPreferences()));
+        WidgetRepository repository = new AndroidWidgetRepository(getBaseContext(), new PreferenceStorage(getAppPreferences()));
         for (int i : repository.getIds())
             appWidgetIds.add(i);
         if (!appWidgetIds.contains(mAppWidgetId))

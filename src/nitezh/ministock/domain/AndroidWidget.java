@@ -35,7 +35,7 @@ import org.json.JSONObject;
 import java.util.Iterator;
 import java.util.Map;
 
-import nitezh.ministock.LocalStorage;
+import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.Storage;
 
@@ -59,7 +59,7 @@ public class AndroidWidget implements Widget {
         } catch (Resources.NotFoundException ignored) {
         }
 
-        return new LocalStorage(widgetPreferences);
+        return new PreferenceStorage(widgetPreferences);
     }
 
     @Override

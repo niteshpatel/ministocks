@@ -38,7 +38,7 @@ public class PreferenceCache extends Cache {
 
     public PreferenceCache(Context context) {
         if (context != null) {
-            preferences = PreferenceTools.getAppPreferences(context);
+            preferences = PreferenceStorage.getInstance(context);
         }
     }
 

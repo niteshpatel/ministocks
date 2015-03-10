@@ -57,7 +57,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import nitezh.ministock.DialogTools;
-import nitezh.ministock.PreferenceTools;
+import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
@@ -85,7 +85,7 @@ public class PortfolioActivity extends Activity {
 
         // Add any missing stocks from the widget stocks map to our local
         // portfolio stocks map
-        Storage appStorage = PreferenceTools.getAppPreferences(this);
+        Storage appStorage = PreferenceStorage.getInstance(this);
         WidgetRepository repository = new AndroidWidgetRepository(this, appStorage);
         mPortfolioStockMap = UserData.getPortfolioStockMap(appStorage);
         mWidgetsStockMap = repository.getWidgetsStockSymbols();

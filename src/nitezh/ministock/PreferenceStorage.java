@@ -25,18 +25,23 @@
 package nitezh.ministock;
 
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class LocalStorage implements Storage {
+public class PreferenceStorage implements Storage {
 
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
 
-    public LocalStorage(SharedPreferences preferences) {
+    public PreferenceStorage(SharedPreferences preferences) {
         this.preferences = preferences;
+    }
+
+    public static PreferenceStorage getInstance(Context context) {
+        return new PreferenceStorage(context.getSharedPreferences(context.getString(R.string.prefs_name), 0));
     }
 
     @Override
