@@ -69,7 +69,7 @@ abstract class ConfigureActivityBase extends Activity {
             WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
 
             // Get widget SharedPreferences
-            Storage widgetStorage = widgetRepository.getWidgetStorage(appWidgetId);
+            Storage widgetStorage = widgetRepository.getWidget(appWidgetId).getStorage();
             if (widgetSize == 0 || widgetSize == 2)
                 widgetStorage.putBoolean("show_percent_change", true);
             widgetStorage.putString("Stock1", "^DJI");

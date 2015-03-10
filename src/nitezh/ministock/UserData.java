@@ -59,7 +59,7 @@ public class UserData {
     public static void addAppWidgetSize(Context context, int appWidgetId, int widgetSize) {
         Storage appStorage = PreferenceTools.getAppPreferences(context);
         WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
-        Storage storage = widgetRepository.getWidgetStorage(appWidgetId);
+        Storage storage = widgetRepository.getWidget(appWidgetId).getStorage();
         storage.putInt("widgetSize", widgetSize);
         storage.apply();
     }
@@ -290,7 +290,9 @@ public class UserData {
                 backupContainer = new JSONObject(rawJson);
             }
             // Now get data for current widget, append to existing data and write to storage
-            JSONObject backupJson = PreferenceTools.getWidgetPreferencesAsJson(context, appWidgetId);
+            Storage appStorage = PreferenceTools.getAppPreferences(context);
+            WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
+            JSONObject backupJson = widgetRepository.getWidget(appWidgetId).getWidgetPreferencesAsJson();
             backupContainer.put(backupName, backupJson);
             writeInternalStorage(context, backupContainer.toString(), WIDGET_JSON);
         } catch (JSONException ignored) {
@@ -303,7 +305,9 @@ public class UserData {
             JSONObject backupContainer = new JSONObject(readInternalStorage(context, WIDGET_JSON));
 
             // Update widget with preferences from backup
-            PreferenceTools.setWidgetPreferencesFromJson(context, appWidgetId, backupContainer.getJSONObject(backupName));
+            Storage appStorage = PreferenceTools.getAppPreferences(context);
+            WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
+            widgetRepository.getWidget(appWidgetId).setWidgetPreferencesFromJson(backupContainer.getJSONObject(backupName));
 
             // Show confirmation to user
             DialogTools.showSimpleDialog(context, "AppWidgetProvider restored", "The current widget preferences have been restored from your selected backup.");

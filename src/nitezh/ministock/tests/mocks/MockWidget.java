@@ -22,16 +22,26 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock.domain;
+package nitezh.ministock.tests.mocks;
 
-import java.util.Set;
+import org.json.JSONObject;
+
+import nitezh.ministock.Storage;
+import nitezh.ministock.domain.Widget;
 
 
-public interface WidgetRepository {
+public class MockWidget implements Widget {
+    @Override
+    public Storage getStorage() {
+        return new MockStorage();
+    }
 
-    int[] getIds();
+    @Override
+    public void setWidgetPreferencesFromJson(JSONObject jsonPrefs) {
+    }
 
-    Set<String> getWidgetsStockSymbols();
-
-    Widget getWidget(int appWidgetId);
+    @Override
+    public JSONObject getWidgetPreferencesAsJson() {
+        return new JSONObject();
+    }
 }

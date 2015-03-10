@@ -26,7 +26,7 @@ package nitezh.ministock.tests.mocks;
 
 import java.util.Set;
 
-import nitezh.ministock.Storage;
+import nitezh.ministock.domain.Widget;
 import nitezh.ministock.domain.WidgetRepository;
 
 
@@ -43,7 +43,7 @@ public class MockWidgetRepository implements WidgetRepository {
     }
 
     @Override
-    public Storage getWidgetStorage(int appWidgetId) {
-        return null;
+    public Widget getWidget(int appWidgetId) {
+        return new MockWidget();
     }
 }

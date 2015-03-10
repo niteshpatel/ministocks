@@ -41,45 +41,4 @@ public class PreferenceTools {
     public static LocalStorage getAppPreferences(Context context) {
         return new LocalStorage(context.getSharedPreferences(context.getString(R.string.prefs_name), 0));
     }
-
-    public static JSONObject getWidgetPreferencesAsJson(Context context, int appWidgetId) {
-        Storage appStorage = PreferenceTools.getAppPreferences(context);
-        WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
-        JSONObject jsonPrefs = new JSONObject();
-        Storage storage = widgetRepository.getWidgetStorage(appWidgetId);
-        for (Map.Entry<String, ?> entry : storage.getAll().entrySet()) {
-            try {
-                jsonPrefs.put(entry.getKey(), entry.getValue());
-            } catch (JSONException ignored) {
-            }
-        }
-
-        return jsonPrefs;
-    }
-
-    public static void setWidgetPreferencesFromJson(Context context, int appWidgetId, JSONObject jsonPrefs) {
-        Storage appStorage = PreferenceTools.getAppPreferences(context);
-        WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
-        Storage storage = widgetRepository.getWidgetStorage(appWidgetId);
-        String key;
-        for (Iterator iter = jsonPrefs.keys(); iter.hasNext(); ) {
-            key = (String) iter.next();
-            try {
-                Object value = jsonPrefs.get(key);
-                if (value instanceof String) {
-                    storage.putString(key, (String) value);
-                } else if (value instanceof Boolean) {
-                    storage.putBoolean(key, (Boolean) value);
-                } else if (value instanceof Integer) {
-                    storage.putInt(key, (Integer) value);
-                } else if (value instanceof Double) {
-                    storage.putFloat(key, (Float) value);
-                } else if (value instanceof Long) {
-                    storage.putLong(key, (Long) value);
-                }
-            } catch (JSONException ignored) {
-            }
-        }
-        storage.apply();
-    }
 }

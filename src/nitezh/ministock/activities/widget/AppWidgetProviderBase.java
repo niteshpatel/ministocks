@@ -47,11 +47,11 @@ import java.util.HashMap;
 
 import nitezh.ministock.AppWidgetProvider;
 import nitezh.ministock.PreferenceTools;
-import nitezh.ministock.activities.PreferencesActivity;
 import nitezh.ministock.R;
 import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
 import nitezh.ministock.UserData.PortfolioField;
+import nitezh.ministock.activities.PreferencesActivity;
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.domain.StockQuoteRepository;
@@ -551,7 +551,7 @@ public class AppWidgetProviderBase extends android.appwidget.AppWidgetProvider {
         WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
 
         // Get widget SharedPreferences
-        Storage widgetStorage = widgetRepository.getWidgetStorage(appWidgetId);
+        Storage widgetStorage = widgetRepository.getWidget(appWidgetId).getStorage();
         // Choose between two widget sizes
         int widgetSize = widgetStorage.getInt("widgetSize", 0);
         // Get relevant RemoteViews
@@ -803,7 +803,7 @@ public class AppWidgetProviderBase extends android.appwidget.AppWidgetProvider {
         // Get widget SharedPreferences
         Storage storage = PreferenceTools.getAppPreferences(context);
         WidgetRepository widgetRepository = new AndroidWidgetRepository(context, storage);
-        Storage prefs = widgetRepository.getWidgetStorage(appWidgetId);
+        Storage prefs = widgetRepository.getWidget(appWidgetId).getStorage();
         // Choose between two widget sizes
         int widgetSize = prefs.getInt("widgetSize", 0);
         // Get the array size for widgets

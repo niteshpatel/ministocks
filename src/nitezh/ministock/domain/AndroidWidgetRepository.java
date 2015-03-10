@@ -25,14 +25,10 @@
 package nitezh.ministock.domain;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import nitezh.ministock.LocalStorage;
-import nitezh.ministock.R;
 import nitezh.ministock.Storage;
 
 
@@ -47,31 +43,8 @@ public class AndroidWidgetRepository implements WidgetRepository {
     }
 
     @Override
-    public Storage getWidgetStorage(int appWidgetId) {
-        SharedPreferences widgetPreferences = null;
-        try {
-            widgetPreferences = this.context.getApplicationContext().getSharedPreferences(context.getString(R.string.prefs_name) + appWidgetId, 0);
-        } catch (Resources.NotFoundException ignored) {
-        }
-
-        return new LocalStorage(widgetPreferences);
-    }
-
-    @Override
-    public Set<String> getWidgetsStockSymbols() {
-        Storage widgetPreferences;
-        Set<String> widgetStockSymbols = new HashSet<>();
-        for (int appWidgetId : this.getIds()) {
-            widgetPreferences = this.getWidgetStorage(appWidgetId);
-            if (widgetPreferences != null) {
-                for (int i = 1; i < 11; i++) {
-                    String stockSymbol = widgetPreferences.getString("Stock" + i, "");
-                    if (!stockSymbol.equals("")) widgetStockSymbols.add(stockSymbol);
-                }
-            }
-        }
-
-        return widgetStockSymbols;
+    public Widget getWidget(int appWidgetId) {
+        return new AndroidWidget(this.context, this.appStorage, appWidgetId);
     }
 
     @Override
@@ -89,7 +62,25 @@ public class AndroidWidgetRepository implements WidgetRepository {
         int[] savedAppWidgetIds = new int[appWidgetIdsLength];
         for (int i = 0; i < appWidgetIds.length; i++)
             if (!appWidgetIds[i].equals(""))
-                savedAppWidgetIds[i] = Integer.parseInt(appWidgetIds[i]);
+                savedAppWidgetIds[i] = Integer.parseInt(appWidgetIds[i])
+                        ;
         return savedAppWidgetIds;
+    }
+
+    @Override
+    public Set<String> getWidgetsStockSymbols() {
+        Storage widgetPreferences;
+        Set<String> widgetStockSymbols = new HashSet<>();
+        for (int appWidgetId : this.getIds()) {
+            widgetPreferences = this.getWidget(appWidgetId).getStorage();
+            if (widgetPreferences != null) {
+                for (int i = 1; i < 11; i++) {
+                    String stockSymbol = widgetPreferences.getString("Stock" + i, "");
+                    if (!stockSymbol.equals("")) widgetStockSymbols.add(stockSymbol);
+                }
+            }
+        }
+
+        return widgetStockSymbols;
     }
 }
