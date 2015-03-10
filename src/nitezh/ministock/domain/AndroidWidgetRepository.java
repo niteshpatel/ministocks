@@ -44,7 +44,7 @@ public class AndroidWidgetRepository implements WidgetRepository {
 
     @Override
     public Widget getWidget(int appWidgetId) {
-        return new AndroidWidget(this.context, this.appStorage, appWidgetId);
+        return new AndroidWidget(this.context, appWidgetId);
     }
 
     @Override

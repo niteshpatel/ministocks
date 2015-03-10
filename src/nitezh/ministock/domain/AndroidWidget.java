@@ -42,14 +42,12 @@ import nitezh.ministock.Storage;
 public class AndroidWidget implements Widget {
 
     private final Storage storage;
-    private final Storage appStorage;
     private final int appWidgetId;
     private final Context context;
 
-    public AndroidWidget(Context context, Storage appStorage, int appWidgetId) {
+    public AndroidWidget(Context context, int appWidgetId) {
         this.context = context;
         this.storage = getStorage();
-        this.appStorage = appStorage;
         this.appWidgetId = appWidgetId;
     }
 
@@ -66,34 +64,32 @@ public class AndroidWidget implements Widget {
 
     @Override
     public void setWidgetPreferencesFromJson(JSONObject jsonPrefs) {
-        Storage storage = this.getStorage();
         String key;
         for (Iterator iter = jsonPrefs.keys(); iter.hasNext(); ) {
             key = (String) iter.next();
             try {
                 Object value = jsonPrefs.get(key);
                 if (value instanceof String) {
-                    storage.putString(key, (String) value);
+                    this.storage.putString(key, (String) value);
                 } else if (value instanceof Boolean) {
-                    storage.putBoolean(key, (Boolean) value);
+                    this.storage.putBoolean(key, (Boolean) value);
                 } else if (value instanceof Integer) {
-                    storage.putInt(key, (Integer) value);
+                    this.storage.putInt(key, (Integer) value);
                 } else if (value instanceof Double) {
-                    storage.putFloat(key, (Float) value);
+                    this.storage.putFloat(key, (Float) value);
                 } else if (value instanceof Long) {
-                    storage.putLong(key, (Long) value);
+                    this.storage.putLong(key, (Long) value);
                 }
             } catch (JSONException ignored) {
             }
         }
-        storage.apply();
+        this.storage.apply();
     }
 
     @Override
     public JSONObject getWidgetPreferencesAsJson() {
         JSONObject jsonPrefs = new JSONObject();
-        Storage storage = this.getStorage();
-        for (Map.Entry<String, ?> entry : storage.getAll().entrySet()) {
+        for (Map.Entry<String, ?> entry : this.storage.getAll().entrySet()) {
             try {
                 jsonPrefs.put(entry.getKey(), entry.getValue());
             } catch (JSONException ignored) {
