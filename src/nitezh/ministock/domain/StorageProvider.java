@@ -22,47 +22,8 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock;
-
-import android.content.Context;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+package nitezh.ministock.domain;
 
 
-public class PreferenceCache extends Cache {
-
-    public static final String JSON_CACHE = "JsonCache";
-    private static String mCache = "";
-    private Storage preferences = null;
-
-    public PreferenceCache(Context context) {
-        if (context != null) {
-            preferences = PreferenceTools.getAppPreferences(context);
-        }
-    }
-
-    @Override
-    protected void persistCache(JSONObject cache) {
-        mCache = cache.toString();
-        if (preferences != null) {
-            Storage editor = preferences;
-            editor.putString(JSON_CACHE, mCache);
-            editor.apply();
-        }
-    }
-
-    @Override
-    protected JSONObject loadCache() {
-        if (preferences != null && mCache.equals("")) {
-            mCache = preferences.getString(JSON_CACHE, "");
-        }
-        JSONObject cache = new JSONObject();
-        try {
-            cache = new JSONObject(mCache);
-        } catch (JSONException ignore) {
-        }
-
-        return cache;
-    }
+public class StorageProvider {
 }

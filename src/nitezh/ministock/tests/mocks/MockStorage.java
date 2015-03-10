@@ -22,47 +22,61 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock;
+package nitezh.ministock.tests.mocks;
 
-import android.content.Context;
+import java.util.HashMap;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import nitezh.ministock.Storage;
 
 
-public class PreferenceCache extends Cache {
+public class MockStorage implements Storage {
 
-    public static final String JSON_CACHE = "JsonCache";
-    private static String mCache = "";
-    private Storage preferences = null;
-
-    public PreferenceCache(Context context) {
-        if (context != null) {
-            preferences = PreferenceTools.getAppPreferences(context);
-        }
+    @Override
+    public HashMap<String, ?> getAll() {
+        return null;
     }
 
     @Override
-    protected void persistCache(JSONObject cache) {
-        mCache = cache.toString();
-        if (preferences != null) {
-            Storage editor = preferences;
-            editor.putString(JSON_CACHE, mCache);
-            editor.apply();
-        }
+    public int getInt(String widgetSize, int defaultVal) {
+        return 0;
     }
 
     @Override
-    protected JSONObject loadCache() {
-        if (preferences != null && mCache.equals("")) {
-            mCache = preferences.getString(JSON_CACHE, "");
-        }
-        JSONObject cache = new JSONObject();
-        try {
-            cache = new JSONObject(mCache);
-        } catch (JSONException ignore) {
-        }
+    public String getString(String key, String defaultVal) {
+        return null;
+    }
 
-        return cache;
+    @Override
+    public boolean getBoolean(String large_font, boolean defaultVal) {
+        return false;
+    }
+
+    @Override
+    public Storage putInt(String key, int value) {
+        return null;
+    }
+
+    @Override
+    public Storage putString(String key, String value) {
+        return null;
+    }
+
+    @Override
+    public Storage putBoolean(String key, Boolean value) {
+        return null;
+    }
+
+    @Override
+    public Storage putFloat(String key, Float value) {
+        return null;
+    }
+
+    @Override
+    public Storage putLong(String key, Long value) {
+        return null;
+    }
+
+    @Override
+    public void apply() {
     }
 }

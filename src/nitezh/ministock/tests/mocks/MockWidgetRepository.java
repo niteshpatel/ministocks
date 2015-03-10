@@ -22,47 +22,28 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock;
+package nitezh.ministock.tests.mocks;
 
-import android.content.Context;
+import java.util.Set;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import nitezh.ministock.Storage;
+import nitezh.ministock.domain.WidgetRepository;
 
 
-public class PreferenceCache extends Cache {
+public class MockWidgetRepository implements WidgetRepository {
 
-    public static final String JSON_CACHE = "JsonCache";
-    private static String mCache = "";
-    private Storage preferences = null;
-
-    public PreferenceCache(Context context) {
-        if (context != null) {
-            preferences = PreferenceTools.getAppPreferences(context);
-        }
+    @Override
+    public int[] getIds() {
+        return new int[0];
     }
 
     @Override
-    protected void persistCache(JSONObject cache) {
-        mCache = cache.toString();
-        if (preferences != null) {
-            Storage editor = preferences;
-            editor.putString(JSON_CACHE, mCache);
-            editor.apply();
-        }
+    public Set<String> getWidgetsStockSymbols() {
+        return null;
     }
 
     @Override
-    protected JSONObject loadCache() {
-        if (preferences != null && mCache.equals("")) {
-            mCache = preferences.getString(JSON_CACHE, "");
-        }
-        JSONObject cache = new JSONObject();
-        try {
-            cache = new JSONObject(mCache);
-        } catch (JSONException ignore) {
-        }
-
-        return cache;
+    public Storage getWidgetStorage(int appWidgetId) {
+        return null;
     }
 }

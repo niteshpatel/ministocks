@@ -28,24 +28,22 @@ import android.app.Activity;
 import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
+
+import nitezh.ministock.domain.AndroidWidgetRepository;
+import nitezh.ministock.domain.WidgetRepository;
 
 
 public class UserData {
@@ -59,27 +57,27 @@ public class UserData {
     private static boolean mDirtyPortfolioStockMap = true;
 
     public static void addAppWidgetSize(Context context, int appWidgetId, int widgetSize) {
-        // Record widgetSize
-        Editor editor = PreferenceTools.getWidgetPreferences(context, appWidgetId).edit();
-        editor.putInt("widgetSize", widgetSize);
-        editor.apply();
+        Storage appStorage = PreferenceTools.getAppPreferences(context);
+        WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
+        Storage storage = widgetRepository.getWidgetStorage(appWidgetId);
+        storage.putInt("widgetSize", widgetSize);
+        storage.apply();
     }
 
     public static void addAppWidgetId(Context context, int appWidgetId, Integer widgetSize) {
         // Get the existing widgetIds from the preferences
-        SharedPreferences preferences = PreferenceTools.getAppPreferences(context);
+        LocalStorage storage = PreferenceTools.getAppPreferences(context);
 
         // Add the new appWidgetId
         StringBuilder rawAppWidgetIds = new StringBuilder();
-        rawAppWidgetIds.append(preferences.getString("appWidgetIds", ""));
+        rawAppWidgetIds.append(storage.getString("appWidgetIds", ""));
         if (!rawAppWidgetIds.toString().equals(""))
             rawAppWidgetIds.append(",");
         rawAppWidgetIds.append(String.valueOf(appWidgetId));
 
         // Update the preferences too
-        Editor editor = preferences.edit();
-        editor.putString("appWidgetIds", rawAppWidgetIds.toString());
-        editor.apply();
+        storage.putString("appWidgetIds", rawAppWidgetIds.toString());
+        storage.apply();
 
         // Only add the widget size if provided
         if (widgetSize != null)
@@ -87,10 +85,10 @@ public class UserData {
     }
 
     public static void delAppWidgetId(Context context, int appWidgetId) {
-        // Get the existing widgetIds from the preferences
-        SharedPreferences preferences = PreferenceTools.getAppPreferences(context);
+        // Get the existing widgetIds from the storage
+        LocalStorage storage = PreferenceTools.getAppPreferences(context);
         ArrayList<String> newAppWidgetIds = new ArrayList<>();
-        Collections.addAll(newAppWidgetIds, preferences.getString("appWidgetIds", "").split(","));
+        Collections.addAll(newAppWidgetIds, storage.getString("appWidgetIds", "").split(","));
 
         // Remove the one to remove
         newAppWidgetIds.remove(String.valueOf(appWidgetId));
@@ -104,51 +102,12 @@ public class UserData {
         if (appWidgetIds.length() > 0)
             appWidgetIds.deleteCharAt(appWidgetIds.length() - 1);
 
-        // Update the preferences too
-        Editor editor = preferences.edit();
-        editor.putString("appWidgetIds", appWidgetIds.toString());
-        editor.apply();
+        // Update the storage too
+        storage.putString("appWidgetIds", appWidgetIds.toString());
+        storage.apply();
     }
 
-    public static int[] getAppWidgetIds2(Context context) {
-        // Get the widgetIds from the preferences
-        SharedPreferences prefs = PreferenceTools.getAppPreferences(context);
-        StringBuilder rawAppWidgetIds = new StringBuilder();
-        rawAppWidgetIds.append(prefs.getString("appWidgetIds", ""));
-
-        // Create an array of appWidgetIds
-        String[] appWidgetIds = rawAppWidgetIds.toString().split(",");
-        int appWidgetIdsLength = 0;
-        if (!rawAppWidgetIds.toString().equals(""))
-            appWidgetIdsLength = appWidgetIds.length;
-        int[] savedAppWidgetIds = new int[appWidgetIdsLength];
-        for (int i = 0; i < appWidgetIds.length; i++)
-            if (!appWidgetIds[i].equals(""))
-                savedAppWidgetIds[i] = Integer.parseInt(appWidgetIds[i]);
-        return savedAppWidgetIds;
-    }
-
-    public static Set<String> getWidgetsStockSymbols(Context context) {
-        Set<String> widgetStockSymbols = new HashSet<>();
-        SharedPreferences widgetPreferences;
-
-        // Add the stock symbols from the widget preferences
-        for (int appWidgetId : getAppWidgetIds2(context)) {
-            widgetPreferences = PreferenceTools.getWidgetPreferences(context, appWidgetId);
-            if (widgetPreferences == null)
-                continue;
-
-            // If widget preferences were found, extract the stock symbols
-            for (int i = 1; i < 11; i++) {
-                String stockSymbol = widgetPreferences.getString("Stock" + i, "");
-                if (!stockSymbol.equals(""))
-                    widgetStockSymbols.add(stockSymbol);
-            }
-        }
-        return widgetStockSymbols;
-    }
-
-    public static HashMap<String, HashMap<PortfolioField, String>> getPortfolioStockMap(Context context) {
+    public static HashMap<String, HashMap<PortfolioField, String>> getPortfolioStockMap(Storage storage) {
         // If data is unchanged return cached version
         if (!mDirtyPortfolioStockMap)
             return mPortfolioStockMap;
@@ -157,10 +116,10 @@ public class UserData {
         mPortfolioStockMap.clear();
 
         // Use the Json data if present
-        String rawJson = PreferenceTools.getAppPreferences(context).getString(PORTFOLIO_JSON, "");
+        String rawJson = storage.getString(PORTFOLIO_JSON, "");
         if (rawJson.equals("")) {
             // If there is no Json data then use the old style data
-            for (String rawStock : PreferenceTools.getAppPreferences(context).getString("portfolio", "").split(",")) {
+            for (String rawStock : storage.getString("portfolio", "").split(",")) {
                 String[] stockArray = rawStock.split(":");
 
                 // Skip empties and invalid formatted stocks
@@ -253,7 +212,7 @@ public class UserData {
         }
 
         // Commit changes to the preferences
-        Editor editor = PreferenceTools.getAppPreferences(context).edit();
+        LocalStorage editor = PreferenceTools.getAppPreferences(context);
         editor.putString(PORTFOLIO_JSON, json.toString());
         editor.apply();
 
@@ -261,9 +220,9 @@ public class UserData {
         mDirtyPortfolioStockMap = true;
     }
 
-    public static HashMap<String, HashMap<PortfolioField, String>> getPortfolioStockMapForWidget(Context context, String[] symbols) {
+    public static HashMap<String, HashMap<PortfolioField, String>> getPortfolioStockMapForWidget(Storage appStorage, String[] symbols) {
         HashMap<String, HashMap<PortfolioField, String>> portfolioStockMapForWidget = new HashMap<>();
-        HashMap<String, HashMap<PortfolioField, String>> portfolioStockMap = getPortfolioStockMap(context);
+        HashMap<String, HashMap<PortfolioField, String>> portfolioStockMap = getPortfolioStockMap(appStorage);
 
         // Add stock details for any symbols that exist in the widget
         for (String symbol : Arrays.asList(symbols)) {
@@ -274,13 +233,14 @@ public class UserData {
         return portfolioStockMapForWidget;
     }
 
-    public static void cleanupPreferenceFiles(Context context) {
+    public static void cleanupPreferenceFiles(Context context, Storage storage) {
         // Remove old preferences if we are upgrading
         ArrayList<String> l = new ArrayList<>();
 
         // Shared preferences is never deleted
         l.add(context.getString(R.string.prefs_name) + ".xml");
-        for (int id : UserData.getAppWidgetIds2(context))
+        WidgetRepository repository = new AndroidWidgetRepository(context, storage);
+        for (int id : repository.getIds())
             l.add(context.getString(R.string.prefs_name) + id + ".xml");
 
         // Remove files we do not have an active widget for
@@ -312,9 +272,9 @@ public class UserData {
         String rawJson = readInternalStorage(context, PORTFOLIO_JSON);
 
         // Store portfolio in preferences
-        Editor editor = PreferenceTools.getAppPreferences(context).edit();
-        editor.putString(PORTFOLIO_JSON, rawJson);
-        editor.apply();
+        LocalStorage storage = PreferenceTools.getAppPreferences(context);
+        storage.putString(PORTFOLIO_JSON, rawJson);
+        storage.apply();
         mDirtyPortfolioStockMap = true;
 
         // Show confirmation to user
@@ -387,7 +347,6 @@ public class UserData {
             }
             BackupManager backupManager = new BackupManager(context);
             backupManager.dataChanged();
-        } catch (FileNotFoundException ignored) {
         } catch (IOException ignored) {
         }
     }
@@ -404,7 +363,6 @@ public class UserData {
                 }
             }
             return new String(fileContent);
-        } catch (FileNotFoundException ignored) {
         } catch (IOException ignored) {
         }
         return null;

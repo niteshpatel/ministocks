@@ -33,6 +33,8 @@ import java.util.List;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.domain.StockQuoteRepository;
 import nitezh.ministock.tests.mocks.MockCache;
+import nitezh.ministock.tests.mocks.MockStorage;
+import nitezh.ministock.tests.mocks.MockWidgetRepository;
 
 
 public class StockQuoteRepositoryTests extends TestCase {
@@ -40,10 +42,11 @@ public class StockQuoteRepositoryTests extends TestCase {
     private StockQuoteRepository stockRepository;
 
     public void setUp() {
-        this.stockRepository = new StockQuoteRepository();
+
+        this.stockRepository = new StockQuoteRepository(new MockStorage(), new MockWidgetRepository());
     }
 
-    public void testGetQuotes() {
+    public void testGetLiveQuotes() {
         List<String> symbols = Arrays.asList("AAPL", "GOOG", ".DJI", ".IXIC");
         HashMap<String, StockQuote> quotes = this.stockRepository.getLiveQuotes(new MockCache(), symbols);
         assertEquals(4, quotes.size());

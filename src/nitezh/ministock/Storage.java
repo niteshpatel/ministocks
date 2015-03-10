@@ -24,45 +24,28 @@
 
 package nitezh.ministock;
 
-import android.content.Context;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.HashMap;
 
 
-public class PreferenceCache extends Cache {
+public interface Storage {
 
-    public static final String JSON_CACHE = "JsonCache";
-    private static String mCache = "";
-    private Storage preferences = null;
+    HashMap<String, ?> getAll();
 
-    public PreferenceCache(Context context) {
-        if (context != null) {
-            preferences = PreferenceTools.getAppPreferences(context);
-        }
-    }
+    public int getInt(String widgetSize, int defaultVal);
 
-    @Override
-    protected void persistCache(JSONObject cache) {
-        mCache = cache.toString();
-        if (preferences != null) {
-            Storage editor = preferences;
-            editor.putString(JSON_CACHE, mCache);
-            editor.apply();
-        }
-    }
+    public String getString(String key, String defaultVal);
 
-    @Override
-    protected JSONObject loadCache() {
-        if (preferences != null && mCache.equals("")) {
-            mCache = preferences.getString(JSON_CACHE, "");
-        }
-        JSONObject cache = new JSONObject();
-        try {
-            cache = new JSONObject(mCache);
-        } catch (JSONException ignore) {
-        }
+    public boolean getBoolean(String large_font, boolean defaultVal);
 
-        return cache;
-    }
+    public Storage putInt(String key, int value);
+
+    public Storage putString(String key, String value);
+
+    public Storage putBoolean(String key, Boolean value);
+
+    public Storage putFloat(String key, Float value);
+
+    public Storage putLong(String key, Long value);
+
+    void apply();
 }

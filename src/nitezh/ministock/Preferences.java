@@ -46,6 +46,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import nitezh.ministock.domain.AndroidWidgetRepository;
+import nitezh.ministock.domain.WidgetRepository;
 import nitezh.ministock.utils.DateTools;
 import nitezh.ministock.utils.VersionTools;
 import nitezh.ministock.widget.WidgetBase;
@@ -125,7 +127,8 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
             return;
         }
         // Cleanup preferences files
-        UserData.cleanupPreferenceFiles(getApplicationContext());
+        Storage appStorage = new LocalStorage(getAppPreferences());
+        UserData.cleanupPreferenceFiles(getApplicationContext(), appStorage);
         @SuppressWarnings("rawtypes") Callable callable = new Callable() {
             @Override
             public Object call() throws Exception {
@@ -154,7 +157,8 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
 
         // Add this widgetId if we don't have it
         Set<Integer> appWidgetIds = new HashSet<Integer>();
-        for (int i : UserData.getAppWidgetIds2(getBaseContext()))
+        WidgetRepository repository = new AndroidWidgetRepository(getBaseContext(), new LocalStorage(getAppPreferences()));
+        for (int i : repository.getIds())
             appWidgetIds.add(i);
         if (!appWidgetIds.contains(mAppWidgetId))
             UserData.addAppWidgetId(getBaseContext(), mAppWidgetId, null);

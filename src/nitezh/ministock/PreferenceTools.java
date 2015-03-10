@@ -25,8 +25,6 @@
 package nitezh.ministock;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,57 +32,54 @@ import org.json.JSONObject;
 import java.util.Iterator;
 import java.util.Map;
 
+import nitezh.ministock.domain.AndroidWidgetRepository;
+import nitezh.ministock.domain.WidgetRepository;
+
 
 public class PreferenceTools {
 
-    public static SharedPreferences getAppPreferences(Context context) {
-        return context.getSharedPreferences(context.getString(R.string.prefs_name), 0);
-    }
-
-    public static SharedPreferences getWidgetPreferences(Context context, int appWidgetId) {
-        SharedPreferences widgetPreferences = null;
-        try {
-            widgetPreferences = context.getApplicationContext().getSharedPreferences(context.getString(R.string.prefs_name) + appWidgetId, 0);
-        } catch (Resources.NotFoundException ignored) {
-        }
-        return widgetPreferences;
+    public static LocalStorage getAppPreferences(Context context) {
+        return new LocalStorage(context.getSharedPreferences(context.getString(R.string.prefs_name), 0));
     }
 
     public static JSONObject getWidgetPreferencesAsJson(Context context, int appWidgetId) {
+        Storage appStorage = PreferenceTools.getAppPreferences(context);
+        WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
         JSONObject jsonPrefs = new JSONObject();
-        SharedPreferences prefs = getWidgetPreferences(context, appWidgetId);
-        String key;
-        for (Map.Entry<String, ?> entry : prefs.getAll().entrySet()) {
-            key = entry.getKey();
+        Storage storage = widgetRepository.getWidgetStorage(appWidgetId);
+        for (Map.Entry<String, ?> entry : storage.getAll().entrySet()) {
             try {
-                jsonPrefs.put(key, entry.getValue());
+                jsonPrefs.put(entry.getKey(), entry.getValue());
             } catch (JSONException ignored) {
             }
         }
+
         return jsonPrefs;
     }
 
     public static void setWidgetPreferencesFromJson(Context context, int appWidgetId, JSONObject jsonPrefs) {
-        SharedPreferences.Editor editor = getWidgetPreferences(context, appWidgetId).edit();
+        Storage appStorage = PreferenceTools.getAppPreferences(context);
+        WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
+        Storage storage = widgetRepository.getWidgetStorage(appWidgetId);
         String key;
         for (Iterator iter = jsonPrefs.keys(); iter.hasNext(); ) {
             key = (String) iter.next();
             try {
                 Object value = jsonPrefs.get(key);
                 if (value instanceof String) {
-                    editor.putString(key, (String) value);
+                    storage.putString(key, (String) value);
                 } else if (value instanceof Boolean) {
-                    editor.putBoolean(key, (Boolean) value);
+                    storage.putBoolean(key, (Boolean) value);
                 } else if (value instanceof Integer) {
-                    editor.putInt(key, (Integer) value);
+                    storage.putInt(key, (Integer) value);
                 } else if (value instanceof Double) {
-                    editor.putFloat(key, (Float) value);
+                    storage.putFloat(key, (Float) value);
                 } else if (value instanceof Long) {
-                    editor.putLong(key, (Long) value);
+                    storage.putLong(key, (Long) value);
                 }
             } catch (JSONException ignored) {
             }
         }
-        editor.apply();
+        storage.apply();
     }
 }

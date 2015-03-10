@@ -37,23 +37,24 @@ public class StockQuote {
     private String volume;
     private String name;
 
-    public StockQuote(String symbol, String price, String change, String percent, String exchange, String volume, String name) {
+    public StockQuote(String symbol, String price, String change, String percent, String exchange,
+                      String volume, String name) {
         this(symbol, price, change, percent, exchange, volume, name, null);
     }
 
-    public StockQuote(String symbol, String price, String change, String percent, String exchange, String volume, String name, String previousPrice) {
-
+    public StockQuote(String symbol, String price, String change, String percent, String exchange,
+                      String volume, String name, String previousPrice) {
         this.symbol = symbol;
         this.exchange = exchange;
         this.volume = volume;
         this.name = name;
 
         // Get additional FX data if applicable
-        Double p2 = null;
+        Double p0 = null;
         boolean isFx = symbol.contains("=");
         if (isFx) {
             try {
-                p2 = Double.parseDouble(previousPrice);
+                p0 = Double.parseDouble(previousPrice);
             } catch (Exception ignored) {
             }
         }
@@ -73,10 +74,10 @@ public class StockQuote {
             }
 
             // Note that if the change or percent == "N/A" set to 0
-            if ((price.equals("N/A") || price.equals("")) && p2 == null) {
+            if ((price.equals("N/A") || price.equals("")) && p0 == null) {
                 change = "0.00";
             }
-            if ((percent.equals("N/A") || percent.equals("")) && p2 == null) {
+            if ((percent.equals("N/A") || percent.equals("")) && p0 == null) {
                 percent = "0.00";
             }
         }
@@ -85,8 +86,8 @@ public class StockQuote {
         Double c = null;
         if (!change.equals("N/A") && !change.equals("")) {
             c = Double.parseDouble(change);
-        } else if (p2 != null && p != null) {
-            c = p - p2;
+        } else if (p0 != null && p != null) {
+            c = p - p0;
         }
         if (c != null) {
             if (p != null && (p < 10 || isFx)) {

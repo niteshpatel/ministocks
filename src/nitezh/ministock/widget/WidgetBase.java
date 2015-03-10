@@ -30,8 +30,6 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -43,22 +41,26 @@ import android.view.View;
 import android.widget.RemoteViews;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
-import nitezh.ministock.domain.StockQuoteRepository;
+import nitezh.ministock.PreferenceTools;
 import nitezh.ministock.Preferences;
 import nitezh.ministock.R;
-import nitezh.ministock.domain.StockQuote;
-import nitezh.ministock.utils.ReflectionTools;
+import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
 import nitezh.ministock.UserData.PortfolioField;
 import nitezh.ministock.Widget;
+import nitezh.ministock.domain.AndroidWidgetRepository;
+import nitezh.ministock.domain.StockQuote;
+import nitezh.ministock.domain.StockQuoteRepository;
+import nitezh.ministock.domain.WidgetRepository;
 import nitezh.ministock.utils.CurrencyFormatter;
 import nitezh.ministock.utils.DateTools;
 import nitezh.ministock.utils.NumberTools;
-import nitezh.ministock.PreferenceTools;
+import nitezh.ministock.utils.ReflectionTools;
 
 
 public class WidgetBase extends AppWidgetProvider {
@@ -89,7 +91,7 @@ public class WidgetBase extends AppWidgetProvider {
     private static final int COLOUR_VOLUME = Color.LTGRAY;
     private static final int COLOUR_NA = Color.parseColor("#66CCCC");
 
-    private static RemoteViews getRemoteViews(Context context, SharedPreferences preferences, int widgetSize) {
+    private static RemoteViews getRemoteViews(Context context, Storage preferences, int widgetSize) {
         // Retrieve background preference and layoutId
         String background = preferences.getString("background", "transparent");
         Integer drawableId;
@@ -159,7 +161,7 @@ public class WidgetBase extends AppWidgetProvider {
     }
 
     // Global formatter so we can perform global text formatting in one place
-    private static SpannableString makeBold(SharedPreferences prefs, String s) {
+    private static SpannableString makeBold(Storage prefs, String s) {
         SpannableString span = new SpannableString(s);
         if (prefs.getString("text_style", "normal").equals("bold"))
             span.setSpan(new StyleSpan(Typeface.BOLD), 0, s.length(), 0);
@@ -168,7 +170,7 @@ public class WidgetBase extends AppWidgetProvider {
         return span;
     }
 
-    private static HashMap<String, Object> getFormattedRow(String symbol, StockQuote quoteInfo, HashMap<String, HashMap<PortfolioField, String>> portfolioStockMap, int widgetView, SharedPreferences preferences, int widgetSize) {
+    private static HashMap<String, Object> getFormattedRow(String symbol, StockQuote quoteInfo, HashMap<String, HashMap<PortfolioField, String>> portfolioStockMap, int widgetView, Storage preferences, int widgetSize) {
         // Create the HashMap for our return values
         HashMap<String, Object> rowItems = new HashMap<>();
         // Initialise columns
@@ -519,7 +521,7 @@ public class WidgetBase extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.widget_right, PendingIntent.getBroadcast(context, appWidgetId, right_intent, 0));
     }
 
-    private static SparseBooleanArray getEnabledViews(SharedPreferences prefs, int widgetSize, boolean noPortfolio) {
+    private static SparseBooleanArray getEnabledViews(Storage prefs, int widgetSize, boolean noPortfolio) {
         // Get widget view prefs
         boolean dailyChangePc = prefs.getBoolean("show_percent_change", false);
         boolean dailyChange = prefs.getBoolean("show_absolute_change", false);
@@ -546,12 +548,15 @@ public class WidgetBase extends AppWidgetProvider {
     }
 
     private static void updateWidget(Context context, int appWidgetId, int updateMode, HashMap<String, StockQuote> quotes) {
+        Storage appStorage = PreferenceTools.getAppPreferences(context);
+        WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
+
         // Get widget SharedPreferences
-        SharedPreferences prefs = PreferenceTools.getWidgetPreferences(context, appWidgetId);
+        Storage widgetStorage = widgetRepository.getWidgetStorage(appWidgetId);
         // Choose between two widget sizes
-        int widgetSize = prefs.getInt("widgetSize", 0);
+        int widgetSize = widgetStorage.getInt("widgetSize", 0);
         // Get relevant RemoteViews
-        RemoteViews views = getRemoteViews(context, prefs, widgetSize);
+        RemoteViews views = getRemoteViews(context, widgetStorage, widgetSize);
         // Get the array size for widgets
         int arraySize = 0;
         if (widgetSize == 0 || widgetSize == 1)
@@ -563,7 +568,7 @@ public class WidgetBase extends AppWidgetProvider {
         boolean found = false;
         String[] stocks = new String[arraySize];
         for (int i = 0; i < arraySize; i++) {
-            stocks[i] = prefs.getString("Stock" + (i + 1), "");
+            stocks[i] = widgetStorage.getString("Stock" + (i + 1), "");
             if (!stocks[i].equals("")) {
                 found = true;
             }
@@ -573,10 +578,11 @@ public class WidgetBase extends AppWidgetProvider {
             stocks[0] = "^DJI";
         }
         // Retrieve portfolio stocks
-        HashMap<String, HashMap<PortfolioField, String>> portfolioStockMap = UserData.getPortfolioStockMapForWidget(context, stocks);
+        Storage storage = PreferenceTools.getAppPreferences(context);
+        HashMap<String, HashMap<PortfolioField, String>> portfolioStockMap = UserData.getPortfolioStockMapForWidget(storage, stocks);
         // Check if we have an empty portfolio
         boolean noPortfolio = portfolioStockMap.isEmpty();
-        SparseBooleanArray enabledViews = getEnabledViews(prefs, widgetSize, noPortfolio);
+        SparseBooleanArray enabledViews = getEnabledViews(widgetStorage, widgetSize, noPortfolio);
         // Check if we have any portfolio-less views
         boolean defaultViews = enabledViews.get(VIEW_DAILY_PERCENT) && enabledViews.get(VIEW_DAILY_CHANGE);
         // Setup setOnClickPendingIntents
@@ -587,7 +593,7 @@ public class WidgetBase extends AppWidgetProvider {
             return;
         }
         // Retrieve the last shown widgetView from the prefs
-        int widgetView = prefs.getInt("widgetView", 0);
+        int widgetView = widgetStorage.getInt("widgetView", 0);
         if (updateMode == VIEW_CHANGE) {
             widgetView += 1;
             widgetView = widgetView % 10;
@@ -605,13 +611,11 @@ public class WidgetBase extends AppWidgetProvider {
             }
         }
         // Only bother to save if the widget view changed
-        if (widgetView != prefs.getInt("widgetView", 0)) {
-            SharedPreferences.Editor editor;
-            editor = prefs.edit();
-            editor.putInt("widgetView", widgetView);
-            editor.apply();
+        if (widgetView != widgetStorage.getInt("widgetView", 0)) {
+            widgetStorage.putInt("widgetView", widgetView);
+            widgetStorage.apply();
         }
-        StockQuoteRepository dataSource = new StockQuoteRepository();
+        StockQuoteRepository dataSource = new StockQuoteRepository(appStorage, widgetRepository);
         String quotesTimeStamp = dataSource.getTimeStamp();
         // If we have stock data then update the widget view
         if (!quotes.isEmpty()) {
@@ -639,19 +643,19 @@ public class WidgetBase extends AppWidgetProvider {
                 StockQuote quoteInfo;
                 quoteInfo = quotes.get(symbol);
                 line_no++;
-                HashMap<String, Object> formattedRow = getFormattedRow(symbol, quoteInfo, portfolioStockMap, widgetView, prefs, widgetSize);
+                HashMap<String, Object> formattedRow = getFormattedRow(symbol, quoteInfo, portfolioStockMap, widgetView, widgetStorage, widgetSize);
                 // Values
-                views.setTextViewText(getStockViewId(line_no, 1), makeBold(prefs, (String) formattedRow.get("COL0_VALUE")));
-                views.setTextViewText(getStockViewId(line_no, 2), makeBold(prefs, (String) formattedRow.get("COL1_VALUE")));
-                views.setTextViewText(getStockViewId(line_no, 3), makeBold(prefs, (String) formattedRow.get("COL2_VALUE")));
+                views.setTextViewText(getStockViewId(line_no, 1), makeBold(widgetStorage, (String) formattedRow.get("COL0_VALUE")));
+                views.setTextViewText(getStockViewId(line_no, 2), makeBold(widgetStorage, (String) formattedRow.get("COL1_VALUE")));
+                views.setTextViewText(getStockViewId(line_no, 3), makeBold(widgetStorage, (String) formattedRow.get("COL2_VALUE")));
                 // Add the other values if we have a wide widget
                 if (widgetSize == 1 || widgetSize == 3) {
-                    views.setTextViewText(getStockViewId(line_no, 4), makeBold(prefs, (String) formattedRow.get("COL3_VALUE")));
-                    views.setTextViewText(getStockViewId(line_no, 5), makeBold(prefs, (String) formattedRow.get("COL4_VALUE")));
+                    views.setTextViewText(getStockViewId(line_no, 4), makeBold(widgetStorage, (String) formattedRow.get("COL3_VALUE")));
+                    views.setTextViewText(getStockViewId(line_no, 5), makeBold(widgetStorage, (String) formattedRow.get("COL4_VALUE")));
                 }
                 // Colours
                 views.setTextColor(getStockViewId(line_no, 1), (Integer) formattedRow.get("COL0_COLOUR"));
-                if (!prefs.getBoolean("colours_on_prices", false)) {
+                if (!widgetStorage.getBoolean("colours_on_prices", false)) {
                     // Narrow widget
                     if (widgetSize == 0 || widgetSize == 2) {
                         views.setTextColor(getStockViewId(line_no, 2), (Integer) formattedRow.get("COL1_COLOUR"));
@@ -679,7 +683,7 @@ public class WidgetBase extends AppWidgetProvider {
                 }
             }
             // Set footer display
-            String updated_display = prefs.getString("updated_display", "visible");
+            String updated_display = widgetStorage.getString("updated_display", "visible");
             switch (updated_display) {
                 case "remove":
                     views.setViewVisibility(R.id.text_footer, View.GONE);
@@ -690,7 +694,7 @@ public class WidgetBase extends AppWidgetProvider {
                 default:
                     views.setViewVisibility(R.id.text_footer, View.VISIBLE);
                     // Set footer text and colour
-                    String updated_colour = prefs.getString("updated_colour", "light");
+                    String updated_colour = widgetStorage.getString("updated_colour", "light");
                     int footer_colour = Color.parseColor("#555555");
                     if (updated_colour.equals("light")) {
                         footer_colour = Color.GRAY;
@@ -698,7 +702,7 @@ public class WidgetBase extends AppWidgetProvider {
                         footer_colour = Color.parseColor("#cccc77");
                     }
                     // Show short time if specified in prefs
-                    if (!prefs.getBoolean("short_time", false)) {
+                    if (!widgetStorage.getBoolean("short_time", false)) {
                         // Get current day and month
                         SimpleDateFormat formatter = new SimpleDateFormat("dd MMM");
                         String current_date = formatter.format(new Date()).toUpperCase();
@@ -715,7 +719,7 @@ public class WidgetBase extends AppWidgetProvider {
                         }
                     }
                     // Set time stamp
-                    views.setTextViewText(R.id.text5, makeBold(prefs, quotesTimeStamp));
+                    views.setTextViewText(R.id.text5, makeBold(widgetStorage, quotesTimeStamp));
                     views.setTextColor(R.id.text5, footer_colour);
                     // Set the widget view text in the footer
                     String currentViewText = "";
@@ -787,7 +791,7 @@ public class WidgetBase extends AppWidgetProvider {
                         }
                     }
                     // Update the view name and view name separator
-                    views.setTextViewText(R.id.text6, makeBold(prefs, currentViewText));
+                    views.setTextViewText(R.id.text6, makeBold(widgetStorage, currentViewText));
                     views.setTextColor(R.id.text6, footer_colour);
                     break;
             }
@@ -798,7 +802,9 @@ public class WidgetBase extends AppWidgetProvider {
 
     public static void update(Context context, int appWidgetId, int updateMode) {
         // Get widget SharedPreferences
-        SharedPreferences prefs = PreferenceTools.getWidgetPreferences(context, appWidgetId);
+        Storage storage = PreferenceTools.getAppPreferences(context);
+        WidgetRepository widgetRepository = new AndroidWidgetRepository(context, storage);
+        Storage prefs = widgetRepository.getWidgetStorage(appWidgetId);
         // Choose between two widget sizes
         int widgetSize = prefs.getInt("widgetSize", 0);
         // Get the array size for widgets
@@ -823,14 +829,17 @@ public class WidgetBase extends AppWidgetProvider {
     }
 
     public static void updateWidgets(Context context, int updateMode) {
-        for (int appWidgetId : UserData.getAppWidgetIds2(context))
+        Storage storage = PreferenceTools.getAppPreferences(context);
+        WidgetRepository widgetRepository = new AndroidWidgetRepository(context, storage);
+        for (int appWidgetId : widgetRepository.getIds())
             WidgetBase.update(context, appWidgetId, updateMode);
+
         // Update last update time
-        SharedPreferences prefs = PreferenceTools.getAppPreferences(context);
+        Storage prefs = PreferenceTools.getAppPreferences(context);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Editor editor = prefs.edit();
-        editor.putString("last_update1", formatter.format(new Date()));
-        editor.apply();
+        prefs.putString("last_update1", formatter.format(new Date()));
+        prefs.apply();
+
         // Reset the alarm
         updateAlarmManager(context);
     }
@@ -840,21 +849,21 @@ public class WidgetBase extends AppWidgetProvider {
          * Update the widget if allowed by the update schedule
 		 */
         boolean doUpdates = true;
-        SharedPreferences sharedPreferences = PreferenceTools.getAppPreferences(context);
+        Storage prefs = PreferenceTools.getAppPreferences(context);
         // Only update after start time
-        String startTime = sharedPreferences.getString("update_start", null);
+        String startTime = prefs.getString("update_start", null);
         if (startTime != null && !startTime.equals("")) {
             if (DateTools.compareToNow(DateTools.parseSimpleDate(startTime)) == 1)
                 doUpdates = false;
         }
         // Only update before end time
-        String endTime = sharedPreferences.getString("update_end", null);
+        String endTime = prefs.getString("update_end", null);
         if (endTime != null && !endTime.equals("")) {
             if (DateTools.compareToNow(DateTools.parseSimpleDate(endTime)) == -1)
                 doUpdates = false;
         }
         // Do not update on weekends
-        Boolean update_weekend = sharedPreferences.getBoolean("update_weekend", false);
+        Boolean update_weekend = prefs.getBoolean("update_weekend", false);
         if (!update_weekend) {
             int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
             if (dayOfWeek == 1 || dayOfWeek == 7)
@@ -875,12 +884,12 @@ public class WidgetBase extends AppWidgetProvider {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, intent, 0);
         alarmManager.cancel(pendingIntent);
         // Get the configured update interval (default 30 minutes)
-        SharedPreferences preferences = PreferenceTools.getAppPreferences(context);
-        Long interval = Long.parseLong((preferences.getString("update_interval", Long.toString(AlarmManager.INTERVAL_HALF_HOUR))));
+        Storage prefs = PreferenceTools.getAppPreferences(context);
+        Long interval = Long.parseLong((prefs.getString("update_interval", Long.toString(AlarmManager.INTERVAL_HALF_HOUR))));
         // First update delay
         Double firstInterval = interval.doubleValue();
         // Get the last update time
-        String lastUpdate = preferences.getString("last_update1", null);
+        String lastUpdate = prefs.getString("last_update1", null);
         Double elapsed = DateTools.elapsedTime(lastUpdate);
         // If the elapsed time is greater than the interval, then update now
         // otherwise, work out how much longer until the next update
@@ -930,7 +939,9 @@ public class WidgetBase extends AppWidgetProvider {
 		 */
         // Reset alarm manager if needed
         updateAlarmManager(context);
-        for (int i : UserData.getAppWidgetIds2(context))
+        Storage storage = PreferenceTools.getAppPreferences(context);
+        WidgetRepository widgetRepository = new AndroidWidgetRepository(context, storage);
+        for (int i : widgetRepository.getIds())
             update(context, i, VIEW_NO_UPDATE);
     }
 
@@ -944,14 +955,17 @@ public class WidgetBase extends AppWidgetProvider {
     @Override
     public void onDeleted(Context context, int[] appWidgetIds) {
         super.onDeleted(context, appWidgetIds);
+
+        Storage storage = PreferenceTools.getAppPreferences(context);
         // Remove the appWidgetIds from our preferences
         for (int appWidgetId : appWidgetIds) {
             UserData.delAppWidgetId(context, appWidgetId);
         }
         // Cleanup preferences files
-        UserData.cleanupPreferenceFiles(context);
+        UserData.cleanupPreferenceFiles(context, storage);
         // Stop the AlarmManager if there are no more widgetIds
-        if (UserData.getAppWidgetIds2(context).length == 0) {
+        WidgetRepository widgetRepository = new AndroidWidgetRepository(context, storage);
+        if (widgetRepository.getIds().length == 0) {
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ALARM_UPDATE), 0);
             alarmManager.cancel(pendingIntent);
@@ -966,8 +980,11 @@ public class WidgetBase extends AppWidgetProvider {
             int appWidgetId = (Integer) params[1];
             int updateMode = (Integer) params[2];
             String[] symbols = (String[]) params[3];
-            StockQuoteRepository dataSource = new StockQuoteRepository();
-            HashMap<String, StockQuote> quotes = dataSource.getQuotes(context, symbols, updateMode == VIEW_UPDATE);
+            Storage appStorage = PreferenceTools.getAppPreferences(context);
+            WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
+            StockQuoteRepository dataSource = new StockQuoteRepository(appStorage, widgetRepository);
+            HashMap<String, StockQuote> quotes = dataSource.getQuotes(context,
+                    Arrays.asList(symbols), updateMode == VIEW_UPDATE);
             updateWidget(context, appWidgetId, updateMode, quotes);
             return null;
         }

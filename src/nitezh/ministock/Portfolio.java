@@ -46,6 +46,7 @@ import java.text.ParseException;
 import java.text.RuleBasedCollator;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,8 +57,10 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import nitezh.ministock.UserData.PortfolioField;
-import nitezh.ministock.domain.StockQuoteRepository;
+import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.StockQuote;
+import nitezh.ministock.domain.StockQuoteRepository;
+import nitezh.ministock.domain.WidgetRepository;
 import nitezh.ministock.utils.CurrencyFormatter;
 import nitezh.ministock.utils.NumberTools;
 import nitezh.ministock.widget.WidgetBase;
@@ -77,8 +80,10 @@ public class Portfolio extends Activity {
 
         // Add any missing stocks from the widget stocks map to our local
         // portfolio stocks map
-        mPortfolioStockMap = UserData.getPortfolioStockMap(this);
-        mWidgetsStockMap = UserData.getWidgetsStockSymbols(this);
+        Storage appStorage = PreferenceTools.getAppPreferences(this);
+        WidgetRepository repository = new AndroidWidgetRepository(this, appStorage);
+        mPortfolioStockMap = UserData.getPortfolioStockMap(appStorage);
+        mWidgetsStockMap = repository.getWidgetsStockSymbols();
         for (String symbol : mWidgetsStockMap) {
             if (!mPortfolioStockMap.containsKey(symbol)) {
                 mPortfolioStockMap.put(symbol, new HashMap<PortfolioField, String>());
@@ -87,7 +92,7 @@ public class Portfolio extends Activity {
 
         // Get current prices
         Set<String> symbolSet = mPortfolioStockMap.keySet();
-        mStockData = new StockQuoteRepository().getQuotes(this, symbolSet.toArray(new String[symbolSet.size()]), false);
+        mStockData = new StockQuoteRepository(appStorage, repository).getQuotes(this, Arrays.asList(symbolSet.toArray(new String[symbolSet.size()])), false);
 
         // Update the list view with the portfolio stock map info
         refreshView();

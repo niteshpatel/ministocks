@@ -30,12 +30,14 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.view.KeyEvent;
 
-import nitezh.ministock.UserData;
 import nitezh.ministock.PreferenceTools;
+import nitezh.ministock.Storage;
+import nitezh.ministock.UserData;
+import nitezh.ministock.domain.AndroidWidgetRepository;
+import nitezh.ministock.domain.WidgetRepository;
 import nitezh.ministock.widget.WidgetBase;
 
 
@@ -63,12 +65,16 @@ abstract class ConfigureBase extends Activity {
             // and add default preferences (view and Stock1)
             Context context = getBaseContext();
             UserData.addAppWidgetSize(context, appWidgetId, widgetSize);
-            Editor editor = PreferenceTools.getWidgetPreferences(context, appWidgetId).edit();
+            Storage appStorage = PreferenceTools.getAppPreferences(context);
+            WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
+
+            // Get widget SharedPreferences
+            Storage widgetStorage = widgetRepository.getWidgetStorage(appWidgetId);
             if (widgetSize == 0 || widgetSize == 2)
-                editor.putBoolean("show_percent_change", true);
-            editor.putString("Stock1", "^DJI");
-            editor.putString("Stock1_summary", "Dow Jones Industrial Average");
-            editor.apply();
+                widgetStorage.putBoolean("show_percent_change", true);
+            widgetStorage.putString("Stock1", "^DJI");
+            widgetStorage.putString("Stock1_summary", "Dow Jones Industrial Average");
+            widgetStorage.apply();
             // Finally update
             WidgetBase.update(getApplicationContext(), appWidgetId, WidgetBase.VIEW_UPDATE);
         }
@@ -87,10 +93,10 @@ abstract class ConfigureBase extends Activity {
         // Set the close button text, we have to specify an empty onClick
         // handler, even though onDismiss will handle the widget setup
         alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Close", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
         alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
