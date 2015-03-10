@@ -22,8 +22,16 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock.activities.widget;
+package nitezh.ministock.activities.configure;
+
+import android.os.Bundle;
 
 
-public class Widget_1x4 extends WidgetBase {
+public class ConfigureActivity_2x4 extends ConfigureActivityBase {
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        mWidgetSize = 3;
+        super.onCreate(savedInstanceState);
+    }
 }

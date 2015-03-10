@@ -51,14 +51,14 @@ import nitezh.ministock.LocalStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
+import nitezh.ministock.activities.widget.AppWidgetProviderBase;
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.WidgetRepository;
 import nitezh.ministock.utils.DateTools;
 import nitezh.ministock.utils.VersionTools;
-import nitezh.ministock.activities.widget.WidgetBase;
 
 
-public class Preferences extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class PreferencesActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     // Constants
     private static final int STRING_TYPE = 0;
@@ -377,7 +377,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
-        // Hook the About preference to the About (Ministocks) activity
+        // Hook the About preference to the About (MinistocksActivity) activity
         Preference about = findPreference("about");
         about.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
@@ -443,17 +443,17 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 // Update all widgets and quit
-                WidgetBase.updateWidgets(getApplicationContext(), WidgetBase.VIEW_UPDATE);
+                AppWidgetProviderBase.updateWidgets(getApplicationContext(), AppWidgetProviderBase.VIEW_UPDATE);
                 finish();
                 return true;
             }
         });
-        // Hook the Portfolio preference to the Portfolio activity
+        // Hook the PortfolioActivity preference to the PortfolioActivity activity
         Preference portfolio = findPreference("portfolio");
         portfolio.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(Preferences.this, Portfolio.class);
+                Intent intent = new Intent(PreferencesActivity.this, PortfolioActivity.class);
                 startActivity(intent);
                 return true;
             }
@@ -464,7 +464,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         backup_portfolio.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                UserData.backupPortfolio(Preferences.this);
+                UserData.backupPortfolio(PreferencesActivity.this);
                 return true;
             }
         });
@@ -474,7 +474,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         restore_portfolio.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                UserData.restorePortfolio(Preferences.this);
+                UserData.restorePortfolio(PreferencesActivity.this);
                 return true;
             }
         });
@@ -487,11 +487,11 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
                 DialogTools.InputAlertCallable callable = new DialogTools.InputAlertCallable() {
                     @Override
                     public Object call() throws Exception {
-                        UserData.backupWidget(Preferences.this, mAppWidgetId, this.getInputValue());
+                        UserData.backupWidget(PreferencesActivity.this, mAppWidgetId, this.getInputValue());
                         return new Object();
                     }
                 };
-                DialogTools.inputWithCallback(Preferences.this, "Backup this widget", "Please enter a name for this backup:", "OK", "Cancel", "Widget backup from " + DateTools.getNowAsString(), callable);
+                DialogTools.inputWithCallback(PreferencesActivity.this, "Backup this widget", "Please enter a name for this backup:", "OK", "Cancel", "AppWidgetProvider backup from " + DateTools.getNowAsString(), callable);
                 return true;
             }
         });
@@ -501,10 +501,10 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         restore_widget.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                CharSequence[] backupNames = UserData.getWidgetBackupNames(Preferences.this);
+                CharSequence[] backupNames = UserData.getWidgetBackupNames(PreferencesActivity.this);
                 // If there are no backups show an appropriate dialog
                 if (backupNames == null) {
-                    DialogTools.showSimpleDialog(Preferences.this, "No backups available", "There were no widget backups to restore.");
+                    DialogTools.showSimpleDialog(PreferencesActivity.this, "No backups available", "There were no widget backups to restore.");
                     return true;
                 }
 
@@ -512,16 +512,16 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
                 DialogTools.InputAlertCallable callable = new DialogTools.InputAlertCallable() {
                     @Override
                     public Object call() throws Exception {
-                        UserData.restoreWidget(Preferences.this, mAppWidgetId, this.getInputValue());
+                        UserData.restoreWidget(PreferencesActivity.this, mAppWidgetId, this.getInputValue());
                         return new Object();
                     }
                 };
-                DialogTools.choiceWithCallback(Preferences.this, "Select a widget backup to restore", "Cancel", backupNames, callable);
+                DialogTools.choiceWithCallback(PreferencesActivity.this, "Select a widget backup to restore", "Cancel", backupNames, callable);
                 return true;
             }
         });
 
-        // Hook Rate Ministocks preference to the market link
+        // Hook Rate MinistocksActivity preference to the market link
         Preference rate_app = findPreference("rate_app");
         rate_app.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
@@ -531,7 +531,7 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
             }
         });
 
-        // Hook the Feedback preference to the Portfolio activity
+        // Hook the Feedback preference to the PortfolioActivity activity
         Preference feedback = findPreference("feedback");
         feedback.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
@@ -669,22 +669,22 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
         // flag is true then do a web update, otherwise do a regular update
         if (mStocksDirty) {
             mStocksDirty = false;
-            WidgetBase.updateWidgets(getApplicationContext(), WidgetBase.VIEW_UPDATE);
+            AppWidgetProviderBase.updateWidgets(getApplicationContext(), AppWidgetProviderBase.VIEW_UPDATE);
         } else {
-            WidgetBase.update(getApplicationContext(), mAppWidgetId, WidgetBase.VIEW_NO_UPDATE);
+            AppWidgetProviderBase.update(getApplicationContext(), mAppWidgetId, AppWidgetProviderBase.VIEW_NO_UPDATE);
         }
         finish();
     }
 
     private void showHelpUsage() {
         String title = "Selecting widget views";
-        String body = "The widget has multiple views that display different information.<br /><br />These views can be turned on from the Widget views menu in settings.<br /><br />Once selected, the views can be changed on your home screen by touching the right-side of the widget.<br /><br />If a stock does not have information for a particular view, then the daily percentage change will instead be displayed for that stock in blue.<br /><br /><b>Daily change %</b><br /><br />Shows the current stock price with the daily percentage change.<br /><br /><b>Daily change (DA)</b><br /><br />Shows the current stock price with the daily price change.<br /><br /><b>Total change % (PF T%)</b><br /><br />Shows the current stock price with the total percentage change from the buy price in the portfolio.<br /><br /><b>Total change (PF TA)</b><br /><br />Shows the current stock price with the total price change from the buy price in the portfolio.<br /><br /><b>Total change AER % (PF AER)</b><br /><br />Shows the current stock price with the annualised percentage change using the buy price in the portfolio.<br /><br /><b>P/L daily change % (P/L D%)</b><br /><br />Shows your current holding value with the daily percentage change.<br /><br /><b>P/L daily change (P/L DA)</b><br /><br />Shows your current holding value with the daily price change.<br /><br /><b>P/L total change % (P/L T%)</b><br /><br />Shows your current holding value with the total percentage change from the buy cost in the portfolio.<br /><br /><b>P/L total change (P/L TA)</b><br /><br />Shows your current holding value with the total value change from the buy cost in the portfolio.<br /><br /><b>P/L total change AER (P/L AER)</b><br /><br />Shows your current holding value with the annualised percentage change using the buy cost in the portfolio.";
+        String body = "The widget has multiple views that display different information.<br /><br />These views can be turned on from the AppWidgetProvider views menu in settings.<br /><br />Once selected, the views can be changed on your home screen by touching the right-side of the widget.<br /><br />If a stock does not have information for a particular view, then the daily percentage change will instead be displayed for that stock in blue.<br /><br /><b>Daily change %</b><br /><br />Shows the current stock price with the daily percentage change.<br /><br /><b>Daily change (DA)</b><br /><br />Shows the current stock price with the daily price change.<br /><br /><b>Total change % (PF T%)</b><br /><br />Shows the current stock price with the total percentage change from the buy price in the portfolio.<br /><br /><b>Total change (PF TA)</b><br /><br />Shows the current stock price with the total price change from the buy price in the portfolio.<br /><br /><b>Total change AER % (PF AER)</b><br /><br />Shows the current stock price with the annualised percentage change using the buy price in the portfolio.<br /><br /><b>P/L daily change % (P/L D%)</b><br /><br />Shows your current holding value with the daily percentage change.<br /><br /><b>P/L daily change (P/L DA)</b><br /><br />Shows your current holding value with the daily price change.<br /><br /><b>P/L total change % (P/L T%)</b><br /><br />Shows your current holding value with the total percentage change from the buy cost in the portfolio.<br /><br /><b>P/L total change (P/L TA)</b><br /><br />Shows your current holding value with the total value change from the buy cost in the portfolio.<br /><br /><b>P/L total change AER (P/L AER)</b><br /><br />Shows your current holding value with the annualised percentage change using the buy cost in the portfolio.";
         DialogTools.showSimpleDialog(this, title, body);
     }
 
     private void showHelpPortfolio() {
         String title = "Using the portfolio";
-        String body = "On the portfolio screen you will see all the stocks that you have entered in your widgets in one list.<br /><br />You can touch an item to enter your stock purchase details.<br /><br /><b>Entering purchase details</b><br /><br />Enter the price that you bought the stock for, this will then be used for the Portfolio and Profit and loss widget views.<br /><br />The Date is optional, and will be used for the AER rate on the portfolio AER and profit and loss AER views.<br /><br />The Quantity is optional, and will be used to calculate your holdings for the profit and loss views.  You may use negative values to simulate a short position.<br /><br />The High price limit and Low price limit are optional.  When the current price hits these limits, the price color will change in the widget.<br /><br /><b>Removing purchase details</b><br /><br />To remove purchase and alert details, long press the portfolio item and then choose the Clear details option.";
+        String body = "On the portfolio screen you will see all the stocks that you have entered in your widgets in one list.<br /><br />You can touch an item to enter your stock purchase details.<br /><br /><b>Entering purchase details</b><br /><br />Enter the price that you bought the stock for, this will then be used for the PortfolioActivity and Profit and loss widget views.<br /><br />The Date is optional, and will be used for the AER rate on the portfolio AER and profit and loss AER views.<br /><br />The Quantity is optional, and will be used to calculate your holdings for the profit and loss views.  You may use negative values to simulate a short position.<br /><br />The High price limit and Low price limit are optional.  When the current price hits these limits, the price color will change in the widget.<br /><br /><b>Removing purchase details</b><br /><br />To remove purchase and alert details, long press the portfolio item and then choose the Clear details option.";
         DialogTools.showSimpleDialog(this, title, body);
     }
 
@@ -702,6 +702,6 @@ public class Preferences extends PreferenceActivity implements SharedPreferences
                 return new Object();
             }
         };
-        DialogTools.alertWithCallback(this, "Rate Ministocks", "Please support Ministocks by giving the application a 5 star rating in the android market.<br /><br />Motivation to continue to improve the product and add new features comes from positive feedback and ratings.", "Rate it!", "Close", callable);
+        DialogTools.alertWithCallback(this, "Rate MinistocksActivity", "Please support MinistocksActivity by giving the application a 5 star rating in the android market.<br /><br />Motivation to continue to improve the product and add new features comes from positive feedback and ratings.", "Rate it!", "Close", callable);
     }
 }

@@ -62,16 +62,16 @@ import nitezh.ministock.R;
 import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
 import nitezh.ministock.UserData.PortfolioField;
+import nitezh.ministock.activities.widget.AppWidgetProviderBase;
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.domain.StockQuoteRepository;
 import nitezh.ministock.domain.WidgetRepository;
 import nitezh.ministock.utils.CurrencyTools;
 import nitezh.ministock.utils.NumberTools;
-import nitezh.ministock.activities.widget.WidgetBase;
 
 
-public class Portfolio extends Activity {
+public class PortfolioActivity extends Activity {
 
     private HashMap<String, StockQuote> mStockData = new HashMap<>();
     private HashMap<String, HashMap<PortfolioField, String>> mPortfolioStockMap = new HashMap<>();
@@ -456,7 +456,7 @@ public class Portfolio extends Activity {
         UserData.setPortfolioStockMap(this, mPortfolioStockMap);
 
         // Update all widget views and exit
-        WidgetBase.updateWidgets(this, WidgetBase.VIEW_NO_UPDATE);
+        AppWidgetProviderBase.updateWidgets(this, AppWidgetProviderBase.VIEW_NO_UPDATE);
         finish();
     }
 }

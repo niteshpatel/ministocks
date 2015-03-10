@@ -27,11 +27,11 @@ package nitezh.ministock.activities.configure;
 import android.os.Bundle;
 
 
-public class Configure_2x2 extends ConfigureBase {
+public class ConfigureActivity_1x4 extends ConfigureActivityBase {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mWidgetSize = 2;
+        mWidgetSize = 1;
         super.onCreate(savedInstanceState);
     }
 }

@@ -27,7 +27,6 @@ package nitezh.ministock.activities.widget;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
-import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -46,13 +45,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import nitezh.ministock.AppWidgetProvider;
 import nitezh.ministock.PreferenceTools;
-import nitezh.ministock.activities.Preferences;
+import nitezh.ministock.activities.PreferencesActivity;
 import nitezh.ministock.R;
 import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
 import nitezh.ministock.UserData.PortfolioField;
-import nitezh.ministock.Widget;
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.domain.StockQuoteRepository;
@@ -63,7 +62,7 @@ import nitezh.ministock.utils.NumberTools;
 import nitezh.ministock.utils.ReflectionTools;
 
 
-public class WidgetBase extends AppWidgetProvider {
+public class AppWidgetProviderBase extends android.appwidget.AppWidgetProvider {
 
     // Update type
     public static final int VIEW_UPDATE = 0;
@@ -510,12 +509,12 @@ public class WidgetBase extends AppWidgetProvider {
 
     private static void setOnClickPendingIntents(Context context, int appWidgetId, RemoteViews views) {
         // Set an onClick handler on the 'widget_left' layout
-        Intent left_intent = new Intent(context, Widget.class);
+        Intent left_intent = new Intent(context, AppWidgetProvider.class);
         left_intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         left_intent.setAction("LEFT");
         views.setOnClickPendingIntent(R.id.widget_left, PendingIntent.getBroadcast(context, appWidgetId, left_intent, 0));
         // Set an onClick handler on the 'widget_right' layout
-        Intent right_intent = new Intent(context, Widget.class);
+        Intent right_intent = new Intent(context, AppWidgetProvider.class);
         right_intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         right_intent.setAction("RIGHT");
         views.setOnClickPendingIntent(R.id.widget_right, PendingIntent.getBroadcast(context, appWidgetId, right_intent, 0));
@@ -832,7 +831,7 @@ public class WidgetBase extends AppWidgetProvider {
         Storage storage = PreferenceTools.getAppPreferences(context);
         WidgetRepository widgetRepository = new AndroidWidgetRepository(context, storage);
         for (int appWidgetId : widgetRepository.getIds())
-            WidgetBase.update(context, appWidgetId, updateMode);
+            AppWidgetProviderBase.update(context, appWidgetId, updateMode);
 
         // Update last update time
         Storage prefs = PreferenceTools.getAppPreferences(context);
@@ -915,8 +914,8 @@ public class WidgetBase extends AppWidgetProvider {
                 // Bring up the preferences screen if the user clicked
                 // on the left side of the widget
                 if (!action.equals("RIGHT")) {
-                    Preferences.mAppWidgetId = appWidgetId;
-                    Intent activity = new Intent(context, Preferences.class);
+                    PreferencesActivity.mAppWidgetId = appWidgetId;
+                    Intent activity = new Intent(context, PreferencesActivity.class);
                     activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(activity);
                 }

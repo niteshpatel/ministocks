@@ -264,7 +264,7 @@ public class UserData {
         writeInternalStorage(context, rawJson, PORTFOLIO_JSON);
 
         // Show confirmation to user
-        DialogTools.showSimpleDialog(context, "Portfolio backed up", "Your portfolio settings have been backed up to internal storage.");
+        DialogTools.showSimpleDialog(context, "PortfolioActivity backed up", "Your portfolio settings have been backed up to internal storage.");
     }
 
     public static void restorePortfolio(Context context) {
@@ -278,7 +278,7 @@ public class UserData {
         mDirtyPortfolioStockMap = true;
 
         // Show confirmation to user
-        DialogTools.showSimpleDialog(context, "Portfolio restored", "Your portfolio settings have been restored from internal storage.");
+        DialogTools.showSimpleDialog(context, "PortfolioActivity restored", "Your portfolio settings have been restored from internal storage.");
     }
 
     public static void backupWidget(Context context, int appWidgetId, String backupName) {
@@ -306,7 +306,7 @@ public class UserData {
             PreferenceTools.setWidgetPreferencesFromJson(context, appWidgetId, backupContainer.getJSONObject(backupName));
 
             // Show confirmation to user
-            DialogTools.showSimpleDialog(context, "Widget restored", "The current widget preferences have been restored from your selected backup.");
+            DialogTools.showSimpleDialog(context, "AppWidgetProvider restored", "The current widget preferences have been restored from your selected backup.");
 
             // restart activity to force reload of preferences
             Activity activity = ((Activity) context);
