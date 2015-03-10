@@ -59,36 +59,33 @@ public class AndroidWidgetRepository implements WidgetRepository {
 
     @Override
     public Set<String> getWidgetsStockSymbols() {
-        Set<String> widgetStockSymbols = new HashSet<>();
         Storage widgetPreferences;
-
-        // Add the stock symbols from the widget preferences
+        Set<String> widgetStockSymbols = new HashSet<>();
         for (int appWidgetId : this.getIds()) {
             widgetPreferences = this.getWidgetStorage(appWidgetId);
-            if (widgetPreferences == null)
-                continue;
-
-            // If widget preferences were found, extract the stock symbols
-            for (int i = 1; i < 11; i++) {
-                String stockSymbol = widgetPreferences.getString("Stock" + i, "");
-                if (!stockSymbol.equals(""))
-                    widgetStockSymbols.add(stockSymbol);
+            if (widgetPreferences != null) {
+                for (int i = 1; i < 11; i++) {
+                    String stockSymbol = widgetPreferences.getString("Stock" + i, "");
+                    if (!stockSymbol.equals("")) widgetStockSymbols.add(stockSymbol);
+                }
             }
         }
+
         return widgetStockSymbols;
     }
 
     @Override
     public int[] getIds() {
-        // Get the widgetIds from the preferences
         StringBuilder rawAppWidgetIds = new StringBuilder();
         rawAppWidgetIds.append(this.appStorage.getString("appWidgetIds", ""));
 
         // Create an array of appWidgetIds
         String[] appWidgetIds = rawAppWidgetIds.toString().split(",");
         int appWidgetIdsLength = 0;
-        if (!rawAppWidgetIds.toString().equals(""))
+        if (!rawAppWidgetIds.toString().equals("")) {
             appWidgetIdsLength = appWidgetIds.length;
+        }
+
         int[] savedAppWidgetIds = new int[appWidgetIdsLength];
         for (int i = 0; i < appWidgetIds.length; i++)
             if (!appWidgetIds[i].equals(""))
