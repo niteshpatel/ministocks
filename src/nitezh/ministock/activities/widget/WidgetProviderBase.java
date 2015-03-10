@@ -45,7 +45,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
-import nitezh.ministock.AppWidgetProvider;
+import nitezh.ministock.WidgetProvider;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.Storage;
@@ -62,7 +62,7 @@ import nitezh.ministock.utils.NumberTools;
 import nitezh.ministock.utils.ReflectionTools;
 
 
-public class AppWidgetProviderBase extends android.appwidget.AppWidgetProvider {
+public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
 
     // Update type
     public static final int VIEW_UPDATE = 0;
@@ -509,12 +509,12 @@ public class AppWidgetProviderBase extends android.appwidget.AppWidgetProvider {
 
     private static void setOnClickPendingIntents(Context context, int appWidgetId, RemoteViews views) {
         // Set an onClick handler on the 'widget_left' layout
-        Intent left_intent = new Intent(context, AppWidgetProvider.class);
+        Intent left_intent = new Intent(context, WidgetProvider.class);
         left_intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         left_intent.setAction("LEFT");
         views.setOnClickPendingIntent(R.id.widget_left, PendingIntent.getBroadcast(context, appWidgetId, left_intent, 0));
         // Set an onClick handler on the 'widget_right' layout
-        Intent right_intent = new Intent(context, AppWidgetProvider.class);
+        Intent right_intent = new Intent(context, WidgetProvider.class);
         right_intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         right_intent.setAction("RIGHT");
         views.setOnClickPendingIntent(R.id.widget_right, PendingIntent.getBroadcast(context, appWidgetId, right_intent, 0));
@@ -831,7 +831,7 @@ public class AppWidgetProviderBase extends android.appwidget.AppWidgetProvider {
         Storage storage = PreferenceStorage.getInstance(context);
         WidgetRepository widgetRepository = new AndroidWidgetRepository(context, storage);
         for (int appWidgetId : widgetRepository.getIds())
-            AppWidgetProviderBase.update(context, appWidgetId, updateMode);
+            WidgetProviderBase.update(context, appWidgetId, updateMode);
 
         // Update last update time
         Storage prefs = PreferenceStorage.getInstance(context);

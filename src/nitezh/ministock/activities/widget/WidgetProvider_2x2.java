@@ -25,5 +25,5 @@
 package nitezh.ministock.activities.widget;
 
 
-public class AppWidgetProvider_2x4 extends AppWidgetProviderBase {
+public class WidgetProvider_2x2 extends WidgetProviderBase {
 }

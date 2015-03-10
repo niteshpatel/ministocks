@@ -51,7 +51,7 @@ import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
-import nitezh.ministock.activities.widget.AppWidgetProviderBase;
+import nitezh.ministock.activities.widget.WidgetProviderBase;
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.WidgetRepository;
 import nitezh.ministock.utils.DateTools;
@@ -443,7 +443,7 @@ public class PreferencesActivity extends PreferenceActivity implements SharedPre
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 // Update all widgets and quit
-                AppWidgetProviderBase.updateWidgets(getApplicationContext(), AppWidgetProviderBase.VIEW_UPDATE);
+                WidgetProviderBase.updateWidgets(getApplicationContext(), WidgetProviderBase.VIEW_UPDATE);
                 finish();
                 return true;
             }
@@ -669,9 +669,9 @@ public class PreferencesActivity extends PreferenceActivity implements SharedPre
         // flag is true then do a web update, otherwise do a regular update
         if (mStocksDirty) {
             mStocksDirty = false;
-            AppWidgetProviderBase.updateWidgets(getApplicationContext(), AppWidgetProviderBase.VIEW_UPDATE);
+            WidgetProviderBase.updateWidgets(getApplicationContext(), WidgetProviderBase.VIEW_UPDATE);
         } else {
-            AppWidgetProviderBase.update(getApplicationContext(), mAppWidgetId, AppWidgetProviderBase.VIEW_NO_UPDATE);
+            WidgetProviderBase.update(getApplicationContext(), mAppWidgetId, WidgetProviderBase.VIEW_NO_UPDATE);
         }
         finish();
     }

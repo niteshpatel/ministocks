@@ -36,7 +36,7 @@ import android.view.KeyEvent;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
-import nitezh.ministock.activities.widget.AppWidgetProviderBase;
+import nitezh.ministock.activities.widget.WidgetProviderBase;
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.WidgetRepository;
 
@@ -76,7 +76,7 @@ abstract class ConfigureActivityBase extends Activity {
             widgetStorage.putString("Stock1_summary", "Dow Jones Industrial Average");
             widgetStorage.apply();
             // Finally update
-            AppWidgetProviderBase.update(getApplicationContext(), appWidgetId, AppWidgetProviderBase.VIEW_UPDATE);
+            WidgetProviderBase.update(getApplicationContext(), appWidgetId, WidgetProviderBase.VIEW_UPDATE);
         }
         finish();
     }
@@ -88,7 +88,7 @@ abstract class ConfigureActivityBase extends Activity {
         this.setVisible(false);
         // Create an alert box that informs the user how to access Setup
         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-        alertDialog.setTitle("MinistocksActivity AppWidgetProvider Added");
+        alertDialog.setTitle("Ministocks Widget Added");
         alertDialog.setMessage("Touch the left side of the widget to view setup options.");
         // Set the close button text, we have to specify an empty onClick
         // handler, even though onDismiss will handle the widget setup

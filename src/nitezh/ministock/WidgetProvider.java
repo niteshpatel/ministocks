@@ -22,8 +22,10 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock.activities.widget;
+package nitezh.ministock;
+
+import nitezh.ministock.activities.widget.WidgetProvider_1x2;
 
 
-public class AppWidgetProvider_1x4 extends AppWidgetProviderBase {
+public class WidgetProvider extends WidgetProvider_1x2 {
 }
