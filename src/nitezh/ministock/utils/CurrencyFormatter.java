@@ -109,7 +109,6 @@ public class CurrencyFormatter {
         charMap.put("TWD", "$");
     }
 
-    // Determine currency symbol from exchange
     private static String getCurrencyForSymbol(String symbol) {
         String currencyChar = null;
         int index = symbol.indexOf(".");

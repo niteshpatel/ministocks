@@ -35,6 +35,7 @@ public class NumberTools {
             return String.format("%." + 2 + "f", Double.parseDouble(s));
         } catch (Exception ignored) {
         }
+
         return s;
     }
 
