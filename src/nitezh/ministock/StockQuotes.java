@@ -25,12 +25,14 @@
 package nitezh.ministock;
 
 import android.content.Context;
-import nitezh.ministock.DataSource.StockField;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+
+import nitezh.ministock.DataSource.StockField;
 
 class StockQuotes {
 
@@ -84,6 +86,9 @@ class StockQuotes {
             // If the query string is not empty add a '+'
             if (!sQuery.toString().equals(""))
                 sQuery.append("+");
+            if (s == "^DJI") {
+                s = "INDU";
+            }
             sQuery.append(s);
         }
 
