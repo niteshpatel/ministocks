@@ -86,7 +86,7 @@ class StockQuotes {
             // If the query string is not empty add a '+'
             if (!sQuery.toString().equals(""))
                 sQuery.append("+");
-            if (s == "^DJI") {
+            if (s.equals("^DJI")) {
                 s = "INDU";
             }
             sQuery.append(s);
