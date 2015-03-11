@@ -24,8 +24,6 @@
 
 package nitezh.ministock.domain;
 
-import android.content.Context;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +33,6 @@ import java.util.List;
 import java.util.Set;
 
 import nitezh.ministock.Cache;
-import nitezh.ministock.PreferenceCache;
 import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
 import nitezh.ministock.dataaccess.FxChangeRepository;
@@ -51,17 +48,20 @@ public class StockQuoteRepository {
     private static HashMap<String, StockQuote> mCachedQuotes;
     private final YahooStockQuoteRepository yahooRepository;
     private final GoogleStockQuoteRepository googleRepository;
-    private final WidgetRepository widgetRepository;
-    private final Storage appStorage;
 
-    public StockQuoteRepository(Storage appStorage, WidgetRepository widgetRepository) {
+    private final Storage appStorage;
+    private final Cache appCache;
+    private final WidgetRepository widgetRepository;
+
+    public StockQuoteRepository(Storage appStorage, Cache appCache, WidgetRepository widgetRepository) {
         this.yahooRepository = new YahooStockQuoteRepository(new FxChangeRepository());
         this.googleRepository = new GoogleStockQuoteRepository();
         this.appStorage = appStorage;
+        this.appCache = appCache;
         this.widgetRepository = widgetRepository;
     }
 
-    public HashMap<String, StockQuote> getLiveQuotes(Cache cache, List<String> symbols) {
+    public HashMap<String, StockQuote> getLiveQuotes(List<String> symbols) {
         HashMap<String, StockQuote> allQuotes = new HashMap<>();
 
         List<String> yahooSymbols = new ArrayList<>(symbols);
@@ -69,22 +69,22 @@ public class StockQuoteRepository {
         yahooSymbols.removeAll(GOOGLE_SYMBOLS);
         googleSymbols.retainAll(GOOGLE_SYMBOLS);
 
-        HashMap<String, StockQuote> yahooQuotes = this.yahooRepository.getQuotes(cache, yahooSymbols);
-        HashMap<String, StockQuote> googleQuotes = this.googleRepository.getQuotes(cache, googleSymbols);
+        HashMap<String, StockQuote> yahooQuotes = this.yahooRepository.getQuotes(this.appCache, yahooSymbols);
+        HashMap<String, StockQuote> googleQuotes = this.googleRepository.getQuotes(this.appCache, googleSymbols);
         if (yahooQuotes != null) allQuotes.putAll(yahooQuotes);
         if (googleQuotes != null) allQuotes.putAll(googleQuotes);
 
         return allQuotes;
     }
 
-    public HashMap<String, StockQuote> getQuotes(Context context, List<String> symbols, boolean noCache) {
+    public HashMap<String, StockQuote> getQuotes(List<String> symbols, boolean noCache) {
         HashMap<String, StockQuote> quotes = new HashMap<>();
 
         if (noCache) {
             Set<String> widgetSymbols = this.widgetRepository.getWidgetsStockSymbols();
-            widgetSymbols.add("^DJI");
+            widgetSymbols.add(".DJI");
             widgetSymbols.addAll(UserData.getPortfolioStockMap(this.appStorage).keySet());
-            quotes = getLiveQuotes(new PreferenceCache(context), symbols);
+            quotes = getLiveQuotes(symbols);
         }
 
         if (quotes.isEmpty()) {
@@ -96,7 +96,7 @@ public class StockQuoteRepository {
         }
 
         // Returns only quotes requested
-        quotes.keySet().retainAll(Arrays.asList(symbols));
+        quotes.keySet().retainAll(symbols);
         return quotes;
     }
 

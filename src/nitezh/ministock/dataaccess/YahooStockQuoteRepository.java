@@ -32,8 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import nitezh.ministock.Cache;
-import nitezh.ministock.utils.UrlDataTools;
 import nitezh.ministock.domain.StockQuote;
+import nitezh.ministock.utils.UrlDataTools;
 
 
 public class YahooStockQuoteRepository {
@@ -55,18 +55,20 @@ public class YahooStockQuoteRepository {
 
         try {
             jsonArray = this.retrieveQuotesAsJson(cache, symbols);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                quoteJson = jsonArray.getJSONObject(i);
-                StockQuote quote = new StockQuote(
-                        quoteJson.optString("symbol"),
-                        quoteJson.optString("price"),
-                        quoteJson.optString("change"),
-                        quoteJson.optString("percent"),
-                        quoteJson.optString("exchange"),
-                        quoteJson.optString("volume"),
-                        quoteJson.optString("name"),
-                        fxChanges.get(quoteJson.optString("symbol")));
-                quotes.put(quote.getSymbol(), quote);
+            if (jsonArray != null) {
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    quoteJson = jsonArray.getJSONObject(i);
+                    StockQuote quote = new StockQuote(
+                            quoteJson.optString("symbol"),
+                            quoteJson.optString("price"),
+                            quoteJson.optString("change"),
+                            quoteJson.optString("percent"),
+                            quoteJson.optString("exchange"),
+                            quoteJson.optString("volume"),
+                            quoteJson.optString("name"),
+                            fxChanges.get(quoteJson.optString("symbol")));
+                    quotes.put(quote.getSymbol(), quote);
+                }
             }
         } catch (JSONException e) {
             return null;

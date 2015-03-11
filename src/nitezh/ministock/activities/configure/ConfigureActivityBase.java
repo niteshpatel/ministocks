@@ -72,7 +72,7 @@ abstract class ConfigureActivityBase extends Activity {
             Storage widgetStorage = widgetRepository.getWidget(appWidgetId).getStorage();
             if (widgetSize == 0 || widgetSize == 2)
                 widgetStorage.putBoolean("show_percent_change", true);
-            widgetStorage.putString("Stock1", "^DJI");
+            widgetStorage.putString("Stock1", ".DJI");
             widgetStorage.putString("Stock1_summary", "Dow Jones Industrial Average");
             widgetStorage.apply();
             // Finally update

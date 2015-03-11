@@ -24,6 +24,7 @@
 
 package nitezh.ministock.tests.mocks;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import nitezh.ministock.domain.Widget;
@@ -39,7 +40,7 @@ public class MockWidgetRepository implements WidgetRepository {
 
     @Override
     public Set<String> getWidgetsStockSymbols() {
-        return null;
+        return new HashSet<>();
     }
 
     @Override

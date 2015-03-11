@@ -45,6 +45,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import nitezh.ministock.PreferenceCache;
 import nitezh.ministock.WidgetProvider;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
@@ -574,7 +575,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         }
         // Ensure widget is not empty
         if (!found) {
-            stocks[0] = "^DJI";
+            stocks[0] = ".DJI";
         }
         // Retrieve portfolio stocks
         Storage storage = PreferenceStorage.getInstance(context);
@@ -614,7 +615,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
             widgetStorage.putInt("widgetView", widgetView);
             widgetStorage.apply();
         }
-        StockQuoteRepository dataSource = new StockQuoteRepository(appStorage, widgetRepository);
+        StockQuoteRepository dataSource = new StockQuoteRepository(appStorage, new PreferenceCache(context), widgetRepository);
         String quotesTimeStamp = dataSource.getTimeStamp();
         // If we have stock data then update the widget view
         if (!quotes.isEmpty()) {
@@ -981,8 +982,8 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
             String[] symbols = (String[]) params[3];
             Storage appStorage = PreferenceStorage.getInstance(context);
             WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
-            StockQuoteRepository dataSource = new StockQuoteRepository(appStorage, widgetRepository);
-            HashMap<String, StockQuote> quotes = dataSource.getQuotes(context,
+            StockQuoteRepository dataSource = new StockQuoteRepository(appStorage, new PreferenceCache(context), widgetRepository);
+            HashMap<String, StockQuote> quotes = dataSource.getQuotes(
                     Arrays.asList(symbols), updateMode == VIEW_UPDATE);
             updateWidget(context, appWidgetId, updateMode, quotes);
             return null;

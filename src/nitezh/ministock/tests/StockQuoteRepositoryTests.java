@@ -43,12 +43,32 @@ public class StockQuoteRepositoryTests extends TestCase {
 
     public void setUp() {
 
-        this.stockRepository = new StockQuoteRepository(new MockStorage(), new MockWidgetRepository());
+        this.stockRepository = new StockQuoteRepository(new MockStorage(), new MockCache(), new MockWidgetRepository());
     }
 
     public void testGetLiveQuotes() {
         List<String> symbols = Arrays.asList("AAPL", "GOOG", ".DJI", ".IXIC");
-        HashMap<String, StockQuote> quotes = this.stockRepository.getLiveQuotes(new MockCache(), symbols);
+        HashMap<String, StockQuote> quotes = this.stockRepository.getLiveQuotes(symbols);
+        assertEquals(4, quotes.size());
+        StockQuote aaplQuote = quotes.get("AAPL");
+        assertEquals("AAPL", aaplQuote.getSymbol());
+        assertEquals("NasdaqNM", aaplQuote.getExchange());
+        assertEquals("Apple Inc.", aaplQuote.getName());
+        StockQuote googQuote = quotes.get("GOOG");
+        assertEquals("GOOG", googQuote.getSymbol());
+        assertEquals("NasdaqNM", googQuote.getExchange());
+        assertEquals("Google Inc.", googQuote.getName());
+        StockQuote djiQuote = quotes.get(".DJI");
+        assertEquals(".DJI", djiQuote.getSymbol());
+        assertEquals("DJX", djiQuote.getExchange());
+        StockQuote ixicQuote = quotes.get(".IXIC");
+        assertEquals(".IXIC", ixicQuote.getSymbol());
+        assertEquals("NASDAQ", ixicQuote.getExchange());
+    }
+
+    public void testGetQuotes(){
+        List<String> symbols = Arrays.asList("AAPL", "GOOG", ".DJI", ".IXIC");
+        HashMap<String, StockQuote> quotes = this.stockRepository.getQuotes(symbols, true);
         assertEquals(4, quotes.size());
         StockQuote aaplQuote = quotes.get("AAPL");
         assertEquals("AAPL", aaplQuote.getSymbol());

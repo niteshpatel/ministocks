@@ -33,7 +33,7 @@ public class MockStorage implements Storage {
 
     @Override
     public HashMap<String, ?> getAll() {
-        return null;
+        return new HashMap<>();
     }
 
     @Override
@@ -43,7 +43,7 @@ public class MockStorage implements Storage {
 
     @Override
     public String getString(String key, String defaultVal) {
-        return null;
+        return "";
     }
 
     @Override
@@ -53,27 +53,27 @@ public class MockStorage implements Storage {
 
     @Override
     public Storage putInt(String key, int value) {
-        return null;
+        return this;
     }
 
     @Override
     public Storage putString(String key, String value) {
-        return null;
+        return this;
     }
 
     @Override
     public Storage putBoolean(String key, Boolean value) {
-        return null;
+        return this;
     }
 
     @Override
     public Storage putFloat(String key, Float value) {
-        return null;
+        return this;
     }
 
     @Override
     public Storage putLong(String key, Long value) {
-        return null;
+        return this;
     }
 
     @Override
