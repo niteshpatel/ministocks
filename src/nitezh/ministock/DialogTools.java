@@ -41,10 +41,15 @@ import java.util.concurrent.Callable;
 public class DialogTools {
 
     public static void showSimpleDialog(Context context, String title, String body) {
-        alertWithCallback(context, title, body, "Close", null, null);
+        alertWithCallback(context, title, body, "Close", null, null, null);
     }
 
-    public static void alertWithCallback(Context context, String title, String body, String positiveButtonText, String negativeButtonText, final Callable<?> callable) {
+
+    public static void alertWithCallback(Context context, String title, String body,
+                                         String positiveButtonText,
+                                         String negativeButtonText,
+                                         final Callable<?> positiveCallback,
+                                         final Callable<?> dismissCallaback) {
         // Create dialog
         AlertDialog alertDialog = new AlertDialog.Builder(context).create();
         alertDialog.setTitle(title);
@@ -66,12 +71,10 @@ public class DialogTools {
         alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, positiveButtonText, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (callable != null) {
+                if (positiveCallback != null) {
                     try {
-                        callable.call();
-                    } catch (Exception e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        positiveCallback.call();
+                    } catch (Exception ignored) {
                     }
                 }
             }
@@ -84,9 +87,16 @@ public class DialogTools {
                 }
             });
         }
+        // Optional dismiss handler
         alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
+                if (dismissCallaback != null) {
+                    try {
+                        dismissCallaback.call();
+                    } catch (Exception ignored) {
+                    }
+                }
             }
         });
         alertDialog.show();

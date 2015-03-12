@@ -44,4 +44,25 @@ public class MockWidget implements Widget {
     public JSONObject getWidgetPreferencesAsJson() {
         return new JSONObject();
     }
+
+    @Override
+    public void setSize(int size) {
+    }
+
+    @Override
+    public void setPercentChange(boolean b) {
+    }
+
+    @Override
+    public void setStock1(String s) {
+    }
+
+    @Override
+    public void setStock1Summary(String s) {
+    }
+
+    @Override
+    public void save() {
+
+    }
 }

@@ -46,12 +46,12 @@ import java.util.Date;
 import java.util.HashMap;
 
 import nitezh.ministock.PreferenceCache;
-import nitezh.ministock.WidgetProvider;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
 import nitezh.ministock.UserData.PortfolioField;
+import nitezh.ministock.WidgetProvider;
 import nitezh.ministock.activities.PreferencesActivity;
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.StockQuote;
@@ -549,7 +549,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
 
     private static void updateWidget(Context context, int appWidgetId, int updateMode, HashMap<String, StockQuote> quotes) {
         Storage appStorage = PreferenceStorage.getInstance(context);
-        WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
+        WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
 
         // Get widget SharedPreferences
         Storage widgetStorage = widgetRepository.getWidget(appWidgetId).getStorage();
@@ -803,7 +803,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
     public static void update(Context context, int appWidgetId, int updateMode) {
         // Get widget SharedPreferences
         Storage storage = PreferenceStorage.getInstance(context);
-        WidgetRepository widgetRepository = new AndroidWidgetRepository(context, storage);
+        WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
         Storage prefs = widgetRepository.getWidget(appWidgetId).getStorage();
         // Choose between two widget sizes
         int widgetSize = prefs.getInt("widgetSize", 0);
@@ -830,7 +830,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
 
     public static void updateWidgets(Context context, int updateMode) {
         Storage storage = PreferenceStorage.getInstance(context);
-        WidgetRepository widgetRepository = new AndroidWidgetRepository(context, storage);
+        WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
         for (int appWidgetId : widgetRepository.getIds())
             WidgetProviderBase.update(context, appWidgetId, updateMode);
 
@@ -902,6 +902,12 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         alarmManager.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), interval, pendingIntent);
     }
 
+    private static void cancelAlarmManager(Context context) {
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ALARM_UPDATE), 0);
+        alarmManager.cancel(pendingIntent);
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
@@ -940,7 +946,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         // Reset alarm manager if needed
         updateAlarmManager(context);
         Storage storage = PreferenceStorage.getInstance(context);
-        WidgetRepository widgetRepository = new AndroidWidgetRepository(context, storage);
+        WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
         for (int i : widgetRepository.getIds())
             update(context, i, VIEW_NO_UPDATE);
     }
@@ -956,20 +962,15 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
     public void onDeleted(Context context, int[] appWidgetIds) {
         super.onDeleted(context, appWidgetIds);
 
-        Storage storage = PreferenceStorage.getInstance(context);
-        // Remove the appWidgetIds from our preferences
+        WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
         for (int appWidgetId : appWidgetIds) {
-            UserData.delAppWidgetId(context, appWidgetId);
+            widgetRepository.delWidgetId(context, appWidgetId);
         }
-        // Cleanup preferences files
-        UserData.cleanupPreferenceFiles(context, storage);
-        // Stop the AlarmManager if there are no more widgetIds
-        WidgetRepository widgetRepository = new AndroidWidgetRepository(context, storage);
-        if (widgetRepository.getIds().length == 0) {
-            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ALARM_UPDATE), 0);
-            alarmManager.cancel(pendingIntent);
+        if (widgetRepository.isEmpty()) {
+            cancelAlarmManager(context);
         }
+
+        UserData.cleanupPreferenceFiles(context, PreferenceStorage.getInstance(context));
     }
 
     private static class GetDataTask extends AsyncTask<Object, Void, Void> {
@@ -981,7 +982,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
             int updateMode = (Integer) params[2];
             String[] symbols = (String[]) params[3];
             Storage appStorage = PreferenceStorage.getInstance(context);
-            WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
+            WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
             StockQuoteRepository dataSource = new StockQuoteRepository(appStorage, new PreferenceCache(context), widgetRepository);
             HashMap<String, StockQuote> quotes = dataSource.getQuotes(
                     Arrays.asList(symbols), updateMode == VIEW_UPDATE);

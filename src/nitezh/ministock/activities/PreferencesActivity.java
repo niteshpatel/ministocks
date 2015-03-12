@@ -57,8 +57,11 @@ import nitezh.ministock.domain.WidgetRepository;
 import nitezh.ministock.utils.DateTools;
 import nitezh.ministock.utils.VersionTools;
 
+import static android.content.SharedPreferences.Editor;
+import static android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 
-public class PreferencesActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+public class PreferencesActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
     // Constants
     private static final int STRING_TYPE = 0;
@@ -139,7 +142,7 @@ public class PreferencesActivity extends PreferenceActivity implements SharedPre
             public Object call() throws Exception {
                 // Ensure we don't show this again
                 SharedPreferences preferences = getAppPreferences();
-                SharedPreferences.Editor editor = preferences.edit();
+                Editor editor = preferences.edit();
                 editor.putString("change_log_viewed", VersionTools.BUILD);
 
                 // Set first install if not set
@@ -150,7 +153,8 @@ public class PreferencesActivity extends PreferenceActivity implements SharedPre
                 return new Object();
             }
         };
-        DialogTools.alertWithCallback(this, "BUILD " + VersionTools.BUILD, getChangeLog(), "Close", null, callable);
+        DialogTools.alertWithCallback(this, "BUILD " + VersionTools.BUILD,
+                getChangeLog(), "Close", null, callable, null);
     }
 
     @Override
@@ -162,11 +166,13 @@ public class PreferencesActivity extends PreferenceActivity implements SharedPre
 
         // Add this widgetId if we don't have it
         Set<Integer> appWidgetIds = new HashSet<Integer>();
-        WidgetRepository repository = new AndroidWidgetRepository(getBaseContext(), new PreferenceStorage(getAppPreferences()));
-        for (int i : repository.getIds())
+        WidgetRepository repository = new AndroidWidgetRepository(getBaseContext());
+        for (int i : repository.getIds()) {
             appWidgetIds.add(i);
-        if (!appWidgetIds.contains(mAppWidgetId))
-            UserData.addAppWidgetId(getBaseContext(), mAppWidgetId, null);
+        }
+        if (!appWidgetIds.contains(mAppWidgetId)) {
+            repository.addWidgetId(mAppWidgetId);
+        }
 
         // Hide preferences for certain widget sizes
         int widgetSize = sharedPreferences.getInt("widgetSize", 0);
@@ -244,7 +250,7 @@ public class PreferencesActivity extends PreferenceActivity implements SharedPre
         String value = sharedPreferences.getString(key, "");
         value = value.replace(" ", "");
         value = value.toUpperCase();
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Editor editor = sharedPreferences.edit();
         editor.putString(key, value);
         editor.apply();
 
@@ -261,7 +267,7 @@ public class PreferencesActivity extends PreferenceActivity implements SharedPre
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 
         // Update the widget preferences with the interval
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Editor editor = sharedPreferences.edit();
         if (valType == STRING_TYPE) {
             String value = getAppPreferences().getString(key, "");
             if (!value.equals("")) {
@@ -289,7 +295,7 @@ public class PreferencesActivity extends PreferenceActivity implements SharedPre
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 
         // Update the global preferences with the widget update interval
-        SharedPreferences.Editor editor = getAppPreferences().edit();
+        Editor editor = getAppPreferences().edit();
         if (valType == STRING_TYPE || valType == LIST_TYPE)
             editor.putString(key, sharedPreferences.getString(key, ""));
         else if (valType == CHECKBOX_TYPE)
@@ -342,7 +348,7 @@ public class PreferencesActivity extends PreferenceActivity implements SharedPre
     void setTimePickerPreference(int hourOfDay, int minute) {
         // Set the preference value
         SharedPreferences preferences = getPreferenceScreen().getSharedPreferences();
-        SharedPreferences.Editor editor = preferences.edit();
+        Editor editor = preferences.edit();
         editor.putString(mTimePickerKey, String.valueOf(hourOfDay) + ":" + String.valueOf(minute));
         editor.apply();
 
@@ -366,7 +372,7 @@ public class PreferencesActivity extends PreferenceActivity implements SharedPre
         }
         // Set dirty
         mStocksDirty = true;
-        SharedPreferences.Editor editor = preferences.edit();
+        Editor editor = preferences.edit();
         editor.putString(key, value);
         editor.putString(key + "_summary", summary);
         editor.apply();
@@ -702,6 +708,8 @@ public class PreferencesActivity extends PreferenceActivity implements SharedPre
                 return new Object();
             }
         };
-        DialogTools.alertWithCallback(this, "Rate MinistocksActivity", "Please support MinistocksActivity by giving the application a 5 star rating in the android market.<br /><br />Motivation to continue to improve the product and add new features comes from positive feedback and ratings.", "Rate it!", "Close", callable);
+        DialogTools.alertWithCallback(this, "Rate MinistocksActivity",
+                "Please support MinistocksActivity by giving the application a 5 star rating in the android market.<br /><br />Motivation to continue to improve the product and add new features comes from positive feedback and ratings.",
+                "Rate it!", "Close", callable, null);
     }
 }

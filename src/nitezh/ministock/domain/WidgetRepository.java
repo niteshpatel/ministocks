@@ -24,14 +24,24 @@
 
 package nitezh.ministock.domain;
 
+import android.content.Context;
+
 import java.util.Set;
 
 
 public interface WidgetRepository {
 
-    int[] getIds();
+    java.util.List<Integer> getIds();
+
+    boolean isEmpty();
 
     Set<String> getWidgetsStockSymbols();
 
-    Widget getWidget(int appWidgetId);
+    void delWidgetId(Context context, int id);
+
+    Widget getWidget(int id);
+
+    Widget addWidget(int id, int size);
+
+    void addWidgetId(int id);
 }

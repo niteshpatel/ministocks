@@ -42,20 +42,20 @@ import nitezh.ministock.Storage;
 public class AndroidWidget implements Widget {
 
     private final Storage storage;
-    private final int appWidgetId;
     private final Context context;
+    private final int id;
 
-    public AndroidWidget(Context context, int appWidgetId) {
+    public AndroidWidget(Context context, int id) {
         this.context = context;
-        this.storage = getStorage();
-        this.appWidgetId = appWidgetId;
+        this.storage = this.getStorage();
+        this.id = id;
     }
 
     @Override
     public Storage getStorage() {
         SharedPreferences widgetPreferences = null;
         try {
-            widgetPreferences = context.getSharedPreferences(context.getString(R.string.prefs_name) + this.appWidgetId, 0);
+            widgetPreferences = context.getSharedPreferences(context.getString(R.string.prefs_name) + this.id, 0);
         } catch (Resources.NotFoundException ignored) {
         }
 
@@ -97,5 +97,33 @@ public class AndroidWidget implements Widget {
         }
 
         return jsonPrefs;
+    }
+
+    @Override
+    public void setSize(int size) {
+        this.storage.putInt("widgetSize", size);
+        if (size == 0 || size == 2) {
+            this.setPercentChange(true);
+        }
+    }
+
+    @Override
+    public void setPercentChange(boolean b) {
+        this.storage.putBoolean("show_percent_change", true);
+    }
+
+    @Override
+    public void setStock1(String s) {
+        this.storage.putString("Stock1", ".DJI");
+    }
+
+    @Override
+    public void setStock1Summary(String s) {
+        this.storage.putString("Stock1_summary", "Dow Jones Industrial Average");
+    }
+
+    @Override
+    public void save() {
+        this.storage.apply();
     }
 }

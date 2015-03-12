@@ -26,9 +26,14 @@ package nitezh.ministock.domain;
 
 import android.content.Context;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.Storage;
 
 
@@ -37,34 +42,89 @@ public class AndroidWidgetRepository implements WidgetRepository {
     private final Context context;
     private final Storage appStorage;
 
-    public AndroidWidgetRepository(Context context, Storage appStorage) {
+    public AndroidWidgetRepository(Context context) {
         this.context = context;
-        this.appStorage = appStorage;
+        this.appStorage = PreferenceStorage.getInstance(context);
     }
 
     @Override
-    public Widget getWidget(int appWidgetId) {
-        return new AndroidWidget(this.context, appWidgetId);
+    public void delWidgetId(Context context, int appWidgetId) {
+        // Get the existing widgetIds from the storage
+        PreferenceStorage storage = PreferenceStorage.getInstance(context);
+        ArrayList<String> newAppWidgetIds = new ArrayList<>();
+        Collections.addAll(newAppWidgetIds, storage.getString("appWidgetIds", "").split(","));
+
+        // Remove the one to remove
+        newAppWidgetIds.remove(String.valueOf(appWidgetId));
+
+        // Add the new appWidgetId
+        StringBuilder appWidgetIds = new StringBuilder();
+        for (String id : newAppWidgetIds)
+            appWidgetIds.append(id).append(",");
+
+        // Remove trailing comma
+        if (appWidgetIds.length() > 0)
+            appWidgetIds.deleteCharAt(appWidgetIds.length() - 1);
+
+        // Update the storage too
+        storage.putString("appWidgetIds", appWidgetIds.toString());
+        storage.apply();
     }
 
     @Override
-    public int[] getIds() {
+    public Widget getWidget(int id) {
+        return new AndroidWidget(this.context, id);
+    }
+
+    @Override
+    public Widget addWidget(int id, int size) {
+        Widget widget = getWidget(id);
+        widget.setSize(size);
+        widget.setStock1(".DJI");
+        widget.setStock1Summary("Dow Jones Industrial Average");
+        widget.save();
+        return widget;
+    }
+
+    @Override
+    public void addWidgetId(int id) {
+        if (this.getIds().contains(id)) {
+            return;
+        }
+
+        StringBuilder rawIds = new StringBuilder();
+        rawIds.append(this.appStorage.getString("appWidgetIds", ""));
+        if (!rawIds.toString().equals("")) {
+            rawIds.append(",");
+        }
+        rawIds.append(String.valueOf(id));
+        this.appStorage.putString("appWidgetIds", rawIds.toString());
+        this.appStorage.apply();
+    }
+
+    @Override
+    public List<Integer> getIds() {
         StringBuilder rawAppWidgetIds = new StringBuilder();
         rawAppWidgetIds.append(this.appStorage.getString("appWidgetIds", ""));
-
-        // Create an array of appWidgetIds
         String[] appWidgetIds = rawAppWidgetIds.toString().split(",");
         int appWidgetIdsLength = 0;
         if (!rawAppWidgetIds.toString().equals("")) {
             appWidgetIdsLength = appWidgetIds.length;
         }
 
-        int[] savedAppWidgetIds = new int[appWidgetIdsLength];
-        for (int i = 0; i < appWidgetIds.length; i++)
-            if (!appWidgetIds[i].equals(""))
-                savedAppWidgetIds[i] = Integer.parseInt(appWidgetIds[i])
-                        ;
-        return savedAppWidgetIds;
+        Integer[] savedAppWidgetIds = new Integer[appWidgetIdsLength];
+        for (int i = 0; i < appWidgetIds.length; i++) {
+            if (!appWidgetIds[i].equals("")) {
+                savedAppWidgetIds[i] = Integer.parseInt(appWidgetIds[i]);
+            }
+        }
+
+        return Arrays.asList(savedAppWidgetIds);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return this.getIds().isEmpty();
     }
 
     @Override

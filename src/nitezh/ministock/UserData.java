@@ -38,7 +38,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -55,57 +54,6 @@ public class UserData {
     private static final HashMap<String, HashMap<PortfolioField, String>> mPortfolioStockMap = new HashMap<>();
     // Cache markers
     private static boolean mDirtyPortfolioStockMap = true;
-
-    public static void addAppWidgetSize(Context context, int appWidgetId, int widgetSize) {
-        Storage appStorage = PreferenceStorage.getInstance(context);
-        WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
-        Storage storage = widgetRepository.getWidget(appWidgetId).getStorage();
-        storage.putInt("widgetSize", widgetSize);
-        storage.apply();
-    }
-
-    public static void addAppWidgetId(Context context, int appWidgetId, Integer widgetSize) {
-        // Get the existing widgetIds from the preferences
-        PreferenceStorage storage = PreferenceStorage.getInstance(context);
-
-        // Add the new appWidgetId
-        StringBuilder rawAppWidgetIds = new StringBuilder();
-        rawAppWidgetIds.append(storage.getString("appWidgetIds", ""));
-        if (!rawAppWidgetIds.toString().equals(""))
-            rawAppWidgetIds.append(",");
-        rawAppWidgetIds.append(String.valueOf(appWidgetId));
-
-        // Update the preferences too
-        storage.putString("appWidgetIds", rawAppWidgetIds.toString());
-        storage.apply();
-
-        // Only add the widget size if provided
-        if (widgetSize != null)
-            addAppWidgetSize(context, appWidgetId, widgetSize);
-    }
-
-    public static void delAppWidgetId(Context context, int appWidgetId) {
-        // Get the existing widgetIds from the storage
-        PreferenceStorage storage = PreferenceStorage.getInstance(context);
-        ArrayList<String> newAppWidgetIds = new ArrayList<>();
-        Collections.addAll(newAppWidgetIds, storage.getString("appWidgetIds", "").split(","));
-
-        // Remove the one to remove
-        newAppWidgetIds.remove(String.valueOf(appWidgetId));
-
-        // Add the new appWidgetId
-        StringBuilder appWidgetIds = new StringBuilder();
-        for (String id : newAppWidgetIds)
-            appWidgetIds.append(id).append(",");
-
-        // Remove trailing comma
-        if (appWidgetIds.length() > 0)
-            appWidgetIds.deleteCharAt(appWidgetIds.length() - 1);
-
-        // Update the storage too
-        storage.putString("appWidgetIds", appWidgetIds.toString());
-        storage.apply();
-    }
 
     public static HashMap<String, HashMap<PortfolioField, String>> getPortfolioStockMap(Storage storage) {
         // If data is unchanged return cached version
@@ -239,7 +187,7 @@ public class UserData {
 
         // Shared preferences is never deleted
         l.add(context.getString(R.string.prefs_name) + ".xml");
-        WidgetRepository repository = new AndroidWidgetRepository(context, storage);
+        WidgetRepository repository = new AndroidWidgetRepository(context);
         for (int id : repository.getIds())
             l.add(context.getString(R.string.prefs_name) + id + ".xml");
 
@@ -264,7 +212,8 @@ public class UserData {
         writeInternalStorage(context, rawJson, PORTFOLIO_JSON);
 
         // Show confirmation to user
-        DialogTools.showSimpleDialog(context, "PortfolioActivity backed up", "Your portfolio settings have been backed up to internal storage.");
+        DialogTools.showSimpleDialog(context, "PortfolioActivity backed up",
+                "Your portfolio settings have been backed up to internal storage.");
     }
 
     public static void restorePortfolio(Context context) {
@@ -278,7 +227,8 @@ public class UserData {
         mDirtyPortfolioStockMap = true;
 
         // Show confirmation to user
-        DialogTools.showSimpleDialog(context, "PortfolioActivity restored", "Your portfolio settings have been restored from internal storage.");
+        DialogTools.showSimpleDialog(context, "PortfolioActivity restored",
+                "Your portfolio settings have been restored from internal storage.");
     }
 
     public static void backupWidget(Context context, int appWidgetId, String backupName) {
@@ -290,8 +240,7 @@ public class UserData {
                 backupContainer = new JSONObject(rawJson);
             }
             // Now get data for current widget, append to existing data and write to storage
-            Storage appStorage = PreferenceStorage.getInstance(context);
-            WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
+            WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
             JSONObject backupJson = widgetRepository.getWidget(appWidgetId).getWidgetPreferencesAsJson();
             backupContainer.put(backupName, backupJson);
             writeInternalStorage(context, backupContainer.toString(), WIDGET_JSON);
@@ -305,8 +254,7 @@ public class UserData {
             JSONObject backupContainer = new JSONObject(readInternalStorage(context, WIDGET_JSON));
 
             // Update widget with preferences from backup
-            Storage appStorage = PreferenceStorage.getInstance(context);
-            WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
+            WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
             widgetRepository.getWidget(appWidgetId).setWidgetPreferencesFromJson(backupContainer.getJSONObject(backupName));
 
             // Show confirmation to user

@@ -87,7 +87,7 @@ public class PortfolioActivity extends Activity {
         // Add any missing stocks from the widget stocks map to our local
         // portfolio stocks map
         Storage appStorage = PreferenceStorage.getInstance(this);
-        WidgetRepository repository = new AndroidWidgetRepository(this, appStorage);
+        WidgetRepository repository = new AndroidWidgetRepository(this);
         mPortfolioStockMap = UserData.getPortfolioStockMap(appStorage);
         mWidgetsStockMap = repository.getWidgetsStockSymbols();
         for (String symbol : mWidgetsStockMap) {
@@ -271,7 +271,7 @@ public class PortfolioActivity extends Activity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         if (item.getItemId() == 1) {
-            @SuppressWarnings("rawtypes") Callable callable = new Callable() {
+            Callable callable = new Callable() {
                 @Override
                 public Object call() throws Exception {
                     updatePortfolioStock();
@@ -279,7 +279,9 @@ public class PortfolioActivity extends Activity {
                     return new Object();
                 }
             };
-            DialogTools.alertWithCallback(this, "Confirm Delete", "Clear portfolio info for " + mStockSymbol + "?", "Delete", "Cancel", callable);
+            DialogTools.alertWithCallback(this, "Confirm Delete",
+                    "Clear portfolio info for " + mStockSymbol + "?", "Delete", "Cancel",
+                    callable, null);
         } else if (item.getItemId() == 0) {
             AdapterContextMenuInfo menuInfo = ((AdapterView.AdapterContextMenuInfo) item.getMenuInfo());
             showPortfolioItemEdit(mPortfolioList, menuInfo.position);

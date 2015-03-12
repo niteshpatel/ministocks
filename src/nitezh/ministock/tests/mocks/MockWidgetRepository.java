@@ -24,7 +24,11 @@
 
 package nitezh.ministock.tests.mocks;
 
+import android.content.Context;
+
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import nitezh.ministock.domain.Widget;
@@ -34,8 +38,13 @@ import nitezh.ministock.domain.WidgetRepository;
 public class MockWidgetRepository implements WidgetRepository {
 
     @Override
-    public int[] getIds() {
-        return new int[0];
+    public List<Integer> getIds() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
     }
 
     @Override
@@ -44,7 +53,21 @@ public class MockWidgetRepository implements WidgetRepository {
     }
 
     @Override
-    public Widget getWidget(int appWidgetId) {
+    public void delWidgetId(Context context, int id) {
+
+    }
+
+    @Override
+    public Widget getWidget(int id) {
         return new MockWidget();
+    }
+
+    @Override
+    public Widget addWidget(int id, int size) {
+        return this.getWidget(id);
+    }
+
+    @Override
+    public void addWidgetId(int id) {
     }
 }

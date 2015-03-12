@@ -25,20 +25,16 @@
 package nitezh.ministock.activities.configure;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 
-import nitezh.ministock.PreferenceStorage;
-import nitezh.ministock.Storage;
-import nitezh.ministock.UserData;
+import java.util.concurrent.Callable;
+
+import nitezh.ministock.DialogTools;
 import nitezh.ministock.activities.widget.WidgetProviderBase;
 import nitezh.ministock.domain.AndroidWidgetRepository;
-import nitezh.ministock.domain.WidgetRepository;
 
 
 abstract class ConfigureActivityBase extends Activity {
@@ -47,13 +43,14 @@ abstract class ConfigureActivityBase extends Activity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // Setup the widget if the back button is pressed
-        if (keyCode == KeyEvent.KEYCODE_BACK)
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             setupWidget(0);
+        }
+
         return super.onKeyDown(keyCode, event);
     }
 
-    void setupWidget(int widgetSize) {
+    void setupWidget(int size) {
         // Update the widget when we end configuration
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -61,21 +58,8 @@ abstract class ConfigureActivityBase extends Activity {
             Intent resultValue = new Intent();
             resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             setResult(RESULT_OK, resultValue);
-            // Add the appWidgetId to our list of added appWidgetIds
-            // and add default preferences (view and Stock1)
-            Context context = getBaseContext();
-            UserData.addAppWidgetSize(context, appWidgetId, widgetSize);
-            Storage appStorage = PreferenceStorage.getInstance(context);
-            WidgetRepository widgetRepository = new AndroidWidgetRepository(context, appStorage);
 
-            // Get widget SharedPreferences
-            Storage widgetStorage = widgetRepository.getWidget(appWidgetId).getStorage();
-            if (widgetSize == 0 || widgetSize == 2)
-                widgetStorage.putBoolean("show_percent_change", true);
-            widgetStorage.putString("Stock1", ".DJI");
-            widgetStorage.putString("Stock1_summary", "Dow Jones Industrial Average");
-            widgetStorage.apply();
-            // Finally update
+            new AndroidWidgetRepository(getBaseContext()).addWidget(appWidgetId, size);
             WidgetProviderBase.update(getApplicationContext(), appWidgetId, WidgetProviderBase.VIEW_UPDATE);
         }
         finish();
@@ -84,25 +68,15 @@ abstract class ConfigureActivityBase extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Hide the activity
+
         this.setVisible(false);
-        // Create an alert box that informs the user how to access Setup
-        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-        alertDialog.setTitle("Ministocks Widget Added");
-        alertDialog.setMessage("Touch the left side of the widget to view setup options.");
-        // Set the close button text, we have to specify an empty onClick
-        // handler, even though onDismiss will handle the widget setup
-        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Close", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            }
-        });
-        alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                setupWidget(mWidgetSize);
-            }
-        });
-        alertDialog.show();
+        DialogTools.alertWithCallback(this, "Ministocks Widget Added",
+                "Touch the left side of the widget to view setup options.", "Close", null, null,
+                new Callable() {
+                    public Object call() throws Exception {
+                        setupWidget(mWidgetSize);
+                        return new Object();
+                    }
+                });
     }
 }
