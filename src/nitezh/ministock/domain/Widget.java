@@ -14,6 +14,7 @@ public interface Widget {
 
     void setSize(int size);
 
+    @SuppressWarnings("UnusedDeclaration")
     void setPercentChange(boolean b);
 
     void setStock1(String s);

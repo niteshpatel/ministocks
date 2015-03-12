@@ -55,7 +55,7 @@ public abstract class Cache {
             if (item.getLong("expiry") > Calendar.getInstance().getTimeInMillis()) {
                 return item.getString("value");
             }
-        } catch (JSONException e) {
+        } catch (JSONException ignored) {
         }
         return null;
     }

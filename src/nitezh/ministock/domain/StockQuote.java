@@ -111,10 +111,12 @@ public class StockQuote {
         }
     }
 
+    /*
     public static StockQuote deserialize(String serialized) {
         String[] parts = serialized.split(";");
         return new StockQuote(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]);
     }
+    */
 
     public String getSymbol() {
         return symbol;

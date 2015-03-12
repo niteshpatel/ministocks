@@ -136,7 +136,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         }
         // Cleanup preferences files
         Storage appStorage = new PreferenceStorage(getAppPreferences());
-        UserData.cleanupPreferenceFiles(getApplicationContext(), appStorage);
+        UserData.cleanupPreferenceFiles(getApplicationContext());
         @SuppressWarnings("rawtypes") Callable callable = new Callable() {
             @Override
             public Object call() throws Exception {

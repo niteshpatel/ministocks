@@ -802,7 +802,6 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
 
     public static void update(Context context, int appWidgetId, int updateMode) {
         // Get widget SharedPreferences
-        Storage storage = PreferenceStorage.getInstance(context);
         WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
         Storage prefs = widgetRepository.getWidget(appWidgetId).getStorage();
         // Choose between two widget sizes
@@ -829,7 +828,6 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
     }
 
     public static void updateWidgets(Context context, int updateMode) {
-        Storage storage = PreferenceStorage.getInstance(context);
         WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
         for (int appWidgetId : widgetRepository.getIds())
             WidgetProviderBase.update(context, appWidgetId, updateMode);
@@ -909,52 +907,55 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
     }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(@SuppressWarnings("NullableProblems") Context context,
+                          @SuppressWarnings("NullableProblems") Intent intent) {
         String action = intent.getAction();
         // Update all widgets if requested
-        if (ALARM_UPDATE.equals(action)) {
-            doScheduledUpdates(context);
-        } else if (action.equals("LEFT") || action.equals("RIGHT")) {
-            Bundle extras = intent.getExtras();
-            if (extras != null) {
-                int appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-                // Bring up the preferences screen if the user clicked
-                // on the left side of the widget
-                if (!action.equals("RIGHT")) {
-                    PreferencesActivity.mAppWidgetId = appWidgetId;
-                    Intent activity = new Intent(context, PreferencesActivity.class);
-                    activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(activity);
+        switch (action) {
+            case ALARM_UPDATE:
+                doScheduledUpdates(context);
+                break;
+            case "LEFT":
+            case "RIGHT":
+                Bundle extras = intent.getExtras();
+                if (extras != null) {
+                    int appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+                    // Bring up the preferences screen if the user clicked
+                    // on the left side of the widget
+                    if (!action.equals("RIGHT")) {
+                        PreferencesActivity.mAppWidgetId = appWidgetId;
+                        Intent activity = new Intent(context, PreferencesActivity.class);
+                        activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(activity);
+                    }
+                    // Update the widget if the user clicked on the right
+                    // side of the widget
+                    else {
+                        update(context, appWidgetId, VIEW_CHANGE);
+                    }
                 }
-                // Update the widget if the user clicked on the right
-                // side of the widget
-                else {
-                    update(context, appWidgetId, VIEW_CHANGE);
-                }
-            }
-        } else {
-            super.onReceive(context, intent);
+                break;
+            default:
+                super.onReceive(context, intent);
+                break;
         }
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        /*
-         * Update the intersection of the appWidgetManager appWidgetIds and the
-		 * true saved appWidgetIds
-		 */
-        // Reset alarm manager if needed
         updateAlarmManager(context);
-        Storage storage = PreferenceStorage.getInstance(context);
+
+        // Update the intersection of the appWidgetManager appWidgetIds and the
         WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
-        for (int i : widgetRepository.getIds())
+        for (int i : widgetRepository.getIds()) {
             update(context, i, VIEW_NO_UPDATE);
+        }
     }
 
     @Override
     public void onEnabled(Context context) {
         super.onEnabled(context);
-        // Update the alarm manager
+
         updateAlarmManager(context);
     }
 
@@ -970,7 +971,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
             cancelAlarmManager(context);
         }
 
-        UserData.cleanupPreferenceFiles(context, PreferenceStorage.getInstance(context));
+        UserData.cleanupPreferenceFiles(context);
     }
 
     private static class GetDataTask extends AsyncTask<Object, Void, Void> {

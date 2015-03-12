@@ -42,7 +42,7 @@ abstract class ConfigureActivityBase extends Activity {
     int mWidgetSize = 0;
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyDown(int keyCode, @SuppressWarnings("NullableProblems") KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             setupWidget(0);
         }

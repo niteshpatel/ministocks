@@ -181,7 +181,7 @@ public class UserData {
         return portfolioStockMapForWidget;
     }
 
-    public static void cleanupPreferenceFiles(Context context, Storage storage) {
+    public static void cleanupPreferenceFiles(Context context) {
         // Remove old preferences if we are upgrading
         ArrayList<String> l = new ArrayList<>();
 

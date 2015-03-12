@@ -41,6 +41,7 @@ public interface WidgetRepository {
 
     Widget getWidget(int id);
 
+    @SuppressWarnings("UnusedDeclaration")
     Widget addWidget(int id, int size);
 
     void addWidgetId(int id);
