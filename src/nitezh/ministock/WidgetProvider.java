@@ -24,8 +24,8 @@
 
 package nitezh.ministock;
 
-import nitezh.ministock.activities.widget.WidgetProvider_1x2;
+import nitezh.ministock.activities.widget.WidgetProvider1x2;
 
 
-public class WidgetProvider extends WidgetProvider_1x2 {
+public class WidgetProvider extends WidgetProvider1x2 {
 }

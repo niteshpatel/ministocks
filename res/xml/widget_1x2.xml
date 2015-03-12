@@ -27,5 +27,5 @@
                     android:minHeight="72dp"
                     android:updatePeriodMillis="7200000"
                     android:initialLayout="@layout/widget_1x2"
-                    android:configure="nitezh.ministock.activities.configure.ConfigureActivity_1x2">
+                    android:configure="nitezh.ministock.activities.configure.ConfigureActivity1x2">
 </appwidget-provider>
