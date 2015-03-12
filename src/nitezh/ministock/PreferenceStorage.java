@@ -41,7 +41,8 @@ public class PreferenceStorage implements Storage {
     }
 
     public static PreferenceStorage getInstance(Context context) {
-        return new PreferenceStorage(context.getSharedPreferences(context.getString(R.string.prefs_name), 0));
+        return new PreferenceStorage(context.getSharedPreferences(
+                context.getString(R.string.prefs_name), 0));
     }
 
     @Override

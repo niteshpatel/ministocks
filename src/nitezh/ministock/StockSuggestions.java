@@ -45,9 +45,6 @@ class StockSuggestions {
     private static final String BASE_URL = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?callback=YAHOO.Finance.SymbolSuggest.ssCallback&query=";
     private static final Pattern PATTERN_RESPONSE = Pattern.compile("YAHOO\\.Finance\\.SymbolSuggest\\.ssCallback\\((\\{.*?\\})\\)");
 
-    /**
-     * Get Symbol Suggestions *
-     */
     public static List<Map<String, String>> getSuggestions(String query) {
         List<Map<String, String>> suggestions = new ArrayList<>();
         String response;
@@ -55,10 +52,11 @@ class StockSuggestions {
             String url = BASE_URL + URLEncoder.encode(query, "UTF-8");
             Cache cache = new PreferenceCache(null);
             response = UrlDataTools.getCachedUrlData(url, cache, 86400);
+
         } catch (UnsupportedEncodingException e1) {
-            // TODO Auto-generated catch block
             response = null;
         }
+
         // Return if empty response
         if (response == null || response.equals("")) {
             return suggestions;
@@ -67,7 +65,10 @@ class StockSuggestions {
         if (m.find()) {
             response = m.group(1);
             try {
-                JSONArray jsonA = new JSONObject(response).getJSONObject("ResultSet").getJSONArray("Result");
+                JSONArray jsonA = new JSONObject(response)
+                        .getJSONObject("ResultSet")
+                        .getJSONArray("Result");
+
                 for (int i = 0; i < jsonA.length(); i++) {
                     Map<String, String> suggestion = new HashMap<>();
                     JSONObject jsonO = jsonA.getJSONObject(i);
@@ -76,8 +77,8 @@ class StockSuggestions {
                     suggestions.add(suggestion);
                 }
                 return suggestions;
-            } catch (JSONException e) {
-                e.printStackTrace();
+
+            } catch (JSONException ignored) {
             }
         }
         return suggestions;

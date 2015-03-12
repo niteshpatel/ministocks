@@ -68,24 +68,26 @@ public class DialogTools {
         alertDialog.setView(scroll);
 
         // Set the close button text
-        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, positiveButtonText, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (positiveCallback != null) {
-                    try {
-                        positiveCallback.call();
-                    } catch (Exception ignored) {
+        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, positiveButtonText,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (positiveCallback != null) {
+                            try {
+                                positiveCallback.call();
+                            } catch (Exception ignored) {
+                            }
+                        }
                     }
-                }
-            }
-        });
+                });
         // Optional negative button
         if (negativeButtonText != null) {
-            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, negativeButtonText, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            });
+            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, negativeButtonText,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
         }
         // Optional dismiss handler
         alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -102,7 +104,10 @@ public class DialogTools {
         alertDialog.show();
     }
 
-    public static void choiceWithCallback(Context context, String title, String negativeButtonText, final CharSequence[] choices, final InputAlertCallable callable) {
+    public static void choiceWithCallback(Context context, String title,
+                                          String negativeButtonText,
+                                          final CharSequence[] choices,
+                                          final InputAlertCallable callable) {
         // Create dialog
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         alertDialogBuilder.setTitle(title);
@@ -125,11 +130,12 @@ public class DialogTools {
 
         // Optional negative button
         if (negativeButtonText != null) {
-            alertDialogBuilder.setNegativeButton(negativeButtonText, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            });
+            alertDialogBuilder.setNegativeButton(negativeButtonText,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
         }
 
         // Create alert dialog
@@ -142,14 +148,19 @@ public class DialogTools {
         alertDialog.show();
     }
 
-    public static void inputWithCallback(Context context, String title, String body, String positiveButtonText, String negativeButtonText, String defaultInputText, final InputAlertCallable callable) {
+    public static void inputWithCallback(Context context, String title, String body,
+                                         String positiveButtonText, String negativeButtonText,
+                                         String defaultInputText,
+                                         final InputAlertCallable callable) {
         // Create dialog
         AlertDialog alertDialog = new AlertDialog.Builder(context).create();
         alertDialog.setTitle(title);
         alertDialog.setMessage(body);
 
         // Set an EditText view to get user input
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
         layoutParams.setMargins(20, 0, 20, 0);
         LinearLayout layout = new LinearLayout(context);
         final EditText input = new EditText(context);
@@ -161,25 +172,27 @@ public class DialogTools {
         alertDialog.setView(layout);
 
         // Set the close button text
-        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, positiveButtonText, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (callable != null) {
-                    try {
-                        callable.setInputValue(input.getText().toString());
-                        callable.call();
-                    } catch (Exception ignored) {
+        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, positiveButtonText,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (callable != null) {
+                            try {
+                                callable.setInputValue(input.getText().toString());
+                                callable.call();
+                            } catch (Exception ignored) {
+                            }
+                        }
                     }
-                }
-            }
-        });
+                });
         // Optional negative button
         if (negativeButtonText != null) {
-            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, negativeButtonText, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            });
+            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, negativeButtonText,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
         }
         alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override

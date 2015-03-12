@@ -56,7 +56,6 @@ public class UserData {
     private static boolean mDirtyPortfolioStockMap = true;
 
     public static HashMap<String, HashMap<PortfolioField, String>> getPortfolioStockMap(Storage storage) {
-        // If data is unchanged return cached version
         if (!mDirtyPortfolioStockMap)
             return mPortfolioStockMap;
 
@@ -80,7 +79,8 @@ public class UserData {
                     HashMap<PortfolioField, String> stockInfoMap = new HashMap<>();
                     for (PortfolioField f : PortfolioField.values()) {
                         String data = "";
-                        if (stockInfo.length > f.ordinal() && !stockInfo[f.ordinal()].equals("empty")) {
+                        if (stockInfo.length > f.ordinal()
+                                && !stockInfo[f.ordinal()].equals("empty")) {
                             data = stockInfo[f.ordinal()];
                         }
                         stockInfoMap.put(f, data);
@@ -129,14 +129,18 @@ public class UserData {
         return mPortfolioStockMap;
     }
 
-    public static void setPortfolioStockMap(Context context, HashMap<String, HashMap<PortfolioField, String>> stockMap) {
+    public static void setPortfolioStockMap(
+            Context context, HashMap<String, HashMap<PortfolioField, String>> stockMap) {
         // Convert the portfolio stock map into a Json string to store in preferences
         JSONObject json = new JSONObject();
         for (String symbol : stockMap.keySet()) {
 
             // Create the raw string, ignoring any items with nulls
             HashMap<PortfolioField, String> stockInfoMap = stockMap.get(symbol);
-            if ((stockInfoMap.get(PortfolioField.PRICE) != null && !stockInfoMap.get(PortfolioField.PRICE).equals("")) || (stockInfoMap.get(PortfolioField.CUSTOM_DISPLAY) != null && !stockInfoMap.get(PortfolioField.CUSTOM_DISPLAY).equals(""))) {
+            if ((stockInfoMap.get(PortfolioField.PRICE) != null
+                    && !stockInfoMap.get(PortfolioField.PRICE).equals(""))
+                    || (stockInfoMap.get(PortfolioField.CUSTOM_DISPLAY) != null
+                    && !stockInfoMap.get(PortfolioField.CUSTOM_DISPLAY).equals(""))) {
 
                 // Create a JSON object to store this data
                 JSONObject itemData = new JSONObject();
@@ -168,14 +172,16 @@ public class UserData {
         mDirtyPortfolioStockMap = true;
     }
 
-    public static HashMap<String, HashMap<PortfolioField, String>> getPortfolioStockMapForWidget(Storage appStorage, String[] symbols) {
+    public static HashMap<String, HashMap<PortfolioField, String>> getPortfolioStockMapForWidget(
+            Storage appStorage, String[] symbols) {
         HashMap<String, HashMap<PortfolioField, String>> portfolioStockMapForWidget = new HashMap<>();
         HashMap<String, HashMap<PortfolioField, String>> portfolioStockMap = getPortfolioStockMap(appStorage);
 
         // Add stock details for any symbols that exist in the widget
         for (String symbol : Arrays.asList(symbols)) {
             HashMap<PortfolioField, String> stockInfoMap = portfolioStockMap.get(symbol);
-            if (stockInfoMap != null && (stockInfoMap.get(PortfolioField.PRICE) != null || stockInfoMap.get(PortfolioField.CUSTOM_DISPLAY) != null))
+            if (stockInfoMap != null && (stockInfoMap.get(PortfolioField.PRICE) != null
+                    || stockInfoMap.get(PortfolioField.CUSTOM_DISPLAY) != null))
                 portfolioStockMapForWidget.put(symbol, stockInfoMap);
         }
         return portfolioStockMapForWidget;
@@ -255,10 +261,12 @@ public class UserData {
 
             // Update widget with preferences from backup
             WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
-            widgetRepository.getWidget(appWidgetId).setWidgetPreferencesFromJson(backupContainer.getJSONObject(backupName));
+            widgetRepository.getWidget(appWidgetId).setWidgetPreferencesFromJson(
+                    backupContainer.getJSONObject(backupName));
 
             // Show confirmation to user
-            DialogTools.showSimpleDialog(context, "AppWidgetProvider restored", "The current widget preferences have been restored from your selected backup.");
+            DialogTools.showSimpleDialog(context, "AppWidgetProvider restored",
+                    "The current widget preferences have been restored from your selected backup.");
 
             // restart activity to force reload of preferences
             Activity activity = ((Activity) context);

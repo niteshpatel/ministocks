@@ -53,8 +53,13 @@ public class SymbolProvider extends ContentProvider {
      * {@link SearchManager} for the details on additional columns that are
      * supported.
      */
-    private static final String[] COLUMNS = {"_id", // must include this column
-            SearchManager.SUGGEST_COLUMN_TEXT_1, SearchManager.SUGGEST_COLUMN_TEXT_2, SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA, SearchManager.SUGGEST_COLUMN_INTENT_DATA,};
+    private static final String[] COLUMNS = {
+            "_id", // must include this column
+            SearchManager.SUGGEST_COLUMN_TEXT_1,
+            SearchManager.SUGGEST_COLUMN_TEXT_2,
+            SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA,
+            SearchManager.SUGGEST_COLUMN_INTENT_DATA
+    };
 
     /**
      * Sets up a uri matcher for search suggestion and shortcut refresh queries.
