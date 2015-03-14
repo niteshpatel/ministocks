@@ -63,6 +63,7 @@ public class StockQuoteRepository {
     public HashMap<String, StockQuote> getLiveQuotes(List<String> symbols) {
         HashMap<String, StockQuote> allQuotes = new HashMap<>();
 
+        symbols = this.convertRequestSymbols(symbols);
         List<String> yahooSymbols = new ArrayList<>(symbols);
         List<String> googleSymbols = new ArrayList<>(symbols);
         yahooSymbols.removeAll(GOOGLE_SYMBOLS);
@@ -72,8 +73,32 @@ public class StockQuoteRepository {
         HashMap<String, StockQuote> googleQuotes = this.googleRepository.getQuotes(this.appCache, googleSymbols);
         if (yahooQuotes != null) allQuotes.putAll(yahooQuotes);
         if (googleQuotes != null) allQuotes.putAll(googleQuotes);
+        allQuotes = this.convertResponseQuotes(allQuotes);
 
         return allQuotes;
+    }
+
+    private HashMap<String, StockQuote> convertResponseQuotes(HashMap<String, StockQuote> quotes) {
+        HashMap<String, StockQuote> newQuotes = new HashMap<>();
+        for (String symbol : quotes.keySet()) {
+            StockQuote quote = quotes.get(symbol);
+            String newSymbol = quote.getSymbol()
+                    .replace(".DJI", "^DJI")
+                    .replace(".IXIC", "^IXIC");
+            quote.setSymbol(newSymbol);
+            newQuotes.put(newSymbol, quote);
+        }
+        return newQuotes;
+    }
+
+    private List<String> convertRequestSymbols(List<String> symbols) {
+        List<String> newSymbols = new ArrayList<>();
+        for (String symbol : symbols) {
+            newSymbols.add(symbol
+                    .replace("^DJI", ".DJI")
+                    .replace("^IXIC", ".IXIC"));
+        }
+        return newSymbols;
     }
 
     public HashMap<String, StockQuote> getQuotes(List<String> symbols, boolean noCache) {
@@ -81,10 +106,10 @@ public class StockQuoteRepository {
 
         if (noCache) {
             Set<String> widgetSymbols = this.widgetRepository.getWidgetsStockSymbols();
-            widgetSymbols.add(".DJI");
+            widgetSymbols.add("^DJI");
             widgetSymbols.addAll(new PortfolioStockRepository(
                     this.appStorage, this.appCache, this.widgetRepository).getStocks().keySet());
-            quotes = getLiveQuotes(symbols);
+            quotes = getLiveQuotes(new ArrayList<>(widgetSymbols));
         }
 
         if (quotes.isEmpty()) {
@@ -96,8 +121,10 @@ public class StockQuoteRepository {
         }
 
         // Returns only quotes requested
-        quotes.keySet().retainAll(symbols);
-        return quotes;
+        @SuppressWarnings("unchecked") HashMap<String, StockQuote> filteredQuotes =
+                (HashMap<String, StockQuote>) quotes.clone();
+        filteredQuotes.keySet().retainAll(symbols);
+        return filteredQuotes;
     }
 
     private HashMap<String, StockQuote> loadQuotes() {

@@ -114,7 +114,7 @@ public class AndroidWidget implements Widget {
 
     @Override
     public void setStock1(String s) {
-        this.storage.putString("Stock1", ".DJI");
+        this.storage.putString("Stock1", "^DJI");
     }
 
     @Override

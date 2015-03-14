@@ -581,7 +581,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         }
         // Ensure widget is not empty
         if (!found) {
-            symbols.add(".DJI");
+            symbols.add("^DJI");
         }
         // Retrieve portfolio stocks
         Storage storage = PreferenceStorage.getInstance(context);

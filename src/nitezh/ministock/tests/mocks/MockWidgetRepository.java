@@ -35,6 +35,8 @@ import nitezh.ministock.domain.WidgetRepository;
 
 public class MockWidgetRepository implements WidgetRepository {
 
+    private HashSet<String> widgetsStockSymbols;
+
     @Override
     public List<Integer> getIds() {
         return new ArrayList<>();
@@ -47,12 +49,18 @@ public class MockWidgetRepository implements WidgetRepository {
 
     @Override
     public Set<String> getWidgetsStockSymbols() {
+        if (this.widgetsStockSymbols != null) {
+            return this.widgetsStockSymbols;
+        }
         return new HashSet<>();
+    }
+
+    public void setWidgetsStockSymbols(HashSet<String> widgetsStockSymbols) {
+        this.widgetsStockSymbols = widgetsStockSymbols;
     }
 
     @Override
     public void delWidgetId(int id) {
-
     }
 
     @Override

@@ -81,7 +81,7 @@ public class AndroidWidgetRepository implements WidgetRepository {
     public Widget addWidget(int id, int size) {
         Widget widget = getWidget(id);
         widget.setSize(size);
-        widget.setStock1(".DJI");
+        widget.setStock1("^DJI");
         widget.setStock1Summary("Dow Jones Industrial Average");
         widget.save();
         return widget;

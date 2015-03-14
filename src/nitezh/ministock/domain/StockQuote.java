@@ -74,17 +74,17 @@ public class StockQuote {
             }
 
             // Note that if the change or percent == "N/A" set to 0
-            if ((price.equals("N/A") || price.equals("")) && p0 == null) {
+            if (this.isNonEmptyNumber(price) && p0 == null) {
                 change = "0.00";
             }
-            if ((percent.equals("N/A") || percent.equals("")) && p0 == null) {
+            if (this.isNonEmptyNumber(percent) && p0 == null) {
                 percent = "0.00";
             }
         }
 
         // Changes are only set to 5 significant figures
         Double c = null;
-        if (!change.equals("N/A") && !change.equals("")) {
+        if (this.isNonEmptyNumber(change)) {
             c = Double.parseDouble(change);
         } else if (p0 != null && p != null) {
             c = p - p0;
@@ -99,7 +99,7 @@ public class StockQuote {
 
         // Percentage changes are only set to one decimal place
         Double pc = null;
-        if (!percent.equals("N/A") && !percent.equals("")) {
+        if (this.isNonEmptyNumber(percent)) {
             pc = Double.parseDouble(percent.replace("%", ""));
         } else {
             if (c != null && p != null) {
@@ -111,6 +111,16 @@ public class StockQuote {
         }
     }
 
+    private boolean isNonEmptyNumber(String value) {
+        return !value.equals("N/A")
+                && !value.equals("")
+                && !value.equals("null");
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
     /*
     public static StockQuote deserialize(String serialized) {
         String[] parts = serialized.split(";");
@@ -118,8 +128,8 @@ public class StockQuote {
     }
     */
 
-    public String getSymbol() {
-        return symbol;
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
     }
 
     public String getPrice() {
@@ -147,6 +157,13 @@ public class StockQuote {
     }
 
     public String serialize() {
-        return String.format("%s;%s;%s;%s;%s;%s;%s", symbol, price, change, percent, exchange, volume, name);
+        return String.format("%s;%s;%s;%s;%s;%s;%s",
+                this.symbol != null ? this.symbol : "",
+                this.price != null ? this.price : "",
+                this.change != null ? this.symbol : "",
+                this.percent != null ? this.percent : "",
+                this.exchange != null ? this.exchange : "",
+                this.volume != null ? this.volume : "",
+                this.name != null ? this.name : "");
     }
 }
