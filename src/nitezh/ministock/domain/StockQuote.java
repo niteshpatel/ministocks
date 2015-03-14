@@ -74,10 +74,10 @@ public class StockQuote {
             }
 
             // Note that if the change or percent == "N/A" set to 0
-            if (this.isNonEmptyNumber(price) && p0 == null) {
+            if (!this.isNonEmptyNumber(price) && p0 == null) {
                 change = "0.00";
             }
-            if (this.isNonEmptyNumber(percent) && p0 == null) {
+            if (!this.isNonEmptyNumber(percent) && p0 == null) {
                 percent = "0.00";
             }
         }
@@ -121,13 +121,6 @@ public class StockQuote {
         return symbol;
     }
 
-    /*
-    public static StockQuote deserialize(String serialized) {
-        String[] parts = serialized.split(";");
-        return new StockQuote(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6]);
-    }
-    */
-
     public void setSymbol(String symbol) {
         this.symbol = symbol;
     }
@@ -154,16 +147,5 @@ public class StockQuote {
 
     public String getName() {
         return name;
-    }
-
-    public String serialize() {
-        return String.format("%s;%s;%s;%s;%s;%s;%s",
-                this.symbol != null ? this.symbol : "",
-                this.price != null ? this.price : "",
-                this.change != null ? this.symbol : "",
-                this.percent != null ? this.percent : "",
-                this.exchange != null ? this.exchange : "",
-                this.volume != null ? this.volume : "",
-                this.name != null ? this.name : "");
     }
 }

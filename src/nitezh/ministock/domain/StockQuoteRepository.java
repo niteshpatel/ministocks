@@ -128,7 +128,6 @@ public class StockQuoteRepository {
     }
 
     private HashMap<String, StockQuote> loadQuotes() {
-        // If we have cached data on the class use that for efficiency
         if (mCachedQuotes != null) {
             return mCachedQuotes;
         }
@@ -164,18 +163,22 @@ public class StockQuoteRepository {
     }
 
     private void saveQuotes(HashMap<String, StockQuote> quotes, String timeStamp) {
-        StringBuilder savedQuotes = new StringBuilder();
-        for (String symbol : quotes.keySet()) {
-            // Ensures we do not add a line break to the last line
-            if (!savedQuotes.toString().equals("")) {
-                savedQuotes.append("\n");
-            }
-            savedQuotes.append(quotes.get(symbol).serialize());
-        }
-
         mCachedQuotes = quotes;
         mTimeStamp = timeStamp;
-        this.appStorage.putString("savedQuotes", savedQuotes.toString());
+
+        StringBuilder savedQuotes = new StringBuilder();
+        for (String symbol : quotes.keySet()) {
+            StockQuote quote = quotes.get(symbol);
+            savedQuotes.append(String.format("%s;%s;%s;%s;%s;%s;%s\n",
+                    quote.getSymbol() != null ? quote.getSymbol() : "",
+                    quote.getPrice() != null ? quote.getPrice() : "",
+                    quote.getChange() != null ? quote.getChange() : "",
+                    quote.getPercent() != null ? quote.getPercent() : "",
+                    quote.getExchange() != null ? quote.getExchange() : "",
+                    quote.getVolume() != null ? quote.getVolume() : "",
+                    quote.getName() != null ? quote.getName() : ""));
+        }
+        this.appStorage.putString("savedQuotes", savedQuotes.toString().trim());
         this.appStorage.putString("savedQuotesTime", timeStamp);
         this.appStorage.apply();
     }
