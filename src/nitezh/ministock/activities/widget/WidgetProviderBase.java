@@ -40,20 +40,23 @@ import android.view.View;
 import android.widget.RemoteViews;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import nitezh.ministock.PreferenceCache;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
-import nitezh.ministock.UserData.PortfolioField;
 import nitezh.ministock.WidgetProvider;
 import nitezh.ministock.activities.PreferencesActivity;
 import nitezh.ministock.domain.AndroidWidgetRepository;
+import nitezh.ministock.domain.PortfolioStock;
+import nitezh.ministock.domain.PortfolioStockRepository;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.domain.StockQuoteRepository;
 import nitezh.ministock.domain.WidgetRepository;
@@ -170,7 +173,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         return span;
     }
 
-    private static HashMap<String, Object> getFormattedRow(String symbol, StockQuote quoteInfo, HashMap<String, HashMap<PortfolioField, String>> portfolioStockMap, int widgetView, Storage preferences, int widgetSize) {
+    private static HashMap<String, Object> getFormattedRow(String symbol, StockQuote quoteInfo, HashMap<String, PortfolioStock> portfolioStockMap, int widgetView, Storage preferences, int widgetSize) {
         // Create the HashMap for our return values
         HashMap<String, Object> rowItems = new HashMap<>();
         // Initialise columns
@@ -215,7 +218,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         String volume = quoteInfo.getVolume();
 
         // Get the buy info for this stock from the portfolio
-        HashMap<PortfolioField, String> stockInfo = portfolioStockMap.get(symbol);
+        PortfolioStock stockInfo = portfolioStockMap.get(symbol);
 
         // Set default values
         if (widgetSize == 1 || widgetSize == 3) {
@@ -231,8 +234,8 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
             rowItems.put("COL2_COLOUR", COLOUR_NA);
         }
         // Override the name if a custom value has been provided
-        if (stockInfo != null && stockInfo.containsKey(PortfolioField.CUSTOM_DISPLAY) && !stockInfo.get(PortfolioField.CUSTOM_DISPLAY).equals("")) {
-            rowItems.put("COL0_VALUE", stockInfo.get(PortfolioField.CUSTOM_DISPLAY));
+        if (stockInfo != null && !stockInfo.getCustomName().equals("")) {
+            rowItems.put("COL0_VALUE", stockInfo.getCustomName());
         }
         // Set the price
         rowItems.put("COL1_VALUE", price);
@@ -257,19 +260,19 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         Double d_limitHigh = null;
         Double d_limitLow = null;
         try {
-            d_buyPrice = NumberTools.parseDouble(stockInfo.get(PortfolioField.PRICE));
+            d_buyPrice = NumberTools.parseDouble(stockInfo.getPrice());
         } catch (Exception ignored) {
         }
         try {
-            d_quantity = NumberTools.parseDouble(stockInfo.get(PortfolioField.QUANTITY));
+            d_quantity = NumberTools.parseDouble(stockInfo.getQuantity());
         } catch (Exception ignored) {
         }
         try {
-            d_limitHigh = NumberTools.parseDouble(stockInfo.get(PortfolioField.LIMIT_HIGH));
+            d_limitHigh = NumberTools.parseDouble(stockInfo.getHighLimit());
         } catch (Exception ignored) {
         }
         try {
-            d_limitLow = NumberTools.parseDouble(stockInfo.get(PortfolioField.LIMIT_LOW));
+            d_limitLow = NumberTools.parseDouble(stockInfo.getLowLimit());
         } catch (Exception ignored) {
         }
         Double d_priceChange = null;
@@ -278,7 +281,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         } catch (Exception ignored) {
         }
         try {
-            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(stockInfo.get(PortfolioField.DATE));
+            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(stockInfo.getDate());
             double elapsed = (new Date().getTime() - date.getTime()) / 1000;
             years_elapsed = elapsed / 31536000;
         } catch (Exception ignored) {
@@ -566,22 +569,25 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         // Hide any rows for smaller widgets
         displayRows(views, arraySize);
         boolean found = false;
-        String[] stocks = new String[arraySize];
+        List<String> symbols = new ArrayList<>();
+        String sym;
         for (int i = 0; i < arraySize; i++) {
-            stocks[i] = widgetStorage.getString("Stock" + (i + 1), "");
-            if (!stocks[i].equals("")) {
+            sym = widgetStorage.getString("Stock" + (i + 1), "");
+            symbols.add(sym);
+            if (!sym.equals("")) {
                 found = true;
             }
         }
         // Ensure widget is not empty
         if (!found) {
-            stocks[0] = ".DJI";
+            symbols.add(".DJI");
         }
         // Retrieve portfolio stocks
         Storage storage = PreferenceStorage.getInstance(context);
-        HashMap<String, HashMap<PortfolioField, String>> portfolioStockMap = UserData.getPortfolioStockMapForWidget(storage, stocks);
+        PortfolioStockRepository portfolioStockRepository = new PortfolioStockRepository(storage);
+        HashMap<String, PortfolioStock> stocks = portfolioStockRepository.getStocksForWidget(symbols);
         // Check if we have an empty portfolio
-        boolean noPortfolio = portfolioStockMap.isEmpty();
+        boolean noPortfolio = stocks.isEmpty();
         SparseBooleanArray enabledViews = getEnabledViews(widgetStorage, widgetSize, noPortfolio);
         // Check if we have any portfolio-less views
         boolean defaultViews = enabledViews.get(VIEW_DAILY_PERCENT) && enabledViews.get(VIEW_DAILY_CHANGE);
@@ -634,7 +640,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
                 }
             }
             int line_no = 0;
-            for (String symbol : stocks) {
+            for (String symbol : symbols) {
                 // Skip blank symbols
                 if (symbol.equals("")) {
                     continue;
@@ -643,7 +649,8 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
                 StockQuote quoteInfo;
                 quoteInfo = quotes.get(symbol);
                 line_no++;
-                HashMap<String, Object> formattedRow = getFormattedRow(symbol, quoteInfo, portfolioStockMap, widgetView, widgetStorage, widgetSize);
+                HashMap<String, Object> formattedRow = getFormattedRow(symbol, quoteInfo, stocks,
+                        widgetView, widgetStorage, widgetSize);
                 // Values
                 views.setTextViewText(getStockViewId(line_no, 1), makeBold(widgetStorage, (String) formattedRow.get("COL0_VALUE")));
                 views.setTextViewText(getStockViewId(line_no, 2), makeBold(widgetStorage, (String) formattedRow.get("COL1_VALUE")));

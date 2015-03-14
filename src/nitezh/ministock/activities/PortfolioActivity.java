@@ -61,10 +61,10 @@ import nitezh.ministock.PreferenceCache;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.Storage;
-import nitezh.ministock.UserData;
-import nitezh.ministock.UserData.PortfolioField;
 import nitezh.ministock.activities.widget.WidgetProviderBase;
 import nitezh.ministock.domain.AndroidWidgetRepository;
+import nitezh.ministock.domain.PortfolioStock;
+import nitezh.ministock.domain.PortfolioStockRepository;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.domain.StockQuoteRepository;
 import nitezh.ministock.domain.WidgetRepository;
@@ -75,7 +75,7 @@ import nitezh.ministock.utils.NumberTools;
 public class PortfolioActivity extends Activity {
 
     private HashMap<String, StockQuote> mStockData = new HashMap<>();
-    private HashMap<String, HashMap<PortfolioField, String>> mPortfolioStockMap = new HashMap<>();
+    private HashMap<String, PortfolioStock> mPortfolioStockMap = new HashMap<>();
     private Set<String> mWidgetsStockMap = new HashSet<>();
     private ListView mPortfolioList;
     private String mStockSymbol = "";
@@ -86,19 +86,19 @@ public class PortfolioActivity extends Activity {
 
         // Add any missing stocks from the widget stocks map to our local
         // portfolio stocks map
-        Storage appStorage = PreferenceStorage.getInstance(this);
+        Storage storage = PreferenceStorage.getInstance(this);
         WidgetRepository repository = new AndroidWidgetRepository(this);
-        mPortfolioStockMap = UserData.getPortfolioStockMap(appStorage);
+        mPortfolioStockMap = new PortfolioStockRepository(storage).getStocks();
         mWidgetsStockMap = repository.getWidgetsStockSymbols();
         for (String symbol : mWidgetsStockMap) {
             if (!mPortfolioStockMap.containsKey(symbol)) {
-                mPortfolioStockMap.put(symbol, new HashMap<PortfolioField, String>());
+                mPortfolioStockMap.put(symbol, null);
             }
         }
 
         // Get current prices
         Set<String> symbolSet = mPortfolioStockMap.keySet();
-        mStockData = new StockQuoteRepository(appStorage, new PreferenceCache(this), repository).getQuotes(Arrays.asList(symbolSet.toArray(new String[symbolSet.size()])), false);
+        mStockData = new StockQuoteRepository(storage, new PreferenceCache(this), repository).getQuotes(Arrays.asList(symbolSet.toArray(new String[symbolSet.size()])), false);
 
         // Update the list view with the portfolio stock map info
         refreshView();
@@ -109,15 +109,9 @@ public class PortfolioActivity extends Activity {
     }
 
     void updatePortfolioStock(String price, String date, String quantity, String limitHigh, String limitLow, String customDisplay) {
-        // Set the last updated stock details in our local portfolio stock map
-        HashMap<PortfolioField, String> stockInfoMap = new HashMap<>();
-        stockInfoMap.put(PortfolioField.PRICE, price);
-        stockInfoMap.put(PortfolioField.DATE, date);
-        stockInfoMap.put(PortfolioField.QUANTITY, quantity);
-        stockInfoMap.put(PortfolioField.LIMIT_HIGH, limitHigh);
-        stockInfoMap.put(PortfolioField.LIMIT_LOW, limitLow);
-        stockInfoMap.put(PortfolioField.CUSTOM_DISPLAY, customDisplay);
-        mPortfolioStockMap.put(mStockSymbol, stockInfoMap);
+        PortfolioStock portfolioStock = new PortfolioStock(mStockSymbol, price, date, quantity,
+                limitHigh, limitLow, customDisplay, null);
+        mPortfolioStockMap.put(mStockSymbol, portfolioStock);
     }
 
     void refreshView() {
@@ -141,14 +135,14 @@ public class PortfolioActivity extends Activity {
         for (String symbol : sortedSymbols) {
             // Get quote and portfolio info
             StockQuote data = mStockData.get(symbol);
-            HashMap<PortfolioField, String> stockInfoMap = mPortfolioStockMap.get(symbol);
+            PortfolioStock stockInfoMap = mPortfolioStockMap.get(symbol);
 
             // Add name if we have one
             Map<String, String> group = new HashMap<>();
             String name = "No description";
             if (data != null) {
-                if (stockInfoMap.containsKey(PortfolioField.CUSTOM_DISPLAY)) {
-                    name = stockInfoMap.get(PortfolioField.CUSTOM_DISPLAY);
+                if (stockInfoMap.getCustomName() != "") {
+                    name = stockInfoMap.getCustomName();
                     group.put("customName", name);
                 }
                 if (name.equals(""))
@@ -167,29 +161,29 @@ public class PortfolioActivity extends Activity {
             group.put("limitLow_label", "Low alert:");
 
             // Add stock info the the list view
-            if (stockInfoMap.containsKey(PortfolioField.PRICE) && !stockInfoMap.get(PortfolioField.PRICE).equals("")) {
+            if (!stockInfoMap.getPrice().equals("")) {
                 // Buy price and label
-                String buyPrice = stockInfoMap.get(PortfolioField.PRICE);
+                String buyPrice = stockInfoMap.getPrice();
                 group.put("buyPrice", buyPrice);
 
                 // Buy date and label
-                String date = stockInfoMap.get(PortfolioField.DATE);
+                String date = stockInfoMap.getDate();
                 group.put("date", date);
 
                 // High alert and label
-                String limitHigh = NumberTools.decimalPlaceFormat(stockInfoMap.get(PortfolioField.LIMIT_HIGH));
+                String limitHigh = NumberTools.decimalPlaceFormat(stockInfoMap.getHighLimit());
                 if (limitHigh != null && !limitHigh.equals(""))
                     group.put("limitHigh_label", "High alert:");
                 group.put("limitHigh", limitHigh);
 
                 // Low alert and label
-                String limitLow = NumberTools.decimalPlaceFormat(stockInfoMap.get(PortfolioField.LIMIT_LOW));
+                String limitLow = NumberTools.decimalPlaceFormat(stockInfoMap.getLowLimit());
                 if (limitLow != null && !limitLow.equals(""))
                     group.put("limitLow_label", "Low alert:");
                 group.put("limitLow", limitLow);
 
                 // Quantity and label
-                String quantity = stockInfoMap.get(PortfolioField.QUANTITY);
+                String quantity = stockInfoMap.getQuantity();
                 group.put("quantity", quantity);
 
                 // Calculate last change, including percentage
@@ -199,7 +193,7 @@ public class PortfolioActivity extends Activity {
                         lastChange = data.getPercent();
                         try {
                             Double change = numberFormat.parse(data.getChange()).doubleValue();
-                            Double totalChange = NumberTools.parseDouble(stockInfoMap.get(PortfolioField.QUANTITY)) * change;
+                            Double totalChange = NumberTools.parseDouble(stockInfoMap.getQuantity()) * change;
                             lastChange += " / " + CurrencyTools.addCurrencyToSymbol(String.format("%.0f", (totalChange)), symbol);
                         } catch (Exception ignored) {
                         }
@@ -218,7 +212,7 @@ public class PortfolioActivity extends Activity {
 
                     // Calculate change
                     try {
-                        Double quanta = NumberTools.parseDouble(stockInfoMap.get(PortfolioField.QUANTITY));
+                        Double quanta = NumberTools.parseDouble(stockInfoMap.getQuantity());
                         totalChange += " / " + CurrencyTools.addCurrencyToSymbol(String.format("%.0f", quanta * totalPercentChange), symbol);
                     } catch (Exception ignored) {
                     }
@@ -229,7 +223,7 @@ public class PortfolioActivity extends Activity {
                 // Calculate the holding value
                 String holdingValue = "";
                 try {
-                    Double holdingQuanta = NumberTools.parseDouble(stockInfoMap.get(PortfolioField.QUANTITY));
+                    Double holdingQuanta = NumberTools.parseDouble(stockInfoMap.getQuantity());
                     Double holdingPrice = numberFormat.parse(currentPrice).doubleValue();
                     holdingValue = CurrencyTools.addCurrencyToSymbol(String.format("%.0f", (holdingQuanta * holdingPrice)), symbol);
                 } catch (Exception ignored) {
@@ -451,12 +445,13 @@ public class PortfolioActivity extends Activity {
         // Remove any items that are empty and not in any widgets and then
         // update the portfolio stocks in the preferences;
         for (String symbol : mPortfolioStockMap.keySet()) {
-            String price = mPortfolioStockMap.get(symbol).get(PortfolioField.PRICE);
+            String price = mPortfolioStockMap.get(symbol).getPrice();
             if ((price == null || price.equals("")) && !mWidgetsStockMap.contains(symbol)) {
                 mPortfolioStockMap.remove(symbol);
             }
         }
-        UserData.setPortfolioStockMap(this, mPortfolioStockMap);
+        Storage storage = PreferenceStorage.getInstance(this);
+        new PortfolioStockRepository(storage).setStocks(mPortfolioStockMap);
 
         // Update all widget views and exit
         WidgetProviderBase.updateWidgets(this, WidgetProviderBase.VIEW_NO_UPDATE);

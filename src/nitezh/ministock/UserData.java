@@ -37,155 +37,17 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import nitezh.ministock.domain.AndroidWidgetRepository;
+import nitezh.ministock.domain.PortfolioStockRepository;
 import nitezh.ministock.domain.WidgetRepository;
 
 
 public class UserData {
 
-    public static final String PORTFOLIO_JSON = "portfolioJson";
-    public static final String WIDGET_JSON = "widgetJson";
     // Object for intrinsic lock
     public static final Object sFileBackupLock = new Object();
-    private static final HashMap<String, HashMap<PortfolioField, String>> mPortfolioStockMap = new HashMap<>();
-    // Cache markers
-    private static boolean mDirtyPortfolioStockMap = true;
-
-    public static HashMap<String, HashMap<PortfolioField, String>> getPortfolioStockMap(Storage storage) {
-        if (!mDirtyPortfolioStockMap)
-            return mPortfolioStockMap;
-
-        // Clear the old data
-        mPortfolioStockMap.clear();
-
-        // Use the Json data if present
-        String rawJson = storage.getString(PORTFOLIO_JSON, "");
-        if (rawJson.equals("")) {
-            // If there is no Json data then use the old style data
-            for (String rawStock : storage.getString("portfolio", "").split(",")) {
-                String[] stockArray = rawStock.split(":");
-
-                // Skip empties and invalid formatted stocks
-                if (stockArray.length != 2)
-                    continue;
-
-                // Create stock map, ignoring any items with nulls
-                String[] stockInfo = stockArray[1].split("\\|");
-                if (stockInfo.length > 0 && stockInfo[0] != null) {
-                    HashMap<PortfolioField, String> stockInfoMap = new HashMap<>();
-                    for (PortfolioField f : PortfolioField.values()) {
-                        String data = "";
-                        if (stockInfo.length > f.ordinal()
-                                && !stockInfo[f.ordinal()].equals("empty")) {
-                            data = stockInfo[f.ordinal()];
-                        }
-                        stockInfoMap.put(f, data);
-                    }
-                    mPortfolioStockMap.put(stockArray[0], stockInfoMap);
-                }
-            }
-        } else {
-            JSONObject json = null;
-            try {
-                json = new JSONObject(rawJson);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            // Parse the stock info from the raw string
-            Iterator keys;
-            if (json != null) {
-                keys = json.keys();
-                while (keys.hasNext()) {
-                    String key = keys.next().toString();
-                    JSONObject itemData = new JSONObject();
-                    try {
-                        itemData = json.getJSONObject(key);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    HashMap<PortfolioField, String> stockInfoMap = new HashMap<>();
-                    for (PortfolioField f : PortfolioField.values()) {
-                        String data = "";
-                        try {
-                            if (!itemData.get(f.name()).equals("empty")) {
-                                data = itemData.get(f.name()).toString();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        stockInfoMap.put(f, data);
-                    }
-                    mPortfolioStockMap.put(key, stockInfoMap);
-                }
-            }
-        }
-
-        // Set marker clean and return
-        mDirtyPortfolioStockMap = false;
-        return mPortfolioStockMap;
-    }
-
-    public static void setPortfolioStockMap(
-            Context context, HashMap<String, HashMap<PortfolioField, String>> stockMap) {
-        // Convert the portfolio stock map into a Json string to store in preferences
-        JSONObject json = new JSONObject();
-        for (String symbol : stockMap.keySet()) {
-
-            // Create the raw string, ignoring any items with nulls
-            HashMap<PortfolioField, String> stockInfoMap = stockMap.get(symbol);
-            if ((stockInfoMap.get(PortfolioField.PRICE) != null
-                    && !stockInfoMap.get(PortfolioField.PRICE).equals(""))
-                    || (stockInfoMap.get(PortfolioField.CUSTOM_DISPLAY) != null
-                    && !stockInfoMap.get(PortfolioField.CUSTOM_DISPLAY).equals(""))) {
-
-                // Create a JSON object to store this data
-                JSONObject itemData = new JSONObject();
-                try {
-                    json.put(symbol, itemData);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                for (PortfolioField f : PortfolioField.values()) {
-                    // Replace null dates with an empty string
-                    String data = stockInfoMap.get(f);
-                    if (data == null || data.equals(""))
-                        data = "empty";
-                    try {
-                        itemData.put(f.name(), data);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-
-        // Commit changes to the preferences
-        PreferenceStorage editor = PreferenceStorage.getInstance(context);
-        editor.putString(PORTFOLIO_JSON, json.toString());
-        editor.apply();
-
-        // Set the cache flag as dirty
-        mDirtyPortfolioStockMap = true;
-    }
-
-    public static HashMap<String, HashMap<PortfolioField, String>> getPortfolioStockMapForWidget(
-            Storage appStorage, String[] symbols) {
-        HashMap<String, HashMap<PortfolioField, String>> portfolioStockMapForWidget = new HashMap<>();
-        HashMap<String, HashMap<PortfolioField, String>> portfolioStockMap = getPortfolioStockMap(appStorage);
-
-        // Add stock details for any symbols that exist in the widget
-        for (String symbol : Arrays.asList(symbols)) {
-            HashMap<PortfolioField, String> stockInfoMap = portfolioStockMap.get(symbol);
-            if (stockInfoMap != null && (stockInfoMap.get(PortfolioField.PRICE) != null
-                    || stockInfoMap.get(PortfolioField.CUSTOM_DISPLAY) != null))
-                portfolioStockMapForWidget.put(symbol, stockInfoMap);
-        }
-        return portfolioStockMapForWidget;
-    }
 
     public static void cleanupPreferenceFiles(Context context) {
         // Remove old preferences if we are upgrading
@@ -210,38 +72,11 @@ public class UserData {
                     f.delete();
     }
 
-    public static void backupPortfolio(Context context) {
-        // Get current portfolio from preferences
-        String rawJson = PreferenceStorage.getInstance(context).getString(PORTFOLIO_JSON, "");
-
-        // Store portfolio in internal storage
-        writeInternalStorage(context, rawJson, PORTFOLIO_JSON);
-
-        // Show confirmation to user
-        DialogTools.showSimpleDialog(context, "PortfolioActivity backed up",
-                "Your portfolio settings have been backed up to internal storage.");
-    }
-
-    public static void restorePortfolio(Context context) {
-        // Get portfolio from internal storage
-        String rawJson = readInternalStorage(context, PORTFOLIO_JSON);
-
-        // Store portfolio in preferences
-        PreferenceStorage storage = PreferenceStorage.getInstance(context);
-        storage.putString(PORTFOLIO_JSON, rawJson);
-        storage.apply();
-        mDirtyPortfolioStockMap = true;
-
-        // Show confirmation to user
-        DialogTools.showSimpleDialog(context, "PortfolioActivity restored",
-                "Your portfolio settings have been restored from internal storage.");
-    }
-
     public static void backupWidget(Context context, int appWidgetId, String backupName) {
         try {
             // Get existing data collection from storage if present
             JSONObject backupContainer = new JSONObject();
-            String rawJson = readInternalStorage(context, WIDGET_JSON);
+            String rawJson = readInternalStorage(context, PortfolioStockRepository.WIDGET_JSON);
             if (rawJson != null) {
                 backupContainer = new JSONObject(rawJson);
             }
@@ -249,7 +84,7 @@ public class UserData {
             WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
             JSONObject backupJson = widgetRepository.getWidget(appWidgetId).getWidgetPreferencesAsJson();
             backupContainer.put(backupName, backupJson);
-            writeInternalStorage(context, backupContainer.toString(), WIDGET_JSON);
+            writeInternalStorage(context, backupContainer.toString(), PortfolioStockRepository.WIDGET_JSON);
         } catch (JSONException ignored) {
         }
     }
@@ -257,7 +92,7 @@ public class UserData {
     public static void restoreWidget(Context context, int appWidgetId, String backupName) {
         try {
             // Get existing data collection from storage
-            JSONObject backupContainer = new JSONObject(readInternalStorage(context, WIDGET_JSON));
+            JSONObject backupContainer = new JSONObject(readInternalStorage(context, PortfolioStockRepository.WIDGET_JSON));
 
             // Update widget with preferences from backup
             WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
@@ -280,11 +115,11 @@ public class UserData {
     public static CharSequence[] getWidgetBackupNames(Context context) {
         // Get existing data collection from storage
         try {
-            String rawJson = readInternalStorage(context, WIDGET_JSON);
+            String rawJson = readInternalStorage(context, PortfolioStockRepository.WIDGET_JSON);
             if (rawJson == null) {
                 return null;
             }
-            JSONObject backupContainer = new JSONObject(readInternalStorage(context, WIDGET_JSON));
+            JSONObject backupContainer = new JSONObject(readInternalStorage(context, PortfolioStockRepository.WIDGET_JSON));
             Iterator<String> iterator = backupContainer.keys();
             ArrayList<String> backupList = new ArrayList<>();
             while (iterator.hasNext()) {
@@ -297,7 +132,7 @@ public class UserData {
         return null;
     }
 
-    private static void writeInternalStorage(Context context, String stringData, String filename) {
+    public static void writeInternalStorage(Context context, String stringData, String filename) {
         try {
             synchronized (UserData.sFileBackupLock) {
                 FileOutputStream fos;
@@ -311,7 +146,7 @@ public class UserData {
         }
     }
 
-    private static String readInternalStorage(Context context, String filename) {
+    public static String readInternalStorage(Context context, String filename) {
         try {
             StringBuffer fileContent = new StringBuffer();
             synchronized (UserData.sFileBackupLock) {
@@ -322,13 +157,11 @@ public class UserData {
                     fileContent.append(new String(buffer));
                 }
             }
+
             return new String(fileContent);
         } catch (IOException ignored) {
         }
-        return null;
-    }
 
-    public enum PortfolioField {
-        PRICE, DATE, QUANTITY, LIMIT_HIGH, LIMIT_LOW, CUSTOM_DISPLAY, SYMBOL_2
+        return null;
     }
 }

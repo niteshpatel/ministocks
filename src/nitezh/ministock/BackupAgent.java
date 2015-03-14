@@ -32,6 +32,8 @@ import android.os.ParcelFileDescriptor;
 
 import java.io.IOException;
 
+import nitezh.ministock.domain.PortfolioStockRepository;
+
 
 public class BackupAgent extends BackupAgentHelper {
 
@@ -40,7 +42,7 @@ public class BackupAgent extends BackupAgentHelper {
 
     // Allocate a helper and add it to the backup agent
     public void onCreate() {
-        FileBackupHelper helper = new FileBackupHelper(this, UserData.PORTFOLIO_JSON);
+        FileBackupHelper helper = new FileBackupHelper(this, PortfolioStockRepository.PORTFOLIO_JSON);
         addHelper(FILES_BACKUP_KEY, helper);
     }
 

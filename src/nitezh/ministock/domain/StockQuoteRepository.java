@@ -34,7 +34,6 @@ import java.util.Set;
 
 import nitezh.ministock.Cache;
 import nitezh.ministock.Storage;
-import nitezh.ministock.UserData;
 import nitezh.ministock.dataaccess.FxChangeRepository;
 import nitezh.ministock.dataaccess.GoogleStockQuoteRepository;
 import nitezh.ministock.dataaccess.YahooStockQuoteRepository;
@@ -83,7 +82,7 @@ public class StockQuoteRepository {
         if (noCache) {
             Set<String> widgetSymbols = this.widgetRepository.getWidgetsStockSymbols();
             widgetSymbols.add(".DJI");
-            widgetSymbols.addAll(UserData.getPortfolioStockMap(this.appStorage).keySet());
+            widgetSymbols.addAll(new PortfolioStockRepository(this.appStorage).getStocks().keySet());
             quotes = getLiveQuotes(symbols);
         }
 

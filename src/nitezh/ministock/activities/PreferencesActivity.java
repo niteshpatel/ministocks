@@ -53,6 +53,7 @@ import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
 import nitezh.ministock.activities.widget.WidgetProviderBase;
 import nitezh.ministock.domain.AndroidWidgetRepository;
+import nitezh.ministock.domain.PortfolioStockRepository;
 import nitezh.ministock.domain.WidgetRepository;
 import nitezh.ministock.utils.DateTools;
 import nitezh.ministock.utils.VersionTools;
@@ -470,7 +471,8 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         backup_portfolio.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                UserData.backupPortfolio(PreferencesActivity.this);
+                Storage storage = PreferenceStorage.getInstance(PreferencesActivity.this);
+                new PortfolioStockRepository(storage).backupPortfolio(PreferencesActivity.this);
                 return true;
             }
         });
@@ -480,7 +482,8 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         restore_portfolio.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                UserData.restorePortfolio(PreferencesActivity.this);
+                Storage storage = PreferenceStorage.getInstance(PreferencesActivity.this);
+                new PortfolioStockRepository(storage).restorePortfolio(PreferencesActivity.this);
                 return true;
             }
         });
