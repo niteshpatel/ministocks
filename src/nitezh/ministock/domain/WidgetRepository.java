@@ -37,7 +37,7 @@ public interface WidgetRepository {
 
     Set<String> getWidgetsStockSymbols();
 
-    void delWidgetId(Context context, int id);
+    void delWidgetId(int id);
 
     Widget getWidget(int id);
 

@@ -48,27 +48,28 @@ public class AndroidWidgetRepository implements WidgetRepository {
     }
 
     @Override
-    public void delWidgetId(Context context, int appWidgetId) {
+    public void delWidgetId(int appWidgetId) {
         // Get the existing widgetIds from the storage
-        PreferenceStorage storage = PreferenceStorage.getInstance(context);
         ArrayList<String> newAppWidgetIds = new ArrayList<>();
-        Collections.addAll(newAppWidgetIds, storage.getString("appWidgetIds", "").split(","));
+        Collections.addAll(newAppWidgetIds, this.appStorage.getString("appWidgetIds", "").split(","));
 
         // Remove the one to remove
         newAppWidgetIds.remove(String.valueOf(appWidgetId));
 
         // Add the new appWidgetId
         StringBuilder appWidgetIds = new StringBuilder();
-        for (String id : newAppWidgetIds)
+        for (String id : newAppWidgetIds) {
             appWidgetIds.append(id).append(",");
+        }
 
         // Remove trailing comma
-        if (appWidgetIds.length() > 0)
+        if (appWidgetIds.length() > 0) {
             appWidgetIds.deleteCharAt(appWidgetIds.length() - 1);
+        }
 
         // Update the storage too
-        storage.putString("appWidgetIds", appWidgetIds.toString());
-        storage.apply();
+        this.appStorage.putString("appWidgetIds", appWidgetIds.toString());
+        this.appStorage.apply();
     }
 
     @Override

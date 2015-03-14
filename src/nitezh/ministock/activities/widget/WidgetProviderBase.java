@@ -47,6 +47,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import nitezh.ministock.Cache;
 import nitezh.ministock.PreferenceCache;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
@@ -584,7 +585,8 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         }
         // Retrieve portfolio stocks
         Storage storage = PreferenceStorage.getInstance(context);
-        PortfolioStockRepository portfolioStockRepository = new PortfolioStockRepository(storage);
+        Cache cache = new PreferenceCache(context);
+        PortfolioStockRepository portfolioStockRepository = new PortfolioStockRepository(storage, cache, widgetRepository);
         HashMap<String, PortfolioStock> stocks = portfolioStockRepository.getStocksForWidget(symbols);
         // Check if we have an empty portfolio
         boolean noPortfolio = stocks.isEmpty();
@@ -972,7 +974,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
 
         WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
         for (int appWidgetId : appWidgetIds) {
-            widgetRepository.delWidgetId(context, appWidgetId);
+            widgetRepository.delWidgetId(appWidgetId);
         }
         if (widgetRepository.isEmpty()) {
             cancelAlarmManager(context);

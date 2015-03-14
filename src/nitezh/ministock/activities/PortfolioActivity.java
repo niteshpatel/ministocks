@@ -41,223 +41,96 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.RuleBasedCollator;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Callable;
 
 import nitezh.ministock.DialogTools;
 import nitezh.ministock.PreferenceCache;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
-import nitezh.ministock.Storage;
 import nitezh.ministock.activities.widget.WidgetProviderBase;
 import nitezh.ministock.domain.AndroidWidgetRepository;
-import nitezh.ministock.domain.PortfolioStock;
 import nitezh.ministock.domain.PortfolioStockRepository;
 import nitezh.ministock.domain.StockQuote;
-import nitezh.ministock.domain.StockQuoteRepository;
-import nitezh.ministock.domain.WidgetRepository;
-import nitezh.ministock.utils.CurrencyTools;
-import nitezh.ministock.utils.NumberTools;
 
 
 public class PortfolioActivity extends Activity {
 
-    private HashMap<String, StockQuote> mStockData = new HashMap<>();
-    private HashMap<String, PortfolioStock> mPortfolioStockMap = new HashMap<>();
-    private Set<String> mWidgetsStockMap = new HashSet<>();
-    private ListView mPortfolioList;
+    private PortfolioStockRepository portfolioRepository;
+    private ListView mPortfolioListView;
     private String mStockSymbol = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Add any missing stocks from the widget stocks map to our local
-        // portfolio stocks map
-        Storage storage = PreferenceStorage.getInstance(this);
-        WidgetRepository repository = new AndroidWidgetRepository(this);
-        mPortfolioStockMap = new PortfolioStockRepository(storage).getStocks();
-        mWidgetsStockMap = repository.getWidgetsStockSymbols();
-        for (String symbol : mWidgetsStockMap) {
-            if (!mPortfolioStockMap.containsKey(symbol)) {
-                mPortfolioStockMap.put(symbol, null);
-            }
-        }
-
-        // Get current prices
-        Set<String> symbolSet = mPortfolioStockMap.keySet();
-        mStockData = new StockQuoteRepository(storage, new PreferenceCache(this), repository).getQuotes(Arrays.asList(symbolSet.toArray(new String[symbolSet.size()])), false);
-
-        // Update the list view with the portfolio stock map info
-        refreshView();
+        this.portfolioRepository = new PortfolioStockRepository(
+                PreferenceStorage.getInstance(this),
+                new PreferenceCache(this),
+                new AndroidWidgetRepository(this)
+        );
+        this.refreshView();
     }
 
-    void updatePortfolioStock() {
-        updatePortfolioStock("", "", "", "", "", "");
-    }
-
-    void updatePortfolioStock(String price, String date, String quantity, String limitHigh, String limitLow, String customDisplay) {
-        PortfolioStock portfolioStock = new PortfolioStock(mStockSymbol, price, date, quantity,
-                limitHigh, limitLow, customDisplay, null);
-        mPortfolioStockMap.put(mStockSymbol, portfolioStock);
-    }
 
     void refreshView() {
         setContentView(R.layout.portfolio);
 
-        // Get number format instance to parse numbers from different locales
-        NumberFormat numberFormat = NumberFormat.getInstance();
+        List<Map<String, String>> listViewData = this.portfolioRepository.getDisplayInfo();
+        SimpleAdapter adapter = new SimpleAdapter(this, listViewData, R.layout.portfolio_list_item,
+                new String[]{
+                        "symbol",
+                        "name",
+                        "buyPrice",
+                        "date",
+                        "limitHigh",
+                        "limitHigh_label",
+                        "limitLow",
+                        "limitLow_label",
+                        "quantity",
+                        "currentPrice",
+                        "lastChange",
+                        "totalChange",
+                        "holdingValue"
+                },
+                new int[]{
+                        R.id.portfolio_list_item_symbol,
+                        R.id.portfolio_list_item_name,
+                        R.id.portfolio_list_item_buy_price,
+                        R.id.portfolio_list_item_date,
+                        R.id.portfolio_list_item_limit_high,
+                        R.id.portfolio_list_item_limit_high_label,
+                        R.id.portfolio_list_item_limit_low,
+                        R.id.portfolio_list_item_limit_low_label,
+                        R.id.portfolio_list_item_quantity,
+                        R.id.portfolio_list_item_current_price,
+                        R.id.portfolio_list_item_last_change,
+                        R.id.portfolio_list_item_total_change,
+                        R.id.portfolio_list_item_holding_value
+                });
 
-        // Sort dictionary by putting values into a list
-        ArrayList<String> sortedSymbols = new ArrayList<>();
-        for (String key : mPortfolioStockMap.keySet())
-            sortedSymbols.add(key);
-
-        // Ensure symbols beginning with ^ appear first
-        try {
-            Collections.sort(sortedSymbols, new RuleBasedCollator("< '^' < a"));
-        } catch (ParseException ignored) {
-        }
-        // Put data into a custom adapter
-        List<Map<String, String>> listViewData = new ArrayList<>();
-        for (String symbol : sortedSymbols) {
-            // Get quote and portfolio info
-            StockQuote data = mStockData.get(symbol);
-            PortfolioStock stockInfoMap = mPortfolioStockMap.get(symbol);
-
-            // Add name if we have one
-            Map<String, String> group = new HashMap<>();
-            String name = "No description";
-            if (data != null) {
-                if (stockInfoMap.getCustomName() != "") {
-                    name = stockInfoMap.getCustomName();
-                    group.put("customName", name);
-                }
-                if (name.equals(""))
-                    name = data.getName();
-            }
-            group.put("name", name);
-
-            // Get the current price if we have the data
-            String currentPrice = "";
-            if (data != null)
-                currentPrice = data.getPrice();
-            group.put("currentPrice", currentPrice);
-
-            // Default labels
-            group.put("limitHigh_label", "High alert:");
-            group.put("limitLow_label", "Low alert:");
-
-            // Add stock info the the list view
-            if (!stockInfoMap.getPrice().equals("")) {
-                // Buy price and label
-                String buyPrice = stockInfoMap.getPrice();
-                group.put("buyPrice", buyPrice);
-
-                // Buy date and label
-                String date = stockInfoMap.getDate();
-                group.put("date", date);
-
-                // High alert and label
-                String limitHigh = NumberTools.decimalPlaceFormat(stockInfoMap.getHighLimit());
-                if (limitHigh != null && !limitHigh.equals(""))
-                    group.put("limitHigh_label", "High alert:");
-                group.put("limitHigh", limitHigh);
-
-                // Low alert and label
-                String limitLow = NumberTools.decimalPlaceFormat(stockInfoMap.getLowLimit());
-                if (limitLow != null && !limitLow.equals(""))
-                    group.put("limitLow_label", "Low alert:");
-                group.put("limitLow", limitLow);
-
-                // Quantity and label
-                String quantity = stockInfoMap.getQuantity();
-                group.put("quantity", quantity);
-
-                // Calculate last change, including percentage
-                String lastChange = "";
-                try {
-                    if (data != null) {
-                        lastChange = data.getPercent();
-                        try {
-                            Double change = numberFormat.parse(data.getChange()).doubleValue();
-                            Double totalChange = NumberTools.parseDouble(stockInfoMap.getQuantity()) * change;
-                            lastChange += " / " + CurrencyTools.addCurrencyToSymbol(String.format("%.0f", (totalChange)), symbol);
-                        } catch (Exception ignored) {
-                        }
-                    }
-                } catch (Exception ignored) {
-                }
-                group.put("lastChange", lastChange);
-
-                // Calculate total change, including percentage
-                String totalChange = "";
-                try {
-                    Double price = numberFormat.parse(currentPrice).doubleValue();
-                    Double buy = Double.parseDouble(buyPrice);
-                    Double totalPercentChange = price - buy;
-                    totalChange = String.format("%.0f", 100 * totalPercentChange / buy) + "%";
-
-                    // Calculate change
-                    try {
-                        Double quanta = NumberTools.parseDouble(stockInfoMap.getQuantity());
-                        totalChange += " / " + CurrencyTools.addCurrencyToSymbol(String.format("%.0f", quanta * totalPercentChange), symbol);
-                    } catch (Exception ignored) {
-                    }
-                } catch (Exception ignored) {
-                }
-                group.put("totalChange", totalChange);
-
-                // Calculate the holding value
-                String holdingValue = "";
-                try {
-                    Double holdingQuanta = NumberTools.parseDouble(stockInfoMap.getQuantity());
-                    Double holdingPrice = numberFormat.parse(currentPrice).doubleValue();
-                    holdingValue = CurrencyTools.addCurrencyToSymbol(String.format("%.0f", (holdingQuanta * holdingPrice)), symbol);
-                } catch (Exception ignored) {
-                }
-                group.put("holdingValue", holdingValue);
-            }
-            group.put("symbol", symbol);
-            listViewData.add(group);
-        }
-        // Assign the list to the ListView
-        SimpleAdapter adapter = new SimpleAdapter(this, listViewData, R.layout.portfolio_list_item, new String[]{"symbol", "name", "buyPrice", "date", "limitHigh", "limitHigh_label", "limitLow", "limitLow_label", "quantity", "currentPrice", "lastChange", "totalChange", "holdingValue",}, new int[]{R.id.portfolio_list_item_symbol, R.id.portfolio_list_item_name, R.id.portfolio_list_item_buy_price, R.id.portfolio_list_item_date, R.id.portfolio_list_item_limit_high, R.id.portfolio_list_item_limit_high_label, R.id.portfolio_list_item_limit_low, R.id.portfolio_list_item_limit_low_label, R.id.portfolio_list_item_quantity, R.id.portfolio_list_item_current_price, R.id.portfolio_list_item_last_change, R.id.portfolio_list_item_total_change, R.id.portfolio_list_item_holding_value});
-
-        // Assign the SimpleAdapter to the ListView
-        ListView portfolio_list = (ListView) findViewById(R.id.portfolio_list);
-        mPortfolioList = portfolio_list;
-
-        // Set an onClick listener for the ListView
-        portfolio_list.setOnItemClickListener(new OnItemClickListener() {
+        ListView portfolioListView = (ListView) findViewById(R.id.portfolio_list);
+        portfolioListView.setAdapter(adapter);
+        portfolioListView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> a, View v, int position, long id) {
                 showPortfolioItemEdit(a, position);
             }
         });
-        portfolio_list.setAdapter(adapter);
-
-        // Register a context menu for this ListView
-        registerForContextMenu(portfolio_list);
+        registerForContextMenu(portfolioListView);
+        mPortfolioListView = portfolioListView;
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        String symbol = (String) (((android.widget.TextView) (((AdapterView.AdapterContextMenuInfo) menuInfo).targetView).findViewById(R.id.portfolio_list_item_symbol))).getText();
-        mStockSymbol = symbol;
-        menu.setHeaderTitle(symbol);
+        View adapterView = ((AdapterContextMenuInfo) menuInfo).targetView;
+        View view = adapterView.findViewById(R.id.portfolio_list_item_symbol);
+        mStockSymbol = ((android.widget.TextView) view).getText().toString();
+        menu.setHeaderTitle(mStockSymbol);
         menu.add(0, 0, 0, "Edit details");
         menu.add(0, 1, 0, "Clear details");
     }
@@ -268,7 +141,7 @@ public class PortfolioActivity extends Activity {
             Callable callable = new Callable() {
                 @Override
                 public Object call() throws Exception {
-                    updatePortfolioStock();
+                    portfolioRepository.updateStock();
                     refreshView();
                     return new Object();
                 }
@@ -278,7 +151,7 @@ public class PortfolioActivity extends Activity {
                     callable, null);
         } else if (item.getItemId() == 0) {
             AdapterContextMenuInfo menuInfo = ((AdapterView.AdapterContextMenuInfo) item.getMenuInfo());
-            showPortfolioItemEdit(mPortfolioList, menuInfo.position);
+            showPortfolioItemEdit(mPortfolioListView, menuInfo.position);
         }
         return super.onContextItemSelected(item);
     }
@@ -293,7 +166,7 @@ public class PortfolioActivity extends Activity {
         mStockSymbol = stockMap.get("symbol");
 
         // Get current data for this stock
-        StockQuote data = mStockData.get(mStockSymbol);
+        StockQuote data = this.portfolioRepository.mStockData.get(mStockSymbol);
         String currentPrice = "";
         if (data != null)
             currentPrice = data.getPrice();
@@ -419,7 +292,7 @@ public class PortfolioActivity extends Activity {
                     price = price + "0";
                 }
                 // Update the actual values
-                updatePortfolioStock(price, date, quantity, limitHigh, limitLow, customDisplay);
+                portfolioRepository.updateStock(price, date, quantity, limitHigh, limitLow, customDisplay);
                 refreshView();
                 portfolioItemEdit.dismiss();
             }
@@ -442,18 +315,7 @@ public class PortfolioActivity extends Activity {
     public void onStop() {
         super.onStop();
 
-        // Remove any items that are empty and not in any widgets and then
-        // update the portfolio stocks in the preferences;
-        for (String symbol : mPortfolioStockMap.keySet()) {
-            String price = mPortfolioStockMap.get(symbol).getPrice();
-            if ((price == null || price.equals("")) && !mWidgetsStockMap.contains(symbol)) {
-                mPortfolioStockMap.remove(symbol);
-            }
-        }
-        Storage storage = PreferenceStorage.getInstance(this);
-        new PortfolioStockRepository(storage).setStocks(mPortfolioStockMap);
-
-        // Update all widget views and exit
+        this.portfolioRepository.saveChanges();
         WidgetProviderBase.updateWidgets(this, WidgetProviderBase.VIEW_NO_UPDATE);
         finish();
     }

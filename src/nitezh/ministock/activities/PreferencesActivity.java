@@ -46,7 +46,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import nitezh.ministock.Cache;
 import nitezh.ministock.DialogTools;
+import nitezh.ministock.PreferenceCache;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.Storage;
@@ -472,7 +474,9 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 Storage storage = PreferenceStorage.getInstance(PreferencesActivity.this);
-                new PortfolioStockRepository(storage).backupPortfolio(PreferencesActivity.this);
+                Cache cache = new PreferenceCache(PreferencesActivity.this);
+                WidgetRepository widgetRepository = new AndroidWidgetRepository(PreferencesActivity.this);
+                new PortfolioStockRepository(storage, cache, widgetRepository).backupPortfolio(PreferencesActivity.this);
                 return true;
             }
         });
@@ -483,7 +487,9 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 Storage storage = PreferenceStorage.getInstance(PreferencesActivity.this);
-                new PortfolioStockRepository(storage).restorePortfolio(PreferencesActivity.this);
+                Cache cache = new PreferenceCache(PreferencesActivity.this);
+                WidgetRepository widgetRepository = new AndroidWidgetRepository(PreferencesActivity.this);
+                new PortfolioStockRepository(storage, cache, widgetRepository).backupPortfolio(PreferencesActivity.this);
                 return true;
             }
         });

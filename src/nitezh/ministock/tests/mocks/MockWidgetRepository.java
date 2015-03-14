@@ -24,8 +24,6 @@
 
 package nitezh.ministock.tests.mocks;
 
-import android.content.Context;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -53,7 +51,7 @@ public class MockWidgetRepository implements WidgetRepository {
     }
 
     @Override
-    public void delWidgetId(Context context, int id) {
+    public void delWidgetId(int id) {
 
     }
 

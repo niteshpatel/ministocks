@@ -82,7 +82,8 @@ public class StockQuoteRepository {
         if (noCache) {
             Set<String> widgetSymbols = this.widgetRepository.getWidgetsStockSymbols();
             widgetSymbols.add(".DJI");
-            widgetSymbols.addAll(new PortfolioStockRepository(this.appStorage).getStocks().keySet());
+            widgetSymbols.addAll(new PortfolioStockRepository(
+                    this.appStorage, this.appCache, this.widgetRepository).getStocks().keySet());
             quotes = getLiveQuotes(symbols);
         }
 
