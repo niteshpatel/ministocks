@@ -42,12 +42,16 @@ public class FxChangeRepositoryTests extends TestCase {
     }
 
     public void testRetrieveChangesAsJson() {
+        // Arrange
         JSONObject json = null;
+
+        // Act
         try {
             json = this.fxRepository.retrieveChangesAsJson(new MockCache());
         } catch (JSONException ignored) {
         }
 
+        // Assert
         assertNotNull(json);
     }
 }

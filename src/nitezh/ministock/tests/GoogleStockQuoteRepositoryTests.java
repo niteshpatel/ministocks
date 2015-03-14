@@ -48,31 +48,43 @@ public class GoogleStockQuoteRepositoryTests extends TestCase {
     }
 
     public void testRetrieveQuotesAsJson() {
+        // Arrange
         List<String> symbols = Arrays.asList(".DJI", ".IXIC");
         JSONArray json = null;
+
+        // Act
         try {
             json = this.googleRepository.retrieveQuotesAsJson(new MockCache(), symbols);
         } catch (JSONException ignored) {
         }
 
+        // Assert
         assertNotNull(json);
         assertEquals(2, json.length());
+
         JSONObject djiJson = json.optJSONObject(0);
         assertEquals(".DJI", djiJson.optString("t"));
         assertEquals("INDEXDJX", djiJson.optString("e"));
+
         JSONObject ixicJson = json.optJSONObject(1);
         assertEquals(".IXIC", ixicJson.optString("t"));
         assertEquals("INDEXNASDAQ", ixicJson.optString("e"));
     }
 
     public void testGetQuotes() {
+        // Arrange
         List<String> symbols = Arrays.asList(".DJI", ".IXIC");
+
+        // Act
         HashMap<String, StockQuote> stockQuotes = this.googleRepository.getQuotes(new MockCache(), symbols);
 
+        // Assert
         assertEquals(2, stockQuotes.size());
+
         StockQuote djiQuote = stockQuotes.get(".DJI");
         assertEquals(".DJI", djiQuote.getSymbol());
         assertEquals("DJX", djiQuote.getExchange());
+
         StockQuote ixicQuote = stockQuotes.get(".IXIC");
         assertEquals(".IXIC", ixicQuote.getSymbol());
         assertEquals("NASDAQ", ixicQuote.getExchange());
