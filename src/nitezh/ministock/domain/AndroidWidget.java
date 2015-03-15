@@ -47,8 +47,8 @@ public class AndroidWidget implements Widget {
 
     public AndroidWidget(Context context, int id) {
         this.context = context;
-        this.storage = this.getStorage();
         this.id = id;
+        this.storage = this.getStorage();
     }
 
     @Override

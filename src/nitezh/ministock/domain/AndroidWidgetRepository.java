@@ -80,6 +80,11 @@ public class AndroidWidgetRepository implements WidgetRepository {
     @Override
     public Widget addWidget(int id, int size) {
         Widget widget = getWidget(id);
+        if (this.getIds().contains(id)) {
+            return widget;
+        }
+
+        this.addWidgetId(id);
         widget.setSize(size);
         widget.setStock1("^DJI");
         widget.setStock1Summary("Dow Jones Industrial Average");

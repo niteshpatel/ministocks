@@ -41,9 +41,7 @@ import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Callable;
 
 import nitezh.ministock.Cache;
@@ -166,16 +164,6 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         showRecentChanges();
         PreferenceScreen screen = getPreferenceScreen();
         SharedPreferences sharedPreferences = screen.getSharedPreferences();
-
-        // Add this widgetId if we don't have it
-        Set<Integer> appWidgetIds = new HashSet<Integer>();
-        WidgetRepository repository = new AndroidWidgetRepository(getBaseContext());
-        for (int i : repository.getIds()) {
-            appWidgetIds.add(i);
-        }
-        if (!appWidgetIds.contains(mAppWidgetId)) {
-            repository.addWidgetId(mAppWidgetId);
-        }
 
         // Hide preferences for certain widget sizes
         int widgetSize = sharedPreferences.getInt("widgetSize", 0);
@@ -489,7 +477,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 Storage storage = PreferenceStorage.getInstance(PreferencesActivity.this);
                 Cache cache = new PreferenceCache(PreferencesActivity.this);
                 WidgetRepository widgetRepository = new AndroidWidgetRepository(PreferencesActivity.this);
-                new PortfolioStockRepository(storage, cache, widgetRepository).backupPortfolio(PreferencesActivity.this);
+                new PortfolioStockRepository(storage, cache, widgetRepository).restorePortfolio(PreferencesActivity.this);
                 return true;
             }
         });
