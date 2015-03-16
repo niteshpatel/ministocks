@@ -440,7 +440,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 // Update all widgets and quit
-                WidgetProviderBase.updateWidgets(getApplicationContext(), WidgetProviderBase.VIEW_UPDATE);
+                WidgetProviderBase.updateWidgets(getApplicationContext(), WidgetProviderBase.UpdateType.VIEW_UPDATE);
                 finish();
                 return true;
             }
@@ -672,9 +672,11 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         // flag is true then do a web update, otherwise do a regular update
         if (mStocksDirty) {
             mStocksDirty = false;
-            WidgetProviderBase.updateWidgets(getApplicationContext(), WidgetProviderBase.VIEW_UPDATE);
+            WidgetProviderBase.updateWidgets(getApplicationContext(),
+                    WidgetProviderBase.UpdateType.VIEW_UPDATE);
         } else {
-            WidgetProviderBase.updateWidgetAsync(getApplicationContext(), mAppWidgetId, WidgetProviderBase.VIEW_NO_UPDATE);
+            WidgetProviderBase.updateWidgetAsync(getApplicationContext(), mAppWidgetId,
+                    WidgetProviderBase.UpdateType.VIEW_NO_UPDATE);
         }
         finish();
     }

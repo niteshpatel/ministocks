@@ -34,7 +34,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
-import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -69,30 +68,6 @@ import nitezh.ministock.utils.ReflectionTools;
 
 public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
 
-    // Update type
-    public static final int VIEW_UPDATE = 0;
-    public static final int VIEW_NO_UPDATE = 2;
-    private static final int VIEW_CHANGE = 1;
-    // View type
-    private static final int VIEW_DAILY_PERCENT = 0;
-    private static final int VIEW_DAILY_CHANGE = 1;
-    private static final int VIEW_PORTFOLIO_PERCENT = 2;
-    private static final int VIEW_PORTFOLIO_CHANGE = 3;
-    private static final int VIEW_PORTFOLIO_PERCENT_AER = 4;
-    private static final int VIEW_PL_DAILY_PERCENT = 5;
-    private static final int VIEW_PL_DAILY_CHANGE = 6;
-    private static final int VIEW_PL_PERCENT = 7;
-    private static final int VIEW_PL_CHANGE = 8;
-    private static final int VIEW_PL_PERCENT_AER = 9;
-    // Colours
-    private static final int COLOUR_GAIN = Color.parseColor("#CCFF66");
-    private static final int COLOUR_LOSS = Color.parseColor("#FF6666");
-    private static final int COLOUR_SAME = Color.WHITE;
-    private static final int COLOUR_ALERT_HIGH = Color.parseColor("#FFEE33");
-    private static final int COLOUR_ALERT_LOW = Color.parseColor("#FF66FF");
-    private static final int COLOUR_VOLUME = Color.LTGRAY;
-    private static final int COLOUR_NA = Color.parseColor("#66CCCC");
-
     private static int getStockViewId(int line, int col) {
         return ReflectionTools.getField("text" + line + col);
     }
@@ -107,9 +82,12 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         return span;
     }
 
-    private static HashMap<String, Object> getFormattedRow(String symbol, StockQuote quoteInfo, HashMap<String, PortfolioStock> portfolioStockMap, int widgetView, Storage preferences, int widgetSize) {
+    private static HashMap<String, Object> getFormattedRow(String symbol, StockQuote quoteInfo,
+                                                           HashMap<String, PortfolioStock> portfolioStockMap, ViewType widgetView,
+                                                           Storage preferences, int widgetSize) {
         // Create the HashMap for our return values
         HashMap<String, Object> rowItems = new HashMap<>();
+
         // Initialise columns
         rowItems.put("COL0_VALUE", symbol);
         rowItems.put("COL0_COLOUR", Color.WHITE);
@@ -121,6 +99,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         rowItems.put("COL3_COLOUR", Color.WHITE);
         rowItems.put("COL4_VALUE", "");
         rowItems.put("COL4_COLOUR", Color.WHITE);
+
         // Set the stock symbol, and strip off exchange suffix
         // if requested in the preferences
         if (preferences.getBoolean("hide_suffix", false)) {
@@ -158,14 +137,14 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         if (widgetSize == 1 || widgetSize == 3) {
             rowItems.put("COL0_VALUE", name);
             rowItems.put("COL2_VALUE", formatVolume(volume));
-            rowItems.put("COL2_COLOUR", COLOUR_VOLUME);
+            rowItems.put("COL2_COLOUR", WidgetColors.VOLUME);
             rowItems.put("COL3_VALUE", change);
-            rowItems.put("COL3_COLOUR", COLOUR_NA);
+            rowItems.put("COL3_COLOUR", WidgetColors.NA);
             rowItems.put("COL4_VALUE", percent);
-            rowItems.put("COL4_COLOUR", COLOUR_NA);
+            rowItems.put("COL4_COLOUR", WidgetColors.NA);
         } else {
             rowItems.put("COL2_VALUE", percent);
-            rowItems.put("COL2_COLOUR", COLOUR_NA);
+            rowItems.put("COL2_COLOUR", WidgetColors.NA);
         }
         // Override the name if a custom value has been provided
         if (stockInfo != null && !stockInfo.getCustomName().equals("")) {
@@ -260,45 +239,55 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
             switch (widgetView) {
                 case VIEW_DAILY_PERCENT:
                     column2 = daily_percent;
+
                     break;
                 case VIEW_DAILY_CHANGE:
                     column2 = daily_change;
+
                     break;
                 case VIEW_PORTFOLIO_PERCENT:
                     column2 = total_percent;
+
                     break;
                 case VIEW_PORTFOLIO_CHANGE:
                     column2 = total_change;
+
                     break;
                 case VIEW_PORTFOLIO_PERCENT_AER:
                     column2 = aer_percent;
+
                     break;
                 case VIEW_PL_DAILY_PERCENT:
                     pl_view = true;
                     column1 = pl_holding;
                     column2 = daily_percent;
+
                     break;
                 case VIEW_PL_DAILY_CHANGE:
                     pl_view = true;
                     pl_change = true;
                     column1 = pl_holding;
                     column2 = pl_daily_change;
+
                     break;
                 case VIEW_PL_PERCENT:
                     pl_view = true;
                     column1 = pl_holding;
                     column2 = total_percent;
+
                     break;
                 case VIEW_PL_CHANGE:
                     pl_view = true;
                     pl_change = true;
                     column1 = pl_holding;
                     column2 = pl_total_change;
+
                     break;
                 case VIEW_PL_PERCENT_AER:
                     pl_view = true;
                     column1 = pl_holding;
                     column2 = aer_percent;
+
                     break;
             }
         } else {
@@ -306,22 +295,27 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
                 case VIEW_DAILY_PERCENT:
                     column3 = daily_change;
                     column4 = daily_percent;
+
                     break;
                 case VIEW_DAILY_CHANGE:
                     column3 = daily_change;
                     column4 = daily_percent;
+
                     break;
                 case VIEW_PORTFOLIO_PERCENT:
                     column3 = total_change;
                     column4 = total_percent;
+
                     break;
                 case VIEW_PORTFOLIO_CHANGE:
                     column3 = total_change;
                     column4 = total_percent;
+
                     break;
                 case VIEW_PORTFOLIO_PERCENT_AER:
                     column3 = aer_change;
                     column4 = aer_percent;
+
                     break;
                 case VIEW_PL_DAILY_PERCENT:
                     pl_view = true;
@@ -329,6 +323,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
                     column1 = pl_holding;
                     column3 = pl_daily_change;
                     column4 = daily_percent;
+
                     break;
                 case VIEW_PL_DAILY_CHANGE:
                     pl_view = true;
@@ -336,6 +331,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
                     column1 = pl_holding;
                     column3 = pl_daily_change;
                     column4 = daily_percent;
+
                     break;
                 case VIEW_PL_PERCENT:
                     pl_view = true;
@@ -343,6 +339,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
                     column1 = pl_holding;
                     column3 = pl_total_change;
                     column4 = total_percent;
+
                     break;
                 case VIEW_PL_CHANGE:
                     pl_view = true;
@@ -350,6 +347,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
                     column1 = pl_holding;
                     column3 = pl_total_change;
                     column4 = total_percent;
+
                     break;
                 case VIEW_PL_PERCENT_AER:
                     pl_view = true;
@@ -357,21 +355,22 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
                     column1 = pl_holding;
                     column3 = pl_aer_change;
                     column4 = aer_percent;
+
                     break;
             }
         }
         // Set the price column colour if we have hit an alert
         // (this is only relevant for non-profit and loss views)
         if (limitHigh_triggered && !pl_view) {
-            rowItems.put("COL1_COLOUR", COLOUR_ALERT_HIGH);
+            rowItems.put("COL1_COLOUR", WidgetColors.HIGH_ALERT);
         }
         if (limitLow_triggered && !pl_view) {
-            rowItems.put("COL1_COLOUR", COLOUR_ALERT_LOW);
+            rowItems.put("COL1_COLOUR", WidgetColors.LOW_ALERT);
         }
         // Set the price column to the holding value and colour
         // the column blue if we have no holdings
         if (pl_view && column1 == null) {
-            rowItems.put("COL1_COLOUR", COLOUR_NA);
+            rowItems.put("COL1_COLOUR", WidgetColors.NA);
         }
         // Add currency symbol if we have a holding
         if (column1 != null) {
@@ -424,23 +423,15 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         return value;
     }
 
-    /**
-     * Get the colour used for this change.
-     * <p/>
-     * Green for rise, red for fall, grey for unchanged.
-     *
-     * @param value The change value.
-     * @return Colour for this change value.
-     */
     private static int getColourForChange(String value) {
         double parsedValue = NumberTools.parseDouble(value, 0d);
         int colour;
         if (parsedValue < 0) {
-            colour = COLOUR_LOSS;
+            colour = WidgetColors.LOSS;
         } else if (parsedValue == 0) {
-            colour = COLOUR_SAME;
+            colour = WidgetColors.SAME;
         } else {
-            colour = COLOUR_GAIN;
+            colour = WidgetColors.GAIN;
         }
         return colour;
     }
@@ -451,6 +442,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         left_intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         left_intent.setAction("LEFT");
         views.setOnClickPendingIntent(R.id.widget_left, PendingIntent.getBroadcast(context, appWidgetId, left_intent, 0));
+
         // Set an onClick handler on the 'widget_right' layout
         Intent right_intent = new Intent(context, WidgetProvider.class);
         right_intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
@@ -458,7 +450,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.widget_right, PendingIntent.getBroadcast(context, appWidgetId, right_intent, 0));
     }
 
-    private static SparseBooleanArray getEnabledViews(Storage prefs, int widgetSize, boolean noPortfolio) {
+    private static HashMap<ViewType, Boolean> getEnabledViews(Storage prefs, int widgetSize, boolean noPortfolio) {
         // Get widget view prefs
         boolean dailyChangePc = prefs.getBoolean("show_percent_change", false);
         boolean dailyChange = prefs.getBoolean("show_absolute_change", false);
@@ -470,21 +462,23 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         boolean plTotalChangePc = prefs.getBoolean("show_profit_change", false);
         boolean plTotalChange = prefs.getBoolean("show_profit_abs", false);
         boolean plTotalChangeAer = prefs.getBoolean("show_profit_aer", false);
-        SparseBooleanArray enabledViews = new SparseBooleanArray();
-        enabledViews.put(VIEW_DAILY_PERCENT, dailyChangePc && (widgetSize == 0 || widgetSize == 2));
-        enabledViews.put(VIEW_DAILY_CHANGE, dailyChange);
-        enabledViews.put(VIEW_PORTFOLIO_PERCENT, totalChangePc && (widgetSize == 0 || widgetSize == 2) && !noPortfolio);
-        enabledViews.put(VIEW_PORTFOLIO_CHANGE, totalChange && !noPortfolio);
-        enabledViews.put(VIEW_PORTFOLIO_PERCENT_AER, totalChangeAer && !noPortfolio);
-        enabledViews.put(VIEW_PL_DAILY_PERCENT, plDailyChangePc && (widgetSize == 0 || widgetSize == 2) && !noPortfolio);
-        enabledViews.put(VIEW_PL_DAILY_CHANGE, plDailyChange && !noPortfolio);
-        enabledViews.put(VIEW_PL_PERCENT, plTotalChangePc && (widgetSize == 0 || widgetSize == 2) && !noPortfolio);
-        enabledViews.put(VIEW_PL_CHANGE, plTotalChange);
-        enabledViews.put(VIEW_PL_PERCENT_AER, plTotalChangeAer && !noPortfolio);
+
+        HashMap<ViewType, Boolean> enabledViews = new HashMap<>();
+        enabledViews.put(ViewType.VIEW_DAILY_PERCENT, dailyChangePc && (widgetSize == 0 || widgetSize == 2));
+        enabledViews.put(ViewType.VIEW_DAILY_CHANGE, dailyChange);
+        enabledViews.put(ViewType.VIEW_PORTFOLIO_PERCENT, totalChangePc && (widgetSize == 0 || widgetSize == 2) && !noPortfolio);
+        enabledViews.put(ViewType.VIEW_PORTFOLIO_CHANGE, totalChange && !noPortfolio);
+        enabledViews.put(ViewType.VIEW_PORTFOLIO_PERCENT_AER, totalChangeAer && !noPortfolio);
+        enabledViews.put(ViewType.VIEW_PL_DAILY_PERCENT, plDailyChangePc && (widgetSize == 0 || widgetSize == 2) && !noPortfolio);
+        enabledViews.put(ViewType.VIEW_PL_DAILY_CHANGE, plDailyChange && !noPortfolio);
+        enabledViews.put(ViewType.VIEW_PL_PERCENT, plTotalChangePc && (widgetSize == 0 || widgetSize == 2) && !noPortfolio);
+        enabledViews.put(ViewType.VIEW_PL_CHANGE, plTotalChange);
+        enabledViews.put(ViewType.VIEW_PL_PERCENT_AER, plTotalChangeAer && !noPortfolio);
         return enabledViews;
     }
 
-    private static void updateWidget(Context context, int appWidgetId, int updateMode, HashMap<String, StockQuote> quotes) {
+    private static void updateWidget(Context context, int appWidgetId, UpdateType updateMode,
+                                     HashMap<String, StockQuote> quotes) {
         Storage appStorage = PreferenceStorage.getInstance(context);
         WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
 
@@ -516,29 +510,39 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         // Retrieve portfolio stocks
         Storage storage = PreferenceStorage.getInstance(context);
         Cache cache = new PreferenceCache(context);
-        PortfolioStockRepository portfolioStockRepository = new PortfolioStockRepository(storage, cache, widgetRepository);
-        HashMap<String, PortfolioStock> stocks = portfolioStockRepository.getStocksForWidget(symbols);
+        PortfolioStockRepository portfolioStockRepository =
+                new PortfolioStockRepository(storage, cache, widgetRepository);
+        HashMap<String, PortfolioStock> stocks =
+                portfolioStockRepository.getStocksForWidget(symbols);
+
         // Check if we have an empty portfolio
         boolean noPortfolio = stocks.isEmpty();
-        SparseBooleanArray enabledViews = getEnabledViews(widgetStorage, widgetSize, noPortfolio);
+        HashMap<ViewType, Boolean> enabledViews =
+                getEnabledViews(widgetStorage, widgetSize, noPortfolio);
+
         // Check if we have any portfolio-less views
-        boolean defaultViews = enabledViews.get(VIEW_DAILY_PERCENT) && enabledViews.get(VIEW_DAILY_CHANGE);
+        boolean defaultViews = enabledViews.get(ViewType.VIEW_DAILY_PERCENT)
+                && enabledViews.get(ViewType.VIEW_DAILY_CHANGE);
+
         // Setup setOnClickPendingIntents
         setOnClickPendingIntents(context, appWidgetId, views);
+
         // Return here if we are requesting a portfolio view and we have
         // no portfolio items to report on
-        if (updateMode == VIEW_CHANGE && noPortfolio && !defaultViews) {
+        if (updateMode == UpdateType.VIEW_CHANGE && noPortfolio && !defaultViews) {
             return;
         }
+
         // Retrieve the last shown widgetView from the prefs
         int widgetDisplay = widgetStorage.getInt("widgetView", 0);
-        if (updateMode == VIEW_CHANGE) {
+        if (updateMode == UpdateType.VIEW_CHANGE) {
             widgetDisplay += 1;
             widgetDisplay = widgetDisplay % 10;
         }
+
         // Skip views as relevant
         int count = 0;
-        while (!enabledViews.get(widgetDisplay)) {
+        while (!enabledViews.get(ViewType.values()[widgetDisplay])) {
             count += 1;
             widgetDisplay += 1;
             widgetDisplay = widgetDisplay % 10;
@@ -548,6 +552,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
                 break;
             }
         }
+
         // Only bother to save if the widget view changed
         if (widgetDisplay != widgetStorage.getInt("widgetView", 0)) {
             widgetStorage.putInt("widgetView", widgetDisplay);
@@ -555,6 +560,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         }
         StockQuoteRepository dataSource = new StockQuoteRepository(appStorage, new PreferenceCache(context), widgetRepository);
         String quotesTimeStamp = dataSource.getTimeStamp();
+
         // If we have stock data then update the widget view
         if (!quotes.isEmpty()) {
             widgetView.clear();
@@ -569,7 +575,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
                 quoteInfo = quotes.get(symbol);
                 line_no++;
                 HashMap<String, Object> formattedRow = getFormattedRow(symbol, quoteInfo, stocks,
-                        widgetDisplay, widgetStorage, widgetSize);
+                        ViewType.values()[widgetDisplay], widgetStorage, widgetSize);
                 // Values
                 views.setTextViewText(getStockViewId(line_no, 1), makeBold(widgetStorage, (String) formattedRow.get("COL0_VALUE")));
                 views.setTextViewText(getStockViewId(line_no, 2), makeBold(widgetStorage, (String) formattedRow.get("COL1_VALUE")));
@@ -650,7 +656,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
                     // Set the widget view text in the footer
                     String currentViewText = "";
                     if (widgetSize == 0 || widgetSize == 2) {
-                        switch (widgetDisplay) {
+                        switch (ViewType.values()[widgetDisplay]) {
                             case VIEW_DAILY_PERCENT:
                                 currentViewText = "";
                                 break;
@@ -683,7 +689,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
                                 break;
                         }
                     } else {
-                        switch (widgetDisplay) {
+                        switch (ViewType.values()[widgetDisplay]) {
                             case VIEW_DAILY_PERCENT:
                                 currentViewText = "";
                                 break;
@@ -726,14 +732,14 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         }
     }
 
-    public static void updateWidgetAsync(Context context, int appWidgetId, int updateMode) {
-        new GetDataTask().execute(context, appWidgetId, updateMode);
+    public static void updateWidgetAsync(Context context, int appWidgetId, UpdateType updateType) {
+        new GetDataTask().execute(context, appWidgetId, updateType);
     }
 
-    public static void updateWidgets(Context context, int updateMode) {
+    public static void updateWidgets(Context context, UpdateType updateType) {
         WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
         for (int appWidgetId : widgetRepository.getIds()) {
-            WidgetProviderBase.updateWidgetAsync(context, appWidgetId, updateMode);
+            WidgetProviderBase.updateWidgetAsync(context, appWidgetId, updateType);
         }
 
         CustomAlarmManager alarmManager = new CustomAlarmManager(context);
@@ -772,9 +778,9 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
 
         // Perform updates as appropriate
         if (doUpdates) {
-            updateWidgets(context, VIEW_UPDATE);
+            updateWidgets(context, UpdateType.VIEW_UPDATE);
         } else {
-            updateWidgets(context, VIEW_NO_UPDATE);
+            updateWidgets(context, UpdateType.VIEW_NO_UPDATE);
         }
     }
 
@@ -782,7 +788,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         if (action.equals("LEFT")) {
             startPreferencesActivity(context, appWidgetId);
         } else if (action.equals("RIGHT")) {
-            updateWidgetAsync(context, appWidgetId, VIEW_CHANGE);
+            updateWidgetAsync(context, appWidgetId, UpdateType.VIEW_CHANGE);
         }
     }
 
@@ -821,7 +827,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
 
     public void updateWidgetsFromCache(Context context) {
         for (int id : new AndroidWidgetRepository(context).getIds()) {
-            updateWidgetAsync(context, id, VIEW_NO_UPDATE);
+            updateWidgetAsync(context, id, UpdateType.VIEW_NO_UPDATE);
         }
     }
 
@@ -853,12 +859,31 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         UserData.cleanupPreferenceFiles(context);
     }
 
+    public static enum ViewType {
+        VIEW_DAILY_PERCENT,
+        VIEW_DAILY_CHANGE,
+        VIEW_PORTFOLIO_PERCENT,
+        VIEW_PORTFOLIO_CHANGE,
+        VIEW_PORTFOLIO_PERCENT_AER,
+        VIEW_PL_DAILY_PERCENT,
+        VIEW_PL_DAILY_CHANGE,
+        VIEW_PL_PERCENT,
+        VIEW_PL_CHANGE,
+        VIEW_PL_PERCENT_AER
+    }
+
+    public static enum UpdateType {
+        VIEW_UPDATE,
+        VIEW_NO_UPDATE,
+        VIEW_CHANGE
+    }
+
     private static class GetDataTask extends AsyncTask<Object, Void, Void> {
         @Override
         protected Void doInBackground(Object... params) {
             Context context = (Context) params[0];
             int appWidgetId = (Integer) params[1];
-            int updateMode = (Integer) params[2];
+            UpdateType updateMode = (UpdateType) params[2];
 
             // Get widget SharedPreferences
             WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
@@ -888,7 +913,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
             StockQuoteRepository dataSource = new StockQuoteRepository(appStorage,
                     new PreferenceCache(context), widgetRepository);
             HashMap<String, StockQuote> quotes = dataSource.getQuotes(
-                    Arrays.asList(symbols), updateMode == VIEW_UPDATE);
+                    Arrays.asList(symbols), updateMode == UpdateType.VIEW_UPDATE);
             updateWidget(context, appWidgetId, updateMode, quotes);
 
             return null;
