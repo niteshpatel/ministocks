@@ -674,7 +674,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
             mStocksDirty = false;
             WidgetProviderBase.updateWidgets(getApplicationContext(), WidgetProviderBase.VIEW_UPDATE);
         } else {
-            WidgetProviderBase.update(getApplicationContext(), mAppWidgetId, WidgetProviderBase.VIEW_NO_UPDATE);
+            WidgetProviderBase.updateWidgetAsync(getApplicationContext(), mAppWidgetId, WidgetProviderBase.VIEW_NO_UPDATE);
         }
         finish();
     }

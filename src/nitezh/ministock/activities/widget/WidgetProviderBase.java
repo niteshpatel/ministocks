@@ -24,7 +24,6 @@
 
 package nitezh.ministock.activities.widget;
 
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
@@ -48,6 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import nitezh.ministock.Cache;
+import nitezh.ministock.CustomAlarmManager;
 import nitezh.ministock.PreferenceCache;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
@@ -84,8 +84,6 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
     private static final int VIEW_PL_PERCENT = 7;
     private static final int VIEW_PL_CHANGE = 8;
     private static final int VIEW_PL_PERCENT_AER = 9;
-    // Static variables used by the alarm manager
-    private static final String ALARM_UPDATE = "nitezh.ministock.ALARM_UPDATE";
     // Colours
     private static final int COLOUR_GAIN = Color.parseColor("#CCFF66");
     private static final int COLOUR_LOSS = Color.parseColor("#FF6666");
@@ -95,73 +93,8 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
     private static final int COLOUR_VOLUME = Color.LTGRAY;
     private static final int COLOUR_NA = Color.parseColor("#66CCCC");
 
-    private static RemoteViews getRemoteViews(Context context, Storage preferences, int widgetSize) {
-        // Retrieve background preference and layoutId
-        String background = preferences.getString("background", "transparent");
-        Integer drawableId;
-        switch (background) {
-            case "transparent":
-                if (preferences.getBoolean("large_font", false)) {
-                    drawableId = R.drawable.ministock_bg_transparent68_large;
-                } else {
-                    drawableId = R.drawable.ministock_bg_transparent68;
-                }
-                break;
-            case "none":
-                drawableId = R.drawable.blank;
-                break;
-            default:
-                if (preferences.getBoolean("large_font", false)) {
-                    drawableId = R.drawable.ministock_bg_large;
-                } else {
-                    drawableId = R.drawable.ministock_bg;
-                }
-                break;
-        }
-        // Return the matching remote views instance
-        RemoteViews views;
-        if (widgetSize == 1) {
-            if (preferences.getBoolean("large_font", false)) {
-                views = new RemoteViews(context.getPackageName(), R.layout.widget_1x4_large);
-            } else {
-                views = new RemoteViews(context.getPackageName(), R.layout.widget_1x4);
-            }
-        } else if (widgetSize == 2) {
-            if (preferences.getBoolean("large_font", false)) {
-                views = new RemoteViews(context.getPackageName(), R.layout.widget_2x2_large);
-            } else {
-                views = new RemoteViews(context.getPackageName(), R.layout.widget_2x2);
-            }
-        } else if (widgetSize == 3) {
-            if (preferences.getBoolean("large_font", false)) {
-                views = new RemoteViews(context.getPackageName(), R.layout.widget_2x4_large);
-            } else {
-                views = new RemoteViews(context.getPackageName(), R.layout.widget_2x4);
-            }
-        } else {
-            if (preferences.getBoolean("large_font", false)) {
-                views = new RemoteViews(context.getPackageName(), R.layout.widget_1x2_large);
-            } else {
-                views = new RemoteViews(context.getPackageName(), R.layout.widget_1x2);
-            }
-        }
-        views.setImageViewResource(R.id.widget_bg, drawableId);
-        return views;
-    }
-
     private static int getStockViewId(int line, int col) {
         return ReflectionTools.getField("text" + line + col);
-    }
-
-    // Display the correct number of widget rows
-    private static void displayRows(RemoteViews views, int arraySize) {
-        for (int i = 0; i < 11; i++) {
-            int viewId = ReflectionTools.getField("line" + i);
-            if (viewId > 0)
-                views.setViewVisibility(ReflectionTools.getField("line" + i), View.GONE);
-        }
-        for (int i = 1; i < arraySize + 1; i++)
-            views.setViewVisibility(ReflectionTools.getField("line" + i), View.VISIBLE);
     }
 
     // Global formatter so we can perform global text formatting in one place
@@ -557,22 +490,19 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
 
         // Get widget SharedPreferences
         Storage widgetStorage = widgetRepository.getWidget(appWidgetId).getStorage();
+
         // Choose between two widget sizes
         int widgetSize = widgetStorage.getInt("widgetSize", 0);
+
         // Get relevant RemoteViews
-        RemoteViews views = getRemoteViews(context, widgetStorage, widgetSize);
-        // Get the array size for widgets
-        int arraySize = 0;
-        if (widgetSize == 0 || widgetSize == 1)
-            arraySize = 4;
-        else if (widgetSize == 2 || widgetSize == 3)
-            arraySize = 10;
+        WidgetView widgetView = new WidgetView(context.getPackageName(), widgetStorage);
+        RemoteViews views = widgetView.getViews();
+
         // Hide any rows for smaller widgets
-        displayRows(views, arraySize);
         boolean found = false;
         List<String> symbols = new ArrayList<>();
         String sym;
-        for (int i = 0; i < arraySize; i++) {
+        for (int i = 0; i < widgetView.getRowCount(); i++) {
             sym = widgetStorage.getString("Stock" + (i + 1), "");
             symbols.add(sym);
             if (!sym.equals("")) {
@@ -601,46 +531,33 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
             return;
         }
         // Retrieve the last shown widgetView from the prefs
-        int widgetView = widgetStorage.getInt("widgetView", 0);
+        int widgetDisplay = widgetStorage.getInt("widgetView", 0);
         if (updateMode == VIEW_CHANGE) {
-            widgetView += 1;
-            widgetView = widgetView % 10;
+            widgetDisplay += 1;
+            widgetDisplay = widgetDisplay % 10;
         }
         // Skip views as relevant
         int count = 0;
-        while (!enabledViews.get(widgetView)) {
+        while (!enabledViews.get(widgetDisplay)) {
             count += 1;
-            widgetView += 1;
-            widgetView = widgetView % 10;
+            widgetDisplay += 1;
+            widgetDisplay = widgetDisplay % 10;
             // Percent change as default view if none selected
             if (count > 10) {
-                widgetView = 0;
+                widgetDisplay = 0;
                 break;
             }
         }
         // Only bother to save if the widget view changed
-        if (widgetView != widgetStorage.getInt("widgetView", 0)) {
-            widgetStorage.putInt("widgetView", widgetView);
+        if (widgetDisplay != widgetStorage.getInt("widgetView", 0)) {
+            widgetStorage.putInt("widgetView", widgetDisplay);
             widgetStorage.apply();
         }
         StockQuoteRepository dataSource = new StockQuoteRepository(appStorage, new PreferenceCache(context), widgetRepository);
         String quotesTimeStamp = dataSource.getTimeStamp();
         // If we have stock data then update the widget view
         if (!quotes.isEmpty()) {
-            // Clear existing widget appearance
-            if (widgetSize == 1 || widgetSize == 3) {
-                for (int i = 1; i < arraySize + 1; i++) {
-                    for (int j = 1; j < 6; j++) {
-                        views.setTextViewText(getStockViewId(i, j), "");
-                    }
-                }
-            } else {
-                for (int i = 1; i < arraySize + 1; i++) {
-                    for (int j = 1; j < 4; j++) {
-                        views.setTextViewText(getStockViewId(i, j), "");
-                    }
-                }
-            }
+            widgetView.clear();
             int line_no = 0;
             for (String symbol : symbols) {
                 // Skip blank symbols
@@ -652,7 +569,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
                 quoteInfo = quotes.get(symbol);
                 line_no++;
                 HashMap<String, Object> formattedRow = getFormattedRow(symbol, quoteInfo, stocks,
-                        widgetView, widgetStorage, widgetSize);
+                        widgetDisplay, widgetStorage, widgetSize);
                 // Values
                 views.setTextViewText(getStockViewId(line_no, 1), makeBold(widgetStorage, (String) formattedRow.get("COL0_VALUE")));
                 views.setTextViewText(getStockViewId(line_no, 2), makeBold(widgetStorage, (String) formattedRow.get("COL1_VALUE")));
@@ -733,7 +650,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
                     // Set the widget view text in the footer
                     String currentViewText = "";
                     if (widgetSize == 0 || widgetSize == 2) {
-                        switch (widgetView) {
+                        switch (widgetDisplay) {
                             case VIEW_DAILY_PERCENT:
                                 currentViewText = "";
                                 break;
@@ -766,7 +683,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
                                 break;
                         }
                     } else {
-                        switch (widgetView) {
+                        switch (widgetDisplay) {
                             case VIEW_DAILY_PERCENT:
                                 currentViewText = "";
                                 break;
@@ -809,140 +726,92 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         }
     }
 
-    public static void update(Context context, int appWidgetId, int updateMode) {
-        // Get widget SharedPreferences
-        WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
-        Storage prefs = widgetRepository.getWidget(appWidgetId).getStorage();
-        // Choose between two widget sizes
-        int widgetSize = prefs.getInt("widgetSize", 0);
-        // Get the array size for widgets
-        int arraySize = 0;
-        if (widgetSize == 0 || widgetSize == 1)
-            arraySize = 4;
-        else if (widgetSize == 2 || widgetSize == 3)
-            arraySize = 10;
-        boolean found = false;
-        String[] stocks = new String[arraySize];
-        for (int i = 0; i < arraySize; i++) {
-            stocks[i] = prefs.getString("Stock" + (i + 1), "");
-            if (!stocks[i].equals("")) {
-                found = true;
-            }
-        }
-        // Ensure widget is not empty
-        if (!found) {
-            stocks[0] = "^DJI";
-        }
-        new GetDataTask().execute(context, appWidgetId, updateMode, stocks);
+    public static void updateWidgetAsync(Context context, int appWidgetId, int updateMode) {
+        new GetDataTask().execute(context, appWidgetId, updateMode);
     }
 
     public static void updateWidgets(Context context, int updateMode) {
         WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
-        for (int appWidgetId : widgetRepository.getIds())
-            WidgetProviderBase.update(context, appWidgetId, updateMode);
+        for (int appWidgetId : widgetRepository.getIds()) {
+            WidgetProviderBase.updateWidgetAsync(context, appWidgetId, updateMode);
+        }
 
-        // Update last update time
-        Storage prefs = PreferenceStorage.getInstance(context);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        prefs.putString("last_update1", formatter.format(new Date()));
-        prefs.apply();
-
-        // Reset the alarm
-        updateAlarmManager(context);
+        CustomAlarmManager alarmManager = new CustomAlarmManager(context);
+        alarmManager.setUpdateTimestamp();
+        alarmManager.update();
     }
 
     private static void doScheduledUpdates(Context context) {
-        /*
-         * Update the widget if allowed by the update schedule
-		 */
         boolean doUpdates = true;
         Storage prefs = PreferenceStorage.getInstance(context);
+
         // Only update after start time
         String startTime = prefs.getString("update_start", null);
         if (startTime != null && !startTime.equals("")) {
-            if (DateTools.compareToNow(DateTools.parseSimpleDate(startTime)) == 1)
+            if (DateTools.compareToNow(DateTools.parseSimpleDate(startTime)) == 1) {
                 doUpdates = false;
+            }
         }
+
         // Only update before end time
         String endTime = prefs.getString("update_end", null);
         if (endTime != null && !endTime.equals("")) {
-            if (DateTools.compareToNow(DateTools.parseSimpleDate(endTime)) == -1)
+            if (DateTools.compareToNow(DateTools.parseSimpleDate(endTime)) == -1) {
                 doUpdates = false;
+            }
         }
+
         // Do not update on weekends
         Boolean update_weekend = prefs.getBoolean("update_weekend", false);
         if (!update_weekend) {
             int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-            if (dayOfWeek == 1 || dayOfWeek == 7)
+            if (dayOfWeek == 1 || dayOfWeek == 7) {
                 doUpdates = false;
+            }
         }
+
         // Perform updates as appropriate
-        if (doUpdates)
+        if (doUpdates) {
             updateWidgets(context, VIEW_UPDATE);
-        else
+        } else {
             updateWidgets(context, VIEW_NO_UPDATE);
+        }
     }
 
-    private static void updateAlarmManager(Context context) {
-        // Get the alarm service
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        // Cancel existing alarms
-        Intent intent = new Intent(ALARM_UPDATE);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, intent, 0);
-        alarmManager.cancel(pendingIntent);
-        // Get the configured update interval (default 30 minutes)
-        Storage prefs = PreferenceStorage.getInstance(context);
-        Long interval = Long.parseLong((prefs.getString("update_interval", Long.toString(AlarmManager.INTERVAL_HALF_HOUR))));
-        // First update delay
-        Double firstInterval = interval.doubleValue();
-        // Get the last update time
-        String lastUpdate = prefs.getString("last_update1", null);
-        Double elapsed = DateTools.elapsedTime(lastUpdate);
-        // If the elapsed time is greater than the interval, then update now
-        // otherwise, work out how much longer until the next update
-        if (elapsed > 0)
-            firstInterval = Math.max(interval - elapsed, 0);
-        // Set the manager up with the specified interval
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.add(Calendar.MILLISECOND, firstInterval.intValue());
-        alarmManager.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), interval, pendingIntent);
+    public void handleTouch(Context context, int appWidgetId, String action) {
+        if (action.equals("LEFT")) {
+            startPreferencesActivity(context, appWidgetId);
+        } else if (action.equals("RIGHT")) {
+            updateWidgetAsync(context, appWidgetId, VIEW_CHANGE);
+        }
     }
 
-    private static void cancelAlarmManager(Context context) {
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(ALARM_UPDATE), 0);
-        alarmManager.cancel(pendingIntent);
+    public void startPreferencesActivity(Context context, int appWidgetId) {
+        PreferencesActivity.mAppWidgetId = appWidgetId;
+        Intent activity = new Intent(context, PreferencesActivity.class);
+        activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(activity);
     }
 
     @Override
     public void onReceive(@SuppressWarnings("NullableProblems") Context context,
                           @SuppressWarnings("NullableProblems") Intent intent) {
         String action = intent.getAction();
-        // Update all widgets if requested
         switch (action) {
-            case ALARM_UPDATE:
+            case CustomAlarmManager.ALARM_UPDATE:
                 doScheduledUpdates(context);
+
                 break;
             case "LEFT":
             case "RIGHT":
                 Bundle extras = intent.getExtras();
                 if (extras != null) {
-                    int appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-                    // Bring up the preferences screen if the user clicked
-                    // on the left side of the widget
-                    if (!action.equals("RIGHT")) {
-                        PreferencesActivity.mAppWidgetId = appWidgetId;
-                        Intent activity = new Intent(context, PreferencesActivity.class);
-                        activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(activity);
-                    }
-                    // Update the widget if the user clicked on the right
-                    // side of the widget
-                    else {
-                        update(context, appWidgetId, VIEW_CHANGE);
-                    }
+                    int appWidgetId = extras.getInt(
+                            AppWidgetManager.EXTRA_APPWIDGET_ID,
+                            AppWidgetManager.INVALID_APPWIDGET_ID);
+                    handleTouch(context, appWidgetId, action);
                 }
+
                 break;
             default:
                 super.onReceive(context, intent);
@@ -950,22 +819,23 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
         }
     }
 
+    public void updateWidgetsFromCache(Context context) {
+        for (int id : new AndroidWidgetRepository(context).getIds()) {
+            updateWidgetAsync(context, id, VIEW_NO_UPDATE);
+        }
+    }
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        updateAlarmManager(context);
-
-        // Update the intersection of the appWidgetManager appWidgetIds and the
-        WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
-        for (int i : widgetRepository.getIds()) {
-            update(context, i, VIEW_NO_UPDATE);
-        }
+        new CustomAlarmManager(context).update();
+        updateWidgetsFromCache(context);
     }
 
     @Override
     public void onEnabled(Context context) {
         super.onEnabled(context);
 
-        updateAlarmManager(context);
+        new CustomAlarmManager(context).update();
     }
 
     @Override
@@ -977,26 +847,50 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
             widgetRepository.delWidgetId(appWidgetId);
         }
         if (widgetRepository.isEmpty()) {
-            cancelAlarmManager(context);
+            new CustomAlarmManager(context).cancel();
         }
 
         UserData.cleanupPreferenceFiles(context);
     }
 
     private static class GetDataTask extends AsyncTask<Object, Void, Void> {
-        // Do the long-running work in here
         @Override
         protected Void doInBackground(Object... params) {
             Context context = (Context) params[0];
             int appWidgetId = (Integer) params[1];
             int updateMode = (Integer) params[2];
-            String[] symbols = (String[]) params[3];
-            Storage appStorage = PreferenceStorage.getInstance(context);
+
+            // Get widget SharedPreferences
             WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
-            StockQuoteRepository dataSource = new StockQuoteRepository(appStorage, new PreferenceCache(context), widgetRepository);
+            Storage storage = widgetRepository.getWidget(appWidgetId).getStorage();
+            // Choose between two widget sizes
+            int widgetSize = storage.getInt("widgetSize", 0);
+            // Get the array size for widgets
+            int arraySize = 0;
+            if (widgetSize == 0 || widgetSize == 1)
+                arraySize = 4;
+            else if (widgetSize == 2 || widgetSize == 3)
+                arraySize = 10;
+            boolean found = false;
+            String[] symbols = new String[arraySize];
+            for (int i = 0; i < arraySize; i++) {
+                symbols[i] = storage.getString("Stock" + (i + 1), "");
+                if (!symbols[i].equals("")) {
+                    found = true;
+                }
+            }
+            // Ensure widget is not empty
+            if (!found) {
+                symbols[0] = "^DJI";
+            }
+
+            Storage appStorage = PreferenceStorage.getInstance(context);
+            StockQuoteRepository dataSource = new StockQuoteRepository(appStorage,
+                    new PreferenceCache(context), widgetRepository);
             HashMap<String, StockQuote> quotes = dataSource.getQuotes(
                     Arrays.asList(symbols), updateMode == VIEW_UPDATE);
             updateWidget(context, appWidgetId, updateMode, quotes);
+
             return null;
         }
     }

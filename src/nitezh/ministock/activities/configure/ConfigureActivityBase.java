@@ -60,7 +60,7 @@ abstract class ConfigureActivityBase extends Activity {
             setResult(RESULT_OK, resultValue);
 
             new AndroidWidgetRepository(getBaseContext()).addWidget(appWidgetId, size);
-            WidgetProviderBase.update(getApplicationContext(), appWidgetId, WidgetProviderBase.VIEW_UPDATE);
+            WidgetProviderBase.updateWidgetAsync(getApplicationContext(), appWidgetId, WidgetProviderBase.VIEW_UPDATE);
         }
         finish();
     }
