@@ -32,7 +32,9 @@ import android.content.res.Resources;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import nitezh.ministock.PreferenceStorage;
@@ -100,14 +102,6 @@ public class AndroidWidget implements Widget {
     }
 
     @Override
-    public void setSize(int size) {
-        this.storage.putInt("widgetSize", size);
-        if (size == 0 || size == 2) {
-            this.setPercentChange(true);
-        }
-    }
-
-    @Override
     public void setPercentChange(boolean b) {
         this.storage.putBoolean("show_percent_change", true);
     }
@@ -125,5 +119,72 @@ public class AndroidWidget implements Widget {
     @Override
     public void save() {
         this.storage.apply();
+    }
+
+    @Override
+    public int getId() {
+        return this.id;
+    }
+
+    @Override
+    public int getSize() {
+        return this.storage.getInt("widgetSize", 0);
+    }
+
+    @Override
+    public void setSize(int size) {
+        this.storage.putInt("widgetSize", size);
+        if (size == 0 || size == 2) {
+            this.setPercentChange(true);
+        }
+    }
+
+    @Override
+    public String getStock(int i) {
+        return this.storage.getString("Stock" + (i + 1), "");
+    }
+
+    @Override
+    public int getPreviousView() {
+        return this.storage.getInt("widgetView", 0);
+    }
+
+    @Override
+    public void setView(int view) {
+        if (view != this.getPreviousView()) {
+            this.storage.putInt("widgetView", view);
+            this.save();
+        }
+    }
+
+    @Override
+    public List<String> getSymbols() {
+        boolean found = false;
+        List<String> symbols = new ArrayList<>();
+        String s;
+        for (int i = 0; i < this.getSymbolCount(); i++) {
+            s = this.getStock(i);
+            symbols.add(s);
+            if (!s.equals("")) {
+                found = true;
+            }
+        }
+
+        if (!found) {
+            symbols.add("^DJI");
+        }
+        return symbols;
+    }
+
+    @Override
+    public int getSymbolCount() {
+        int size = this.getSize();
+        int count = 0;
+        if (size == 0 || size == 1) {
+            count = 4;
+        } else if (size == 2 || size == 3) {
+            count = 10;
+        }
+        return count;
     }
 }

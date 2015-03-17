@@ -276,18 +276,18 @@ public class PortfolioStockRepository {
         mDirtyPortfolioStockMap = true;
     }
 
-    public HashMap<String, PortfolioStock> getStocksForWidget(List<String> symbols) {
-        HashMap<String, PortfolioStock> stocksForWidget = new HashMap<>();
+    public HashMap<String, PortfolioStock> getStocksForSymbols(List<String> symbols) {
+        HashMap<String, PortfolioStock> stocksForSymbols = new HashMap<>();
         HashMap<String, PortfolioStock> stocks = this.getStocks();
 
         for (String symbol : symbols) {
             PortfolioStock stock = stocks.get(symbol);
             if (stock != null && !stock.isEmpty()) {
-                stocksForWidget.put(symbol, stock);
+                stocksForSymbols.put(symbol, stock);
             }
         }
 
-        return stocksForWidget;
+        return stocksForSymbols;
     }
 
     public List<String> getSortedSymbols() {

@@ -125,4 +125,23 @@ public class NumberTools {
             return defaultValue;
         }
     }
+
+    public static String getNormalisedVolume(String value) {
+        Double volume;
+        try {
+            volume = parseDouble(value);
+            if (volume > 999999999999D)
+                value = String.format("%.0fT", volume / 1000000000000D);
+            else if (volume > 999999999D)
+                value = String.format("%.0fB", volume / 1000000000D);
+            else if (volume > 999999D)
+                value = String.format("%.0fM", volume / 1000000D);
+            else if (volume > 999D)
+                value = String.format("%.0fK", volume / 1000D);
+            else
+                value = String.format("%.0f", volume);
+        } catch (Exception ignored) {
+        }
+        return value;
+    }
 }

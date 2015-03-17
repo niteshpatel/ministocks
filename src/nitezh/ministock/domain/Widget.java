@@ -2,6 +2,8 @@ package nitezh.ministock.domain;
 
 import org.json.JSONObject;
 
+import java.util.List;
+
 import nitezh.ministock.Storage;
 
 
@@ -12,8 +14,6 @@ public interface Widget {
 
     JSONObject getWidgetPreferencesAsJson();
 
-    void setSize(int size);
-
     @SuppressWarnings("UnusedDeclaration")
     void setPercentChange(boolean b);
 
@@ -22,4 +22,20 @@ public interface Widget {
     void setStock1Summary(String s);
 
     void save();
+
+    int getId();
+
+    int getSize();
+
+    void setSize(int size);
+
+    String getStock(int i);
+
+    int getPreviousView();
+
+    void setView(int view);
+
+    List<String> getSymbols();
+
+    int getSymbolCount();
 }
