@@ -850,7 +850,7 @@ public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
 
         WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
         for (int appWidgetId : appWidgetIds) {
-            widgetRepository.delWidgetId(appWidgetId);
+            widgetRepository.delWidget(appWidgetId);
         }
         if (widgetRepository.isEmpty()) {
             new CustomAlarmManager(context).cancel();

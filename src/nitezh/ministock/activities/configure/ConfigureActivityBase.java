@@ -35,6 +35,7 @@ import java.util.concurrent.Callable;
 import nitezh.ministock.DialogTools;
 import nitezh.ministock.activities.widget.WidgetProviderBase;
 import nitezh.ministock.domain.AndroidWidgetRepository;
+import nitezh.ministock.domain.WidgetRepository;
 
 
 abstract class ConfigureActivityBase extends Activity {
@@ -59,7 +60,8 @@ abstract class ConfigureActivityBase extends Activity {
             resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             setResult(RESULT_OK, resultValue);
 
-            new AndroidWidgetRepository(getBaseContext()).addWidget(appWidgetId, size);
+            WidgetRepository widgetRepository = new AndroidWidgetRepository(getBaseContext());
+            widgetRepository.addWidget(appWidgetId, size);
             WidgetProviderBase.updateWidgetAsync(getApplicationContext(), appWidgetId,
                     WidgetProviderBase.UpdateType.VIEW_UPDATE);
         }

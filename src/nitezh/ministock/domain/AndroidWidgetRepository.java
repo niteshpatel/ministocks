@@ -48,7 +48,7 @@ public class AndroidWidgetRepository implements WidgetRepository {
     }
 
     @Override
-    public void delWidgetId(int appWidgetId) {
+    public void delWidget(int appWidgetId) {
         // Get the existing widgetIds from the storage
         ArrayList<String> newAppWidgetIds = new ArrayList<>();
         Collections.addAll(newAppWidgetIds, this.appStorage.getString("appWidgetIds", "").split(","));
@@ -92,8 +92,7 @@ public class AndroidWidgetRepository implements WidgetRepository {
         return widget;
     }
 
-    @Override
-    public void addWidgetId(int id) {
+    private void addWidgetId(int id) {
         if (this.getIds().contains(id)) {
             return;
         }

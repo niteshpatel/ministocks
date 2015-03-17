@@ -24,8 +24,6 @@
 
 package nitezh.ministock.domain;
 
-import android.content.Context;
-
 import java.util.Set;
 
 
@@ -37,12 +35,9 @@ public interface WidgetRepository {
 
     Set<String> getWidgetsStockSymbols();
 
-    void delWidgetId(int id);
+    void delWidget(int id);
 
     Widget getWidget(int id);
 
-    @SuppressWarnings("UnusedDeclaration")
     Widget addWidget(int id, int size);
-
-    void addWidgetId(int id);
 }

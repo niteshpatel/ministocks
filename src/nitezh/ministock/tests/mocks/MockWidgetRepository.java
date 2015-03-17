@@ -60,7 +60,7 @@ public class MockWidgetRepository implements WidgetRepository {
     }
 
     @Override
-    public void delWidgetId(int id) {
+    public void delWidget(int id) {
     }
 
     @Override
@@ -73,7 +73,4 @@ public class MockWidgetRepository implements WidgetRepository {
         return this.getWidget(id);
     }
 
-    @Override
-    public void addWidgetId(int id) {
-    }
 }
