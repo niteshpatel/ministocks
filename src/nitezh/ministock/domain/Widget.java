@@ -38,4 +38,40 @@ public interface Widget {
     List<String> getSymbols();
 
     int getSymbolCount();
+
+    String getBackgroundStyle();
+
+    boolean useLargeFont();
+
+    boolean getHideSuffix();
+
+    boolean getTextStyle();
+
+    boolean getColorsOnPrices();
+
+    String getFooterVisibility();
+
+    String getFooterColor();
+
+    boolean showShortTime();
+
+    boolean hasDailyChangeView();
+
+    boolean hasTotalPercentView();
+
+    boolean hasDailyPercentView();
+
+    boolean hasTotalChangeView();
+
+    boolean hasTotalChangeAerView();
+
+    boolean hasDailyPlChangeView();
+
+    boolean hasDailyPlPercentView();
+
+    boolean hasTotalPlPercentView();
+
+    boolean hasTotalPlChangeView();
+
+    boolean hasTotalPlPercentAerView();
 }

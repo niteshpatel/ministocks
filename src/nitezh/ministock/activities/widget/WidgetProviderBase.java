@@ -25,6 +25,7 @@
 package nitezh.ministock.activities.widget;
 
 import android.appwidget.AppWidgetManager;
+import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -32,7 +33,6 @@ import android.os.Bundle;
 
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 
 import nitezh.ministock.CustomAlarmManager;
 import nitezh.ministock.PreferenceCache;
@@ -41,34 +41,23 @@ import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
 import nitezh.ministock.activities.PreferencesActivity;
 import nitezh.ministock.domain.AndroidWidgetRepository;
-import nitezh.ministock.domain.PortfolioStock;
-import nitezh.ministock.domain.PortfolioStockRepository;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.domain.StockQuoteRepository;
-import nitezh.ministock.domain.Widget;
 import nitezh.ministock.domain.WidgetRepository;
 import nitezh.ministock.utils.DateTools;
 
 
-public class WidgetProviderBase extends android.appwidget.AppWidgetProvider {
+public class WidgetProviderBase extends AppWidgetProvider {
 
     private static void applyUpdate(Context context, int appWidgetId, UpdateType updateMode,
-                                    HashMap<String, StockQuote> quotes, String timeStamp) {
-        WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
-        Widget widget = widgetRepository.getWidget(appWidgetId);
-        List<String> symbols = widget.getSymbols();
-
-        HashMap<String, PortfolioStock> portfolioStocks =
-                new PortfolioStockRepository(PreferenceStorage.getInstance(context),
-                        new PreferenceCache(context), widgetRepository).getStocksForSymbols(symbols);
-
-        WidgetView widgetView = new WidgetView(context, widget, portfolioStocks.isEmpty());
-        if (quotes.isEmpty() || !widgetView.canChangeView(updateMode)) {
-            return;
+                                    HashMap<String, StockQuote> quotes, String quotesTimeStamp) {
+        WidgetView widgetView = new WidgetView(context, appWidgetId, updateMode,
+                quotes, quotesTimeStamp);
+        widgetView.setOnClickPendingIntents();
+        if (widgetView.hasPendingChanges()) {
+            widgetView.applyPendingChanges();
+            AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, widgetView.getRemoteViews());
         }
-
-        widgetView.update(symbols, quotes, portfolioStocks, updateMode, timeStamp);
-        AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, widgetView.getRemoteViews());
     }
 
     public static void updateWidgetAsync(Context context, int appWidgetId, UpdateType updateType) {

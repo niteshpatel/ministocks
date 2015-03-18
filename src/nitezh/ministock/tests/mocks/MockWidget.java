@@ -26,6 +26,8 @@ package nitezh.ministock.tests.mocks;
 
 import org.json.JSONObject;
 
+import java.util.List;
+
 import nitezh.ministock.Storage;
 import nitezh.ministock.domain.Widget;
 
@@ -50,6 +52,121 @@ public class MockWidget implements Widget {
     }
 
     @Override
+    public String getStock(int i) {
+        return null;
+    }
+
+    @Override
+    public int getPreviousView() {
+        return 0;
+    }
+
+    @Override
+    public void setView(int view) {
+
+    }
+
+    @Override
+    public List<String> getSymbols() {
+        return null;
+    }
+
+    @Override
+    public int getSymbolCount() {
+        return 0;
+    }
+
+    @Override
+    public String getBackgroundStyle() {
+        return null;
+    }
+
+    @Override
+    public boolean useLargeFont() {
+        return false;
+    }
+
+    @Override
+    public boolean getHideSuffix() {
+        return false;
+    }
+
+    @Override
+    public boolean getTextStyle() {
+        return false;
+    }
+
+    @Override
+    public boolean getColorsOnPrices() {
+        return false;
+    }
+
+    @Override
+    public String getFooterVisibility() {
+        return null;
+    }
+
+    @Override
+    public String getFooterColor() {
+        return null;
+    }
+
+    @Override
+    public boolean showShortTime() {
+        return false;
+    }
+
+    @Override
+    public boolean hasDailyChangeView() {
+        return false;
+    }
+
+    @Override
+    public boolean hasTotalPercentView() {
+        return false;
+    }
+
+    @Override
+    public boolean hasDailyPercentView() {
+        return false;
+    }
+
+    @Override
+    public boolean hasTotalChangeView() {
+        return false;
+    }
+
+    @Override
+    public boolean hasTotalChangeAerView() {
+        return false;
+    }
+
+    @Override
+    public boolean hasDailyPlChangeView() {
+        return false;
+    }
+
+    @Override
+    public boolean hasDailyPlPercentView() {
+        return false;
+    }
+
+    @Override
+    public boolean hasTotalPlPercentView() {
+        return false;
+    }
+
+    @Override
+    public boolean hasTotalPlChangeView() {
+        return false;
+    }
+
+    @Override
+    public boolean hasTotalPlPercentAerView() {
+        return false;
+    }
+
+    @Override
     public void setPercentChange(boolean b) {
     }
 
@@ -64,5 +181,15 @@ public class MockWidget implements Widget {
     @Override
     public void save() {
 
+    }
+
+    @Override
+    public int getId() {
+        return 0;
+    }
+
+    @Override
+    public int getSize() {
+        return 0;
     }
 }

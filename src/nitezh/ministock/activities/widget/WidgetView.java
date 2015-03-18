@@ -40,12 +40,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import nitezh.ministock.PreferenceCache;
+import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
-import nitezh.ministock.Storage;
 import nitezh.ministock.WidgetProvider;
+import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.PortfolioStock;
+import nitezh.ministock.domain.PortfolioStockRepository;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.domain.Widget;
+import nitezh.ministock.domain.WidgetRepository;
 import nitezh.ministock.utils.CurrencyTools;
 import nitezh.ministock.utils.NumberTools;
 import nitezh.ministock.utils.ReflectionTools;
@@ -56,24 +60,80 @@ import static nitezh.ministock.activities.widget.WidgetProviderBase.ViewType;
 public class WidgetView {
 
     private final RemoteViews remoteViews;
-    private final int arraySize;
-    private final int widgetSize;
     private final Widget widget;
     private final boolean hasPortfolioData;
+    private final List<String> symbols;
+    private final HashMap<String, PortfolioStock> portfolioStocks;
+    private final HashMap<String, StockQuote> quotes;
+    private final UpdateType updateMode;
+    private final String quotesTimeStamp;
+    private final Context context;
     private HashMap<ViewType, Boolean> enabledViews;
-    private Storage storage;
 
-    public WidgetView(Context context, Widget widget, boolean hasPortfolioData) {
-        String packageName = context.getPackageName();
-        this.widget = widget;
-        this.hasPortfolioData = hasPortfolioData;
-        this.storage = widget.getStorage();
-        this.widgetSize = storage.getInt("widgetSize", 0);
-        String background = storage.getString("background", "transparent");
+    public WidgetView(Context context, int appWidgetId, UpdateType updateMode,
+                      HashMap<String, StockQuote> quotes, String quotesTimeStamp) {
+        WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
+
+        this.context = context;
+        this.widget = widgetRepository.getWidget(appWidgetId);
+        this.quotes = quotes;
+        this.quotesTimeStamp = quotesTimeStamp;
+        this.updateMode = updateMode;
+        this.symbols = widget.getSymbols();
+
+        this.portfolioStocks = new PortfolioStockRepository(PreferenceStorage.getInstance(context),
+                new PreferenceCache(context), widgetRepository).getStocksForSymbols(symbols);
+        this.hasPortfolioData = portfolioStocks.isEmpty();
+
+        this.remoteViews = this.getBlankRemoteViews(this.widget, context.getPackageName());
+        this.enabledViews = this.calculateEnabledViews(this.widget);
+    }
+
+    private static int getStockViewId(int line, int col) {
+        return ReflectionTools.getField("text" + line + col);
+    }
+
+    private RemoteViews getBlankRemoteViews(Widget widget, String packageName) {
+        String backgroundStyle = widget.getBackgroundStyle();
+        boolean useLargeFont = widget.useLargeFont();
+
+        RemoteViews views;
+        if (widget.getSize() == 1) {
+            if (useLargeFont) {
+                views = new RemoteViews(packageName, R.layout.widget_1x4_large);
+            } else {
+                views = new RemoteViews(packageName, R.layout.widget_1x4);
+            }
+        } else if (widget.getSize() == 2) {
+            if (useLargeFont) {
+                views = new RemoteViews(packageName, R.layout.widget_2x2_large);
+            } else {
+                views = new RemoteViews(packageName, R.layout.widget_2x2);
+            }
+        } else if (widget.getSize() == 3) {
+            if (useLargeFont) {
+                views = new RemoteViews(packageName, R.layout.widget_2x4_large);
+            } else {
+                views = new RemoteViews(packageName, R.layout.widget_2x4);
+            }
+        } else {
+            if (useLargeFont) {
+                views = new RemoteViews(packageName, R.layout.widget_1x2_large);
+            } else {
+                views = new RemoteViews(packageName, R.layout.widget_1x2);
+            }
+        }
+        views.setImageViewResource(R.id.widget_bg,
+                getImageViewSrcId(backgroundStyle, useLargeFont));
+        this.hideUnusedRows(views, widget.getSymbolCount());
+        return views;
+    }
+
+    private int getImageViewSrcId(String backgroundStyle, Boolean useLargeFont) {
         Integer imageViewSrcId;
-        switch (background) {
+        switch (backgroundStyle) {
             case "transparent":
-                if (storage.getBoolean("large_font", false)) {
+                if (useLargeFont) {
                     imageViewSrcId = R.drawable.ministock_bg_transparent68_large;
                 } else {
                     imageViewSrcId = R.drawable.ministock_bg_transparent68;
@@ -83,194 +143,130 @@ public class WidgetView {
                 imageViewSrcId = R.drawable.blank;
                 break;
             default:
-                if (storage.getBoolean("large_font", false)) {
+                if (useLargeFont) {
                     imageViewSrcId = R.drawable.ministock_bg_large;
                 } else {
                     imageViewSrcId = R.drawable.ministock_bg;
                 }
                 break;
         }
-
-        // Return the matching remote views instance
-        RemoteViews views;
-        if (widgetSize == 1) {
-            if (storage.getBoolean("large_font", false)) {
-                views = new RemoteViews(packageName, R.layout.widget_1x4_large);
-            } else {
-                views = new RemoteViews(packageName, R.layout.widget_1x4);
-            }
-        } else if (widgetSize == 2) {
-            if (storage.getBoolean("large_font", false)) {
-                views = new RemoteViews(packageName, R.layout.widget_2x2_large);
-            } else {
-                views = new RemoteViews(packageName, R.layout.widget_2x2);
-            }
-        } else if (widgetSize == 3) {
-            if (storage.getBoolean("large_font", false)) {
-                views = new RemoteViews(packageName, R.layout.widget_2x4_large);
-            } else {
-                views = new RemoteViews(packageName, R.layout.widget_2x4);
-            }
-        } else {
-            if (storage.getBoolean("large_font", false)) {
-                views = new RemoteViews(packageName, R.layout.widget_1x2_large);
-            } else {
-                views = new RemoteViews(packageName, R.layout.widget_1x2);
-            }
-        }
-        views.setImageViewResource(R.id.widget_bg, imageViewSrcId);
-        this.remoteViews = views;
-
-        // Get the array widgetSize for widgets
-        int arraySize = 0;
-        if (widgetSize == 0 || widgetSize == 1) {
-            arraySize = 4;
-        } else if (widgetSize == 2 || widgetSize == 3) {
-            arraySize = 10;
-        }
-        this.arraySize = arraySize;
-
-        // Hide any rows for smaller widgets
-        this.displayRows();
-        this.setEnabledViews();
-        this.setOnClickPendingIntents(context, widget.getId());
-    }
-
-    private static int getStockViewId(int line, int col) {
-        return ReflectionTools.getField("text" + line + col);
+        return imageViewSrcId;
     }
 
     // Global formatter so we can perform global text formatting in one place
-    private static SpannableString makeBold(Storage prefs, String s) {
+    private SpannableString makeBold(String s) {
         SpannableString span = new SpannableString(s);
-        if (prefs.getString("text_style", "normal").equals("bold"))
+        if (this.widget.getTextStyle()) {
             span.setSpan(new StyleSpan(Typeface.BOLD), 0, s.length(), 0);
-        else
+        } else {
             span.setSpan(new StyleSpan(Typeface.NORMAL), 0, s.length(), 0);
+        }
         return span;
     }
 
-    private void setOnClickPendingIntents(Context context, int appWidgetId) {
-        // Set an onClick handler on the 'widget_left' layout
-        Intent left_intent = new Intent(context, WidgetProvider.class);
-        left_intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        left_intent.setAction("LEFT");
-        this.remoteViews.setOnClickPendingIntent(R.id.widget_left, PendingIntent.getBroadcast(context, appWidgetId, left_intent, 0));
+    public void setOnClickPendingIntents() {
+        Intent leftTouchIntent = new Intent(this.context, WidgetProvider.class);
+        leftTouchIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widget.getId());
+        leftTouchIntent.setAction("LEFT");
+        this.remoteViews.setOnClickPendingIntent(R.id.widget_left,
+                PendingIntent.getBroadcast(this.context, this.widget.getId(), leftTouchIntent, 0));
 
-        // Set an onClick handler on the 'widget_right' layout
-        Intent right_intent = new Intent(context, WidgetProvider.class);
-        right_intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        right_intent.setAction("RIGHT");
-        this.remoteViews.setOnClickPendingIntent(R.id.widget_right, PendingIntent.getBroadcast(context, appWidgetId, right_intent, 0));
-    }
-
-    public void setEnabledViews() {
-        Storage storage = this.widget.getStorage();
-        int size = this.widget.getSize();
-
-        // Get widget view prefs
-        boolean dailyChangePc = storage.getBoolean("show_percent_change", false);
-        boolean dailyChange = storage.getBoolean("show_absolute_change", false);
-        boolean totalChangePc = storage.getBoolean("show_portfolio_change", false);
-        boolean totalChange = storage.getBoolean("show_portfolio_abs", false);
-        boolean totalChangeAer = storage.getBoolean("show_portfolio_aer", false);
-        boolean plDailyChangePc = storage.getBoolean("show_profit_daily_change", false);
-        boolean plDailyChange = storage.getBoolean("show_profit_daily_abs", false);
-        boolean plTotalChangePc = storage.getBoolean("show_profit_change", false);
-        boolean plTotalChange = storage.getBoolean("show_profit_abs", false);
-        boolean plTotalChangeAer = storage.getBoolean("show_profit_aer", false);
-
-        HashMap<WidgetProviderBase.ViewType, Boolean> enabledViews = new HashMap<>();
-        enabledViews.put(ViewType.VIEW_DAILY_PERCENT, dailyChangePc && (size == 0 || size == 2));
-        enabledViews.put(ViewType.VIEW_DAILY_CHANGE, dailyChange);
-        enabledViews.put(ViewType.VIEW_PORTFOLIO_PERCENT, totalChangePc && (size == 0 || size == 2) && this.hasPortfolioData);
-        enabledViews.put(ViewType.VIEW_PORTFOLIO_CHANGE, totalChange && this.hasPortfolioData);
-        enabledViews.put(ViewType.VIEW_PORTFOLIO_PERCENT_AER, totalChangeAer && this.hasPortfolioData);
-        enabledViews.put(ViewType.VIEW_PL_DAILY_PERCENT, plDailyChangePc && (size == 0 || size == 2) && this.hasPortfolioData);
-        enabledViews.put(ViewType.VIEW_PL_DAILY_CHANGE, plDailyChange && this.hasPortfolioData);
-        enabledViews.put(ViewType.VIEW_PL_PERCENT, plTotalChangePc && (size == 0 || size == 2) && this.hasPortfolioData);
-        enabledViews.put(ViewType.VIEW_PL_CHANGE, plTotalChange);
-        enabledViews.put(ViewType.VIEW_PL_PERCENT_AER, plTotalChangeAer && this.hasPortfolioData);
-        this.enabledViews = enabledViews;
+        Intent rightTouchIntent = new Intent(this.context, WidgetProvider.class);
+        rightTouchIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widget.getId());
+        rightTouchIntent.setAction("RIGHT");
+        this.remoteViews.setOnClickPendingIntent(R.id.widget_right,
+                PendingIntent.getBroadcast(this.context, this.widget.getId(), rightTouchIntent, 0));
     }
 
     public HashMap<WidgetProviderBase.ViewType, Boolean> getEnabledViews() {
         return this.enabledViews;
     }
 
-    private HashMap<String, Object> getFormattedRow(String symbol, StockQuote quoteInfo,
-                                                    HashMap<String, PortfolioStock> portfolioStockMap, ViewType widgetView,
-                                                    Storage preferences, int widgetSize) {
-        // Create the HashMap for our return values
-        HashMap<String, Object> rowItems = new HashMap<>();
+    public HashMap<ViewType, Boolean> calculateEnabledViews(Widget widget) {
+        HashMap<WidgetProviderBase.ViewType, Boolean> enabledViews = new HashMap<>();
+        enabledViews.put(ViewType.VIEW_DAILY_PERCENT, widget.hasDailyPercentView());
+        enabledViews.put(ViewType.VIEW_DAILY_CHANGE, widget.hasDailyChangeView());
+        enabledViews.put(ViewType.VIEW_PORTFOLIO_PERCENT, widget.hasTotalPercentView() && this.hasPortfolioData);
+        enabledViews.put(ViewType.VIEW_PORTFOLIO_CHANGE, widget.hasTotalChangeView() && this.hasPortfolioData);
+        enabledViews.put(ViewType.VIEW_PORTFOLIO_PERCENT_AER, widget.hasTotalChangeAerView() && this.hasPortfolioData);
+        enabledViews.put(ViewType.VIEW_PL_DAILY_PERCENT, widget.hasDailyPlPercentView() && this.hasPortfolioData);
+        enabledViews.put(ViewType.VIEW_PL_DAILY_CHANGE, widget.hasDailyPlChangeView() && this.hasPortfolioData);
+        enabledViews.put(ViewType.VIEW_PL_PERCENT, widget.hasTotalPlPercentView() && this.hasPortfolioData);
+        enabledViews.put(ViewType.VIEW_PL_CHANGE, widget.hasTotalPlChangeView() && this.hasPortfolioData);
+        enabledViews.put(ViewType.VIEW_PL_PERCENT_AER, widget.hasTotalPlPercentAerView() && this.hasPortfolioData);
+        return enabledViews;
+    }
+
+    private HashMap<String, Object> getRowInfo(String symbol, ViewType widgetView) {
+        HashMap<String, Object> rowInfo = new HashMap<>();
 
         // Initialise columns
-        rowItems.put("COL0_VALUE", symbol);
-        rowItems.put("COL0_COLOUR", Color.WHITE);
-        rowItems.put("COL1_VALUE", "");
-        rowItems.put("COL1_COLOUR", Color.WHITE);
-        rowItems.put("COL2_VALUE", "");
-        rowItems.put("COL2_COLOUR", Color.WHITE);
-        rowItems.put("COL3_VALUE", "");
-        rowItems.put("COL3_COLOUR", Color.WHITE);
-        rowItems.put("COL4_VALUE", "");
-        rowItems.put("COL4_COLOUR", Color.WHITE);
+        rowInfo.put("COL0_VALUE", symbol);
+        rowInfo.put("COL0_COLOUR", Color.WHITE);
+        rowInfo.put("COL1_VALUE", "");
+        rowInfo.put("COL1_COLOUR", Color.WHITE);
+        rowInfo.put("COL2_VALUE", "");
+        rowInfo.put("COL2_COLOUR", Color.WHITE);
+        rowInfo.put("COL3_VALUE", "");
+        rowInfo.put("COL3_COLOUR", Color.WHITE);
+        rowInfo.put("COL4_VALUE", "");
+        rowInfo.put("COL4_COLOUR", Color.WHITE);
 
         // Set the stock symbol, and strip off exchange suffix
         // if requested in the preferences
-        if (preferences.getBoolean("hide_suffix", false)) {
+        if (this.widget.getHideSuffix()) {
             int dotIndex = symbol.indexOf(".");
             if (dotIndex > -1) {
-                rowItems.put("COL0_VALUE", symbol.substring(0, dotIndex));
+                rowInfo.put("COL0_VALUE", symbol.substring(0, dotIndex));
             }
         }
+
         // If there is no quote info return immediately
-        if (quoteInfo == null || quoteInfo.getPrice() == null || quoteInfo.getPercent() == null) {
+        StockQuote quote = this.quotes.get(symbol);
+        int widgetSize = this.widget.getSize();
+        if (quote == null || quote.getPrice() == null || quote.getPercent() == null) {
             if (widgetSize == 0 || widgetSize == 2) {
-                rowItems.put("COL1_VALUE", "no");
-                rowItems.put("COL1_COLOUR", Color.GRAY);
-                rowItems.put("COL2_VALUE", "data");
-                rowItems.put("COL2_COLOUR", Color.GRAY);
+                rowInfo.put("COL1_VALUE", "no");
+                rowInfo.put("COL1_COLOUR", Color.GRAY);
+                rowInfo.put("COL2_VALUE", "data");
+                rowInfo.put("COL2_COLOUR", Color.GRAY);
             } else {
-                rowItems.put("COL3_VALUE", "no");
-                rowItems.put("COL3_COLOUR", Color.GRAY);
-                rowItems.put("COL4_VALUE", "data");
-                rowItems.put("COL4_COLOUR", Color.GRAY);
+                rowInfo.put("COL3_VALUE", "no");
+                rowInfo.put("COL3_COLOUR", Color.GRAY);
+                rowInfo.put("COL4_VALUE", "data");
+                rowInfo.put("COL4_COLOUR", Color.GRAY);
             }
-            return rowItems;
+            return rowInfo;
         }
-        // Retrieve quote info
-        String name = quoteInfo.getName();
-        String price = quoteInfo.getPrice();
-        String change = quoteInfo.getChange();
-        String percent = quoteInfo.getPercent();
-        String volume = quoteInfo.getVolume();
 
         // Get the buy info for this stock from the portfolio
-        PortfolioStock stockInfo = portfolioStockMap.get(symbol);
+        PortfolioStock portfolioStock = this.portfolioStocks.get(symbol);
 
         // Set default values
         if (widgetSize == 1 || widgetSize == 3) {
-            rowItems.put("COL0_VALUE", name);
-            rowItems.put("COL2_VALUE", NumberTools.getNormalisedVolume(volume));
-            rowItems.put("COL2_COLOUR", WidgetColors.VOLUME);
-            rowItems.put("COL3_VALUE", change);
-            rowItems.put("COL3_COLOUR", WidgetColors.NA);
-            rowItems.put("COL4_VALUE", percent);
-            rowItems.put("COL4_COLOUR", WidgetColors.NA);
+            rowInfo.put("COL0_VALUE", quote.getName());
+            rowInfo.put("COL2_VALUE", NumberTools.getNormalisedVolume(quote.getVolume()));
+            rowInfo.put("COL2_COLOUR", WidgetColors.VOLUME);
+            rowInfo.put("COL3_VALUE", quote.getChange());
+            rowInfo.put("COL3_COLOUR", WidgetColors.NA);
+            rowInfo.put("COL4_VALUE", quote.getPercent());
+            rowInfo.put("COL4_COLOUR", WidgetColors.NA);
         } else {
-            rowItems.put("COL2_VALUE", percent);
-            rowItems.put("COL2_COLOUR", WidgetColors.NA);
+            rowInfo.put("COL2_VALUE", quote.getPercent());
+            rowInfo.put("COL2_COLOUR", WidgetColors.NA);
         }
+
         // Override the name if a custom value has been provided
-        if (stockInfo != null && !stockInfo.getCustomName().equals("")) {
-            rowItems.put("COL0_VALUE", stockInfo.getCustomName());
+        if (portfolioStock != null && !portfolioStock.getCustomName().equals("")) {
+            rowInfo.put("COL0_VALUE", portfolioStock.getCustomName());
         }
+
         // Set the price
-        rowItems.put("COL1_VALUE", price);
+        rowInfo.put("COL1_VALUE", quote.getPrice());
+
         // Initialise variables for values
-        String daily_change = quoteInfo.getChange();
-        String daily_percent = quoteInfo.getPercent();
+        String daily_change = quote.getChange();
+        String daily_percent = quote.getPercent();
         String total_change = null;
         String total_percent = null;
         String aer_change = null;
@@ -282,26 +278,26 @@ public class WidgetView {
         Double years_elapsed = null;
         Boolean limitHigh_triggered = false;
         Boolean limitLow_triggered = false;
-        Double d_price = NumberTools.parseDouble(price);
-        Double d_dailyChange = NumberTools.parseDouble(change);
+        Double d_price = NumberTools.parseDouble(quote.getPrice());
+        Double d_dailyChange = NumberTools.parseDouble(quote.getChange());
         Double d_buyPrice = null;
         Double d_quantity = null;
         Double d_limitHigh = null;
         Double d_limitLow = null;
         try {
-            d_buyPrice = NumberTools.parseDouble(stockInfo.getPrice());
+            d_buyPrice = NumberTools.parseDouble(portfolioStock.getPrice());
         } catch (Exception ignored) {
         }
         try {
-            d_quantity = NumberTools.parseDouble(stockInfo.getQuantity());
+            d_quantity = NumberTools.parseDouble(portfolioStock.getQuantity());
         } catch (Exception ignored) {
         }
         try {
-            d_limitHigh = NumberTools.parseDouble(stockInfo.getHighLimit());
+            d_limitHigh = NumberTools.parseDouble(portfolioStock.getHighLimit());
         } catch (Exception ignored) {
         }
         try {
-            d_limitLow = NumberTools.parseDouble(stockInfo.getLowLimit());
+            d_limitLow = NumberTools.parseDouble(portfolioStock.getLowLimit());
         } catch (Exception ignored) {
         }
         Double d_priceChange = null;
@@ -310,7 +306,7 @@ public class WidgetView {
         } catch (Exception ignored) {
         }
         try {
-            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(stockInfo.getDate());
+            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(portfolioStock.getDate());
             double elapsed = (new Date().getTime() - date.getTime()) / 1000;
             years_elapsed = elapsed / 31536000;
         } catch (Exception ignored) {
@@ -478,45 +474,45 @@ public class WidgetView {
         // Set the price column colour if we have hit an alert
         // (this is only relevant for non-profit and loss views)
         if (limitHigh_triggered && !pl_view) {
-            rowItems.put("COL1_COLOUR", WidgetColors.HIGH_ALERT);
+            rowInfo.put("COL1_COLOUR", WidgetColors.HIGH_ALERT);
         }
         if (limitLow_triggered && !pl_view) {
-            rowItems.put("COL1_COLOUR", WidgetColors.LOW_ALERT);
+            rowInfo.put("COL1_COLOUR", WidgetColors.LOW_ALERT);
         }
         // Set the price column to the holding value and colour
         // the column blue if we have no holdings
         if (pl_view && column1 == null) {
-            rowItems.put("COL1_COLOUR", WidgetColors.NA);
+            rowInfo.put("COL1_COLOUR", WidgetColors.NA);
         }
         // Add currency symbol if we have a holding
         if (column1 != null) {
-            rowItems.put("COL1_VALUE", CurrencyTools.addCurrencyToSymbol(column1, symbol));
+            rowInfo.put("COL1_VALUE", CurrencyTools.addCurrencyToSymbol(column1, symbol));
         }
         // Set the value and colour for the change values
         if (widgetSize == 1 || widgetSize == 3) {
             if (column3 != null) {
                 if (pl_change) {
-                    rowItems.put("COL3_VALUE", CurrencyTools.addCurrencyToSymbol(column3, symbol));
+                    rowInfo.put("COL3_VALUE", CurrencyTools.addCurrencyToSymbol(column3, symbol));
                 } else {
-                    rowItems.put("COL3_VALUE", column3);
+                    rowInfo.put("COL3_VALUE", column3);
                 }
-                rowItems.put("COL3_COLOUR", getColourForChange(column3));
+                rowInfo.put("COL3_COLOUR", getColourForChange(column3));
             }
             if (column4 != null) {
-                rowItems.put("COL4_VALUE", column4);
-                rowItems.put("COL4_COLOUR", getColourForChange(column4));
+                rowInfo.put("COL4_VALUE", column4);
+                rowInfo.put("COL4_COLOUR", getColourForChange(column4));
             }
         } else {
             if (column2 != null) {
                 if (pl_change) {
-                    rowItems.put("COL2_VALUE", CurrencyTools.addCurrencyToSymbol(column2, symbol));
+                    rowInfo.put("COL2_VALUE", CurrencyTools.addCurrencyToSymbol(column2, symbol));
                 } else {
-                    rowItems.put("COL2_VALUE", column2);
+                    rowInfo.put("COL2_VALUE", column2);
                 }
-                rowItems.put("COL2_COLOUR", getColourForChange(column2));
+                rowInfo.put("COL2_COLOUR", getColourForChange(column2));
             }
         }
-        return rowItems;
+        return rowInfo;
     }
 
     private int getColourForChange(String value) {
@@ -533,33 +529,25 @@ public class WidgetView {
     }
 
     public void clear() {
-        if (widgetSize == 1 || widgetSize == 3) {
-            for (int i = 1; i < this.getRowCount() + 1; i++) {
-                for (int j = 1; j < 6; j++) {
-                    remoteViews.setTextViewText(getStockViewId(i, j), "");
-                }
-            }
-        } else {
-            for (int i = 1; i < this.getRowCount() + 1; i++) {
-                for (int j = 1; j < 4; j++) {
-                    remoteViews.setTextViewText(getStockViewId(i, j), "");
-                }
+        int size = this.widget.getSize();
+        int columnCount = (size == 1 || size == 3) ? 6 : 4;
+        for (int i = 1; i < this.widget.getSymbolCount() + 1; i++) {
+            for (int j = 1; j < columnCount; j++) {
+                this.remoteViews.setTextViewText(getStockViewId(i, j), "");
             }
         }
     }
 
-    public int getRowCount() {
-        return arraySize;
-    }
-
-    private void displayRows() {
+    private void hideUnusedRows(RemoteViews views, int count) {
         for (int i = 0; i < 11; i++) {
             int viewId = ReflectionTools.getField("line" + i);
-            if (viewId > 0)
-                remoteViews.setViewVisibility(ReflectionTools.getField("line" + i), View.GONE);
+            if (viewId > 0) {
+                views.setViewVisibility(ReflectionTools.getField("line" + i), View.GONE);
+            }
         }
-        for (int i = 1; i < arraySize + 1; i++)
-            remoteViews.setViewVisibility(ReflectionTools.getField("line" + i), View.VISIBLE);
+        for (int i = 1; i < count + 1; i++) {
+            views.setViewVisibility(ReflectionTools.getField("line" + i), View.VISIBLE);
+        }
     }
 
     public RemoteViews getRemoteViews() {
@@ -589,34 +577,35 @@ public class WidgetView {
         return currentView;
     }
 
-    public void update(List<String> symbols, HashMap<String, StockQuote> quotes,
-                       HashMap<String, PortfolioStock> stocks, UpdateType updateMode, String quotesTimeStamp) {
-        int widgetDisplay = this.getNextView(updateMode);
+    public void applyPendingChanges() {
+        String timeStamp = this.quotesTimeStamp;
+        int widgetDisplay = this.getNextView(this.updateMode);
+        int widgetSize = this.widget.getSize();
         this.clear();
         int line_no = 0;
-        for (String symbol : symbols) {
+        for (String symbol : this.symbols) {
             // Skip blank symbols
             if (symbol.equals("")) {
                 continue;
             }
             // Get the info for this quote
             StockQuote quoteInfo;
-            quoteInfo = quotes.get(symbol);
+            quoteInfo = this.quotes.get(symbol);
             line_no++;
-            HashMap<String, Object> formattedRow = getFormattedRow(symbol, quoteInfo, stocks,
-                    ViewType.values()[widgetDisplay], storage, widgetSize);
+            HashMap<String, Object> formattedRow = getRowInfo(symbol,
+                    ViewType.values()[widgetDisplay]);
             // Values
-            remoteViews.setTextViewText(getStockViewId(line_no, 1), makeBold(storage, (String) formattedRow.get("COL0_VALUE")));
-            remoteViews.setTextViewText(getStockViewId(line_no, 2), makeBold(storage, (String) formattedRow.get("COL1_VALUE")));
-            remoteViews.setTextViewText(getStockViewId(line_no, 3), makeBold(storage, (String) formattedRow.get("COL2_VALUE")));
+            remoteViews.setTextViewText(getStockViewId(line_no, 1), makeBold((String) formattedRow.get("COL0_VALUE")));
+            remoteViews.setTextViewText(getStockViewId(line_no, 2), makeBold((String) formattedRow.get("COL1_VALUE")));
+            remoteViews.setTextViewText(getStockViewId(line_no, 3), makeBold((String) formattedRow.get("COL2_VALUE")));
             // Add the other values if we have a wide widget
             if (widgetSize == 1 || widgetSize == 3) {
-                remoteViews.setTextViewText(getStockViewId(line_no, 4), makeBold(storage, (String) formattedRow.get("COL3_VALUE")));
-                remoteViews.setTextViewText(getStockViewId(line_no, 5), makeBold(storage, (String) formattedRow.get("COL4_VALUE")));
+                remoteViews.setTextViewText(getStockViewId(line_no, 4), makeBold((String) formattedRow.get("COL3_VALUE")));
+                remoteViews.setTextViewText(getStockViewId(line_no, 5), makeBold((String) formattedRow.get("COL4_VALUE")));
             }
             // Colours
             remoteViews.setTextColor(getStockViewId(line_no, 1), (Integer) formattedRow.get("COL0_COLOUR"));
-            if (!storage.getBoolean("colours_on_prices", false)) {
+            if (!this.widget.getColorsOnPrices()) {
                 // Narrow widget
                 if (widgetSize == 0 || widgetSize == 2) {
                     remoteViews.setTextColor(getStockViewId(line_no, 2), (Integer) formattedRow.get("COL1_COLOUR"));
@@ -644,7 +633,7 @@ public class WidgetView {
             }
         }
         // Set footer display
-        String updated_display = storage.getString("updated_display", "visible");
+        String updated_display = this.widget.getFooterVisibility();
         switch (updated_display) {
             case "remove":
                 remoteViews.setViewVisibility(R.id.text_footer, View.GONE);
@@ -655,7 +644,7 @@ public class WidgetView {
             default:
                 remoteViews.setViewVisibility(R.id.text_footer, View.VISIBLE);
                 // Set footer text and colour
-                String updated_colour = storage.getString("updated_colour", "light");
+                String updated_colour = this.widget.getFooterColor();
                 int footer_colour = Color.parseColor("#555555");
                 if (updated_colour.equals("light")) {
                     footer_colour = Color.GRAY;
@@ -663,24 +652,24 @@ public class WidgetView {
                     footer_colour = Color.parseColor("#cccc77");
                 }
                 // Show short time if specified in prefs
-                if (!storage.getBoolean("short_time", false)) {
+                if (!this.widget.showShortTime()) {
                     // Get current day and month
                     SimpleDateFormat formatter = new SimpleDateFormat("dd MMM");
                     String current_date = formatter.format(new Date()).toUpperCase();
                     // Set default time as today
-                    if (quotesTimeStamp.equals("")) {
-                        quotesTimeStamp = "NO DATE SET";
+                    if (timeStamp.equals("")) {
+                        timeStamp = "NO DATE SET";
                     }
                     // Check if we should use yesterdays date or today's time
-                    String[] split_time = quotesTimeStamp.split(" ");
+                    String[] split_time = timeStamp.split(" ");
                     if ((split_time[0] + " " + split_time[1]).equals(current_date)) {
-                        quotesTimeStamp = split_time[2];
+                        timeStamp = split_time[2];
                     } else {
-                        quotesTimeStamp = (split_time[0] + " " + split_time[1]);
+                        timeStamp = (split_time[0] + " " + split_time[1]);
                     }
                 }
                 // Set time stamp
-                remoteViews.setTextViewText(R.id.text5, makeBold(storage, quotesTimeStamp));
+                remoteViews.setTextViewText(R.id.text5, makeBold(timeStamp));
                 remoteViews.setTextColor(R.id.text5, footer_colour);
                 // Set the widget view text in the footer
                 String currentViewText = "";
@@ -752,20 +741,23 @@ public class WidgetView {
                     }
                 }
                 // Update the view name and view name separator
-                remoteViews.setTextViewText(R.id.text6, makeBold(storage, currentViewText));
+                remoteViews.setTextViewText(R.id.text6, makeBold(currentViewText));
                 remoteViews.setTextColor(R.id.text6, footer_colour);
                 break;
         }
     }
 
-    public boolean canChangeView(UpdateType updateMode) {
+    public boolean canChangeView() {
         HashMap<ViewType, Boolean> enabledViews = this.getEnabledViews();
         boolean hasMultipleDefaultViews = enabledViews.get(ViewType.VIEW_DAILY_PERCENT)
                 && enabledViews.get(ViewType.VIEW_DAILY_CHANGE);
 
-        return !(updateMode == UpdateType.VIEW_CHANGE
+        return !(this.updateMode == UpdateType.VIEW_CHANGE
                 && !this.hasPortfolioData
                 && !hasMultipleDefaultViews);
+    }
 
+    public boolean hasPendingChanges() {
+        return (!this.quotes.isEmpty() || this.canChangeView());
     }
 }

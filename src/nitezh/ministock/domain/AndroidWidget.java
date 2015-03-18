@@ -46,11 +46,14 @@ public class AndroidWidget implements Widget {
     private final Storage storage;
     private final Context context;
     private final int id;
+    private int size;
 
     public AndroidWidget(Context context, int id) {
         this.context = context;
         this.id = id;
         this.storage = this.getStorage();
+
+        this.size = this._getSize(); // This is used a lot so don't get from storage each time
     }
 
     @Override
@@ -128,15 +131,20 @@ public class AndroidWidget implements Widget {
 
     @Override
     public int getSize() {
-        return this.storage.getInt("widgetSize", 0);
+        return this.size;
     }
 
     @Override
     public void setSize(int size) {
+        this.size = size;
         this.storage.putInt("widgetSize", size);
         if (size == 0 || size == 2) {
             this.setPercentChange(true);
         }
+    }
+
+    public int _getSize() {
+        return this.storage.getInt("widgetSize", 0);
     }
 
     @Override
@@ -186,5 +194,99 @@ public class AndroidWidget implements Widget {
             count = 10;
         }
         return count;
+    }
+
+    @Override
+    public String getBackgroundStyle() {
+        return this.storage.getString("background", "transparent");
+    }
+
+    @Override
+    public boolean useLargeFont() {
+        return this.storage.getBoolean("large_font", false);
+    }
+
+    @Override
+    public boolean getHideSuffix() {
+        return this.storage.getBoolean("hide_suffix", false);
+    }
+
+    @Override
+    public boolean getTextStyle() {
+        return this.storage.getString("text_style", "normal").equals("bold");
+    }
+
+    @Override
+    public boolean getColorsOnPrices() {
+        return this.storage.getBoolean("colours_on_prices", false);
+    }
+
+    @Override
+    public String getFooterVisibility() {
+        return this.storage.getString("updated_display", "visible");
+    }
+
+    @Override
+    public String getFooterColor() {
+        return this.storage.getString("updated_colour", "light");
+    }
+
+    @Override
+    public boolean showShortTime() {
+        return this.storage.getBoolean("short_time", false);
+    }
+
+    @Override
+    public boolean hasDailyChangeView() {
+        return this.storage.getBoolean("show_absolute_change", false);
+    }
+
+    @Override
+    public boolean hasDailyPercentView() {
+        return this.storage.getBoolean("show_percent_change", false)
+                && (size == 0 || size == 2);
+    }
+
+    @Override
+    public boolean hasTotalChangeView() {
+        return this.storage.getBoolean("show_portfolio_abs", false);
+    }
+
+    @Override
+    public boolean hasTotalPercentView() {
+        return this.storage.getBoolean("show_portfolio_change", false)
+                && (size == 0 || size == 2);
+    }
+
+    @Override
+    public boolean hasTotalChangeAerView() {
+        return this.storage.getBoolean("show_portfolio_aer", false);
+    }
+
+    @Override
+    public boolean hasDailyPlChangeView() {
+        return this.storage.getBoolean("show_profit_daily_abs", false);
+    }
+
+    @Override
+    public boolean hasDailyPlPercentView() {
+        return this.storage.getBoolean("show_profit_daily_change", false)
+                && (size == 0 || size == 2);
+    }
+
+    @Override
+    public boolean hasTotalPlChangeView() {
+        return this.storage.getBoolean("show_profit_abs", false);
+    }
+
+    @Override
+    public boolean hasTotalPlPercentView() {
+        return this.storage.getBoolean("show_profit_change", false)
+                && (size == 0 || size == 2);
+    }
+
+    @Override
+    public boolean hasTotalPlPercentAerView() {
+        return this.storage.getBoolean("show_profit_aer", false);
     }
 }
