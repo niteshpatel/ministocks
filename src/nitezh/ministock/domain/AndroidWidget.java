@@ -105,8 +105,13 @@ public class AndroidWidget implements Widget {
     }
 
     @Override
-    public void setPercentChange(boolean b) {
+    public void enablePercentChangeView() {
         this.storage.putBoolean("show_percent_change", true);
+    }
+
+    @Override
+    public void enableDailyChangeView() {
+        this.storage.putBoolean("show_absolute_change", true);
     }
 
     @Override
@@ -138,9 +143,11 @@ public class AndroidWidget implements Widget {
     public void setSize(int size) {
         this.size = size;
         this.storage.putInt("widgetSize", size);
-        if (size == 0 || size == 2) {
-            this.setPercentChange(true);
-        }
+    }
+
+    @Override
+    public boolean isNarrow() {
+        return (size == 0 || size == 2);
     }
 
     public int _getSize() {

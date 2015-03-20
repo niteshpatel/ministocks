@@ -14,8 +14,9 @@ public interface Widget {
 
     JSONObject getWidgetPreferencesAsJson();
 
-    @SuppressWarnings("UnusedDeclaration")
-    void setPercentChange(boolean b);
+    void enablePercentChangeView();
+
+    void enableDailyChangeView();
 
     void setStock1(String s);
 
@@ -28,6 +29,8 @@ public interface Widget {
     int getSize();
 
     void setSize(int size);
+
+    boolean isNarrow();
 
     String getStock(int i);
 

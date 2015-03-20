@@ -48,7 +48,8 @@ public class MockWidget implements Widget {
     }
 
     @Override
-    public void setSize(int size) {
+    public boolean isNarrow() {
+        return false;
     }
 
     @Override
@@ -167,7 +168,12 @@ public class MockWidget implements Widget {
     }
 
     @Override
-    public void setPercentChange(boolean b) {
+    public void enablePercentChangeView() {
+    }
+
+    @Override
+    public void enableDailyChangeView() {
+
     }
 
     @Override
@@ -191,5 +197,9 @@ public class MockWidget implements Widget {
     @Override
     public int getSize() {
         return 0;
+    }
+
+    @Override
+    public void setSize(int size) {
     }
 }

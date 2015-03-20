@@ -86,9 +86,15 @@ public class AndroidWidgetRepository implements WidgetRepository {
 
         this.addWidgetId(id);
         widget.setSize(size);
+        widget.enableDailyChangeView();
+        if (widget.isNarrow()) {
+            widget.enablePercentChangeView();
+        }
+
         widget.setStock1("^DJI");
         widget.setStock1Summary("Dow Jones Industrial Average");
         widget.save();
+
         return widget;
     }
 
