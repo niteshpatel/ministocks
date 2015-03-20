@@ -71,7 +71,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     // Public variables
     public static int mAppWidgetId = 0;
     // Private
-    private static boolean mStocksDirty = false;
+    private static boolean mPendingUpdate = false;
     private static String mSymbolSearchKey = "";
     private final String CHANGE_LOG = "• Bug-fixes and optimisations.<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>";
     // Fields for time pickers
@@ -214,7 +214,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
             updateStockValue(sharedPreferences, key);
 
             // Mark stock changed as dirty
-            mStocksDirty = true;
+            mPendingUpdate = true;
         } else if (key.equals("update_interval")) {
             updateGlobalPref(sharedPreferences, key, LIST_TYPE);
 
@@ -362,7 +362,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
             value = value.replace("Use ", "");
         }
         // Set dirty
-        mStocksDirty = true;
+        mPendingUpdate = true;
         Editor editor = preferences.edit();
         editor.putString(key, value);
         editor.putString(key + "_summary", summary);
@@ -439,8 +439,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         updateNow.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                // Update all widgets and quit
-                WidgetProviderBase.updateWidgets(getApplicationContext(), WidgetProviderBase.UpdateType.VIEW_UPDATE);
+                mPendingUpdate = true;
                 finish();
                 return true;
             }
@@ -670,8 +669,8 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 
         // Update the widget when we quit the preferences, and if the dirty,
         // flag is true then do a web update, otherwise do a regular update
-        if (mStocksDirty) {
-            mStocksDirty = false;
+        if (mPendingUpdate) {
+            mPendingUpdate = false;
             WidgetProviderBase.updateWidgets(getApplicationContext(),
                     WidgetProviderBase.UpdateType.VIEW_UPDATE);
         } else {

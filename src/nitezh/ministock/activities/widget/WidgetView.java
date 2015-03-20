@@ -243,7 +243,7 @@ public class WidgetView {
         PortfolioStock portfolioStock = this.portfolioStocks.get(symbol);
         WidgetStock widgetStock = new WidgetStock(quote, portfolioStock);
         rowInfo.put("COL1_VALUE", widgetStock.getPrice());
-        if (widget.isNarrow()) {
+        if (!widget.isNarrow()) {
             rowInfo.put("COL0_VALUE", widgetStock.getDisplayName());
             rowInfo.put("COL2_VALUE", widgetStock.getVolume());
             rowInfo.put("COL2_COLOUR", WidgetColors.VOLUME);
