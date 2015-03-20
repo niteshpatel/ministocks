@@ -33,6 +33,7 @@ import android.os.Bundle;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.concurrent.RejectedExecutionException;
 
 import nitezh.ministock.CustomAlarmManager;
 import nitezh.ministock.PreferenceCache;
@@ -61,7 +62,12 @@ public class WidgetProviderBase extends AppWidgetProvider {
     }
 
     public static void updateWidgetAsync(Context context, int appWidgetId, UpdateType updateType) {
-        new GetDataTask().execute(context, appWidgetId, updateType);
+        try {
+            new GetDataTask().build(context, appWidgetId, updateType).execute();
+        }
+        // usually occurs when queued tasks = 128
+        catch (RejectedExecutionException ignored) {
+        }
     }
 
     public static void updateWidgets(Context context, UpdateType updateType) {
@@ -72,7 +78,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
 
         CustomAlarmManager alarmManager = new CustomAlarmManager(context);
         alarmManager.setUpdateTimestamp();
-        alarmManager.update();
+        alarmManager.reinitialize();
     }
 
     private static void doScheduledUpdates(Context context) {
@@ -156,7 +162,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        new CustomAlarmManager(context).update();
+        new CustomAlarmManager(context).reinitialize();
         updateWidgetsFromCache(context);
     }
 
@@ -164,7 +170,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
     public void onEnabled(Context context) {
         super.onEnabled(context);
 
-        new CustomAlarmManager(context).update();
+        new CustomAlarmManager(context).reinitialize();
     }
 
     @Override
@@ -202,22 +208,39 @@ public class WidgetProviderBase extends AppWidgetProvider {
     }
 
     private static class GetDataTask extends AsyncTask<Object, Void, Void> {
+        private Context context;
+        private Integer appWidgetId;
+        private UpdateType updateType;
+        private HashMap<String, StockQuote> quotes;
+        private String timeStamp;
+
+        public GetDataTask build(Context context, Integer appWidgetId, UpdateType updateType) {
+            this.context = context;
+            this.appWidgetId = appWidgetId;
+            this.updateType = updateType;
+
+            return this;
+        }
+
         @Override
         protected Void doInBackground(Object... params) {
-            Context context = (Context) params[0];
-            int appWidgetId = (Integer) params[1];
-            UpdateType updateMode = (UpdateType) params[2];
-
-            WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
+            WidgetRepository widgetRepository = new AndroidWidgetRepository(this.context);
             StockQuoteRepository quoteRepository = new StockQuoteRepository(
-                    PreferenceStorage.getInstance(context), new PreferenceCache(context),
+                    PreferenceStorage.getInstance(this.context), new PreferenceCache(this.context),
                     widgetRepository);
-            HashMap<String, StockQuote> quotes = quoteRepository.getQuotes(
-                    widgetRepository.getWidget(appWidgetId).getSymbols(),
-                    updateMode == UpdateType.VIEW_UPDATE);
 
-            applyUpdate(context, appWidgetId, updateMode, quotes, quoteRepository.getTimeStamp());
+            this.quotes = quoteRepository.getQuotes(
+                    widgetRepository.getWidget(this.appWidgetId).getSymbols(),
+                    updateType == UpdateType.VIEW_UPDATE);
+            this.timeStamp = quoteRepository.getTimeStamp();
+
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            applyUpdate(this.context, this.appWidgetId, this.updateType, this.quotes,
+                    this.timeStamp);
         }
     }
 }

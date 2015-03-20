@@ -64,10 +64,18 @@ public class WidgetStock {
         Double elapsedYears = null;
         Double priceValue = NumberTools.parseDouble(quote.getPrice());
         Double dailyChangeValue = NumberTools.parseDouble(quote.getChange());
-        Double buyPriceValue = NumberTools.parseDouble(portfolioStock.getPrice());
-        Double quantityValue = NumberTools.parseDouble(portfolioStock.getQuantity());
-        Double limitHighValue = NumberTools.parseDouble(portfolioStock.getHighLimit());
-        Double limitLowValue = NumberTools.parseDouble(portfolioStock.getLowLimit());
+
+        Double buyPriceValue = null;
+        Double quantityValue = null;
+        Double limitHighValue = null;
+        Double limitLowValue = null;
+
+        if (portfolioStock != null) {
+            buyPriceValue = NumberTools.parseDouble(portfolioStock.getPrice());
+            quantityValue = NumberTools.parseDouble(portfolioStock.getQuantity());
+            limitHighValue = NumberTools.parseDouble(portfolioStock.getHighLimit());
+            limitLowValue = NumberTools.parseDouble(portfolioStock.getLowLimit());
+        }
 
         Double priceChangeValue = null;
         try {
@@ -176,10 +184,10 @@ public class WidgetStock {
     }
 
     public Boolean getLimitHighTriggered() {
-        return limitHighTriggered;
+        return limitHighTriggered != null ? limitHighTriggered : false;
     }
 
     public Boolean getLimitLowTriggered() {
-        return limitLowTriggered;
+        return limitLowTriggered != null ? limitLowTriggered : false;
     }
 }

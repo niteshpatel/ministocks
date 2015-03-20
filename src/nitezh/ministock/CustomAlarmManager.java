@@ -70,7 +70,7 @@ public class CustomAlarmManager {
         this.appStorage.apply();
     }
 
-    public void update() {
+    public void reinitialize() {
         this.cancel();
 
         Long updateInterval = getUpdateInterval();
