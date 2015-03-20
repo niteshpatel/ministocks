@@ -224,9 +224,8 @@ public class WidgetView {
 
         // If there is no quote info return immediately
         StockQuote quote = this.quotes.get(symbol);
-        int widgetSize = this.widget.getSize();
         if (quote == null || quote.getPrice() == null || quote.getPercent() == null) {
-            if (widgetSize == 0 || widgetSize == 2) {
+            if (this.widget.isNarrow()) {
                 rowInfo.put("COL1_VALUE", "no");
                 rowInfo.put("COL1_COLOUR", Color.GRAY);
                 rowInfo.put("COL2_VALUE", "data");
@@ -244,7 +243,7 @@ public class WidgetView {
         PortfolioStock portfolioStock = this.portfolioStocks.get(symbol);
         WidgetStock widgetStock = new WidgetStock(quote, portfolioStock);
         rowInfo.put("COL1_VALUE", widgetStock.getPrice());
-        if (widgetSize == 1 || widgetSize == 3) {
+        if (widget.isNarrow()) {
             rowInfo.put("COL0_VALUE", widgetStock.getDisplayName());
             rowInfo.put("COL2_VALUE", widgetStock.getVolume());
             rowInfo.put("COL2_COLOUR", WidgetColors.VOLUME);
@@ -264,7 +263,7 @@ public class WidgetView {
         String column3 = null;
         String column4 = null;
 
-        if (widgetSize == 0 || widgetSize == 2) {
+        if (widget.isNarrow()) {
             switch (widgetView) {
                 case VIEW_DAILY_PERCENT:
                     column2 = widgetStock.getDailyPercent();
@@ -408,7 +407,7 @@ public class WidgetView {
         }
 
         // Set the value and colour for the change values
-        if (widgetSize == 1 || widgetSize == 3) {
+        if (!widget.isNarrow()) {
             if (column3 != null) {
                 if (plChange) {
                     rowInfo.put("COL3_VALUE", CurrencyTools.addCurrencyToSymbol(column3, symbol));
@@ -448,8 +447,7 @@ public class WidgetView {
     }
 
     public void clear() {
-        int size = this.widget.getSize();
-        int columnCount = (size == 1 || size == 3) ? 6 : 4;
+        int columnCount = (!widget.isNarrow()) ? 6 : 4;
         for (int i = 1; i < this.widget.getSymbolCount() + 1; i++) {
             for (int j = 1; j < columnCount; j++) {
                 this.remoteViews.setTextViewText(getStockViewId(i, j), "");
@@ -497,189 +495,204 @@ public class WidgetView {
     }
 
     public void applyPendingChanges() {
-        String timeStamp = this.quotesTimeStamp;
         int widgetDisplay = this.getNextView(this.updateMode);
-        int widgetSize = this.widget.getSize();
         this.clear();
-        int line_no = 0;
-        for (String symbol : this.symbols) {
 
-            // Skip blank symbols
+        int lineNo = 0;
+        for (String symbol : this.symbols) {
             if (symbol.equals("")) {
                 continue;
             }
 
             // Get the info for this quote
-            line_no++;
-            HashMap<String, Object> rowInfo = getRowInfo(symbol,
-                    ViewType.values()[widgetDisplay]);
+            lineNo++;
+            HashMap<String, Object> rowInfo = getRowInfo(symbol, ViewType.values()[widgetDisplay]);
 
             // Values
-            remoteViews.setTextViewText(getStockViewId(line_no, 1), makeBold((String) rowInfo.get("COL0_VALUE")));
-            remoteViews.setTextViewText(getStockViewId(line_no, 2), makeBold((String) rowInfo.get("COL1_VALUE")));
-            remoteViews.setTextViewText(getStockViewId(line_no, 3), makeBold((String) rowInfo.get("COL2_VALUE")));
+            remoteViews.setTextViewText(getStockViewId(lineNo, 1), makeBold((String) rowInfo.get("COL0_VALUE")));
+            remoteViews.setTextViewText(getStockViewId(lineNo, 2), makeBold((String) rowInfo.get("COL1_VALUE")));
+            remoteViews.setTextViewText(getStockViewId(lineNo, 3), makeBold((String) rowInfo.get("COL2_VALUE")));
 
             // Add the other values if we have a wide widget
-            if (widgetSize == 1 || widgetSize == 3) {
-                remoteViews.setTextViewText(getStockViewId(line_no, 4), makeBold((String) rowInfo.get("COL3_VALUE")));
-                remoteViews.setTextViewText(getStockViewId(line_no, 5), makeBold((String) rowInfo.get("COL4_VALUE")));
+            if (!widget.isNarrow()) {
+                remoteViews.setTextViewText(getStockViewId(lineNo, 4), makeBold((String) rowInfo.get("COL3_VALUE")));
+                remoteViews.setTextViewText(getStockViewId(lineNo, 5), makeBold((String) rowInfo.get("COL4_VALUE")));
             }
 
             // Colours
-            remoteViews.setTextColor(getStockViewId(line_no, 1), (Integer) rowInfo.get("COL0_COLOUR"));
+            remoteViews.setTextColor(getStockViewId(lineNo, 1), (Integer) rowInfo.get("COL0_COLOUR"));
             if (!this.widget.getColorsOnPrices()) {
-
-                // Narrow widget
-                if (widgetSize == 0 || widgetSize == 2) {
-                    remoteViews.setTextColor(getStockViewId(line_no, 2), (Integer) rowInfo.get("COL1_COLOUR"));
-                    remoteViews.setTextColor(getStockViewId(line_no, 3), (Integer) rowInfo.get("COL2_COLOUR"));
-                }
-
-                // Wide widget
-                else {
-                    remoteViews.setTextColor(getStockViewId(line_no, 2), (Integer) rowInfo.get("COL1_COLOUR"));
-                    remoteViews.setTextColor(getStockViewId(line_no, 3), (Integer) rowInfo.get("COL2_COLOUR"));
-                    remoteViews.setTextColor(getStockViewId(line_no, 4), (Integer) rowInfo.get("COL3_COLOUR"));
-                    remoteViews.setTextColor(getStockViewId(line_no, 5), (Integer) rowInfo.get("COL4_COLOUR"));
+                if (widget.isNarrow()) {
+                    remoteViews.setTextColor(getStockViewId(lineNo, 2), (Integer) rowInfo.get("COL1_COLOUR"));
+                    remoteViews.setTextColor(getStockViewId(lineNo, 3), (Integer) rowInfo.get("COL2_COLOUR"));
+                } else {
+                    remoteViews.setTextColor(getStockViewId(lineNo, 2), (Integer) rowInfo.get("COL1_COLOUR"));
+                    remoteViews.setTextColor(getStockViewId(lineNo, 3), (Integer) rowInfo.get("COL2_COLOUR"));
+                    remoteViews.setTextColor(getStockViewId(lineNo, 4), (Integer) rowInfo.get("COL3_COLOUR"));
+                    remoteViews.setTextColor(getStockViewId(lineNo, 5), (Integer) rowInfo.get("COL4_COLOUR"));
                 }
             } else {
 
                 // Narrow widget
-                if (widgetSize == 0 || widgetSize == 2) {
-                    remoteViews.setTextColor(getStockViewId(line_no, 3), (Integer) rowInfo.get("COL1_COLOUR"));
-                    remoteViews.setTextColor(getStockViewId(line_no, 2), (Integer) rowInfo.get("COL2_COLOUR"));
+                if (widget.isNarrow()) {
+                    remoteViews.setTextColor(getStockViewId(lineNo, 3), (Integer) rowInfo.get("COL1_COLOUR"));
+                    remoteViews.setTextColor(getStockViewId(lineNo, 2), (Integer) rowInfo.get("COL2_COLOUR"));
                 }
 
                 // Wide widget
                 else {
-                    remoteViews.setTextColor(getStockViewId(line_no, 2), (Integer) rowInfo.get("COL4_COLOUR"));
-                    remoteViews.setTextColor(getStockViewId(line_no, 4), (Integer) rowInfo.get("COL1_COLOUR"));
-                    remoteViews.setTextColor(getStockViewId(line_no, 5), (Integer) rowInfo.get("COL1_COLOUR"));
+                    remoteViews.setTextColor(getStockViewId(lineNo, 2), (Integer) rowInfo.get("COL4_COLOUR"));
+                    remoteViews.setTextColor(getStockViewId(lineNo, 4), (Integer) rowInfo.get("COL1_COLOUR"));
+                    remoteViews.setTextColor(getStockViewId(lineNo, 5), (Integer) rowInfo.get("COL1_COLOUR"));
                 }
             }
         }
 
         // Set footer display
-        String updated_display = this.widget.getFooterVisibility();
-        switch (updated_display) {
+        switch (this.widget.getFooterVisibility()) {
             case "remove":
                 remoteViews.setViewVisibility(R.id.text_footer, View.GONE);
                 break;
+
             case "invisible":
                 remoteViews.setViewVisibility(R.id.text_footer, View.INVISIBLE);
                 break;
+
             default:
                 remoteViews.setViewVisibility(R.id.text_footer, View.VISIBLE);
 
-                // Set footer text and colour
-                String updated_colour = this.widget.getFooterColor();
-                int footer_colour = Color.parseColor("#555555");
-                if (updated_colour.equals("light")) {
-                    footer_colour = Color.GRAY;
-                } else if (updated_colour.equals("yellow")) {
-                    footer_colour = Color.parseColor("#cccc77");
-                }
-
-                // Show short time if specified in prefs
-                if (!this.widget.showShortTime()) {
-
-                    // Get current day and month
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd MMM");
-                    String current_date = formatter.format(new Date()).toUpperCase();
-
-                    // Set default time as today
-                    if (timeStamp.equals("")) {
-                        timeStamp = "NO DATE SET";
-                    }
-
-                    // Check if we should use yesterdays date or today's time
-                    String[] split_time = timeStamp.split(" ");
-                    if ((split_time[0] + " " + split_time[1]).equals(current_date)) {
-                        timeStamp = split_time[2];
-                    } else {
-                        timeStamp = (split_time[0] + " " + split_time[1]);
-                    }
-                }
-
                 // Set time stamp
-                remoteViews.setTextViewText(R.id.text5, makeBold(timeStamp));
-                remoteViews.setTextColor(R.id.text5, footer_colour);
+                int footerColor = this.getFooterColor();
+                remoteViews.setTextViewText(R.id.text5, makeBold(this.getTimeStamp()));
+                remoteViews.setTextColor(R.id.text5, footerColor);
 
-                // Set the widget view text in the footer
-                String currentViewText = "";
-                if (widgetSize == 0 || widgetSize == 2) {
-                    switch (ViewType.values()[widgetDisplay]) {
-                        case VIEW_DAILY_PERCENT:
-                            currentViewText = "";
-                            break;
-                        case VIEW_DAILY_CHANGE:
-                            currentViewText = "DA";
-                            break;
-                        case VIEW_PORTFOLIO_PERCENT:
-                            currentViewText = "PF T%";
-                            break;
-                        case VIEW_PORTFOLIO_CHANGE:
-                            currentViewText = "PF TA";
-                            break;
-                        case VIEW_PORTFOLIO_PERCENT_AER:
-                            currentViewText = "PF AER";
-                            break;
-                        case VIEW_PL_DAILY_PERCENT:
-                            currentViewText = "P/L D%";
-                            break;
-                        case VIEW_PL_DAILY_CHANGE:
-                            currentViewText = "P/L DA";
-                            break;
-                        case VIEW_PL_PERCENT:
-                            currentViewText = "P/L T%";
-                            break;
-                        case VIEW_PL_CHANGE:
-                            currentViewText = "P/L TA";
-                            break;
-                        case VIEW_PL_PERCENT_AER:
-                            currentViewText = "P/L AER";
-                            break;
-                    }
-                } else {
-                    switch (ViewType.values()[widgetDisplay]) {
-                        case VIEW_DAILY_PERCENT:
-                            currentViewText = "";
-                            break;
-                        case VIEW_DAILY_CHANGE:
-                            currentViewText = "";
-                            break;
-                        case VIEW_PORTFOLIO_PERCENT:
-                            currentViewText = "PF T";
-                            break;
-                        case VIEW_PORTFOLIO_CHANGE:
-                            currentViewText = "PF T";
-                            break;
-                        case VIEW_PORTFOLIO_PERCENT_AER:
-                            currentViewText = "PF AER";
-                            break;
-                        case VIEW_PL_DAILY_PERCENT:
-                            currentViewText = "P/L D";
-                            break;
-                        case VIEW_PL_DAILY_CHANGE:
-                            currentViewText = "P/L D";
-                            break;
-                        case VIEW_PL_PERCENT:
-                            currentViewText = "P/L T";
-                            break;
-                        case VIEW_PL_CHANGE:
-                            currentViewText = "P/L T";
-                            break;
-                        case VIEW_PL_PERCENT_AER:
-                            currentViewText = "P/L AER";
-                            break;
-                    }
-                }
-
-                // Update the view name and view name separator
-                remoteViews.setTextViewText(R.id.text6, makeBold(currentViewText));
-                remoteViews.setTextColor(R.id.text6, footer_colour);
+                // Set the view label
+                remoteViews.setTextViewText(R.id.text6, makeBold(this.getLabel(widgetDisplay)));
+                remoteViews.setTextColor(R.id.text6, footerColor);
                 break;
         }
+    }
+
+    public int getFooterColor() {
+        String colorType = this.widget.getFooterColor();
+        int color = Color.parseColor("#555555");
+        if (colorType.equals("light")) {
+            color = Color.GRAY;
+        } else if (colorType.equals("yellow")) {
+            color = Color.parseColor("#cccc77");
+        }
+
+        return color;
+    }
+
+    public String getLabel(int widgetDisplay) {
+        // Set the widget view text in the footer
+        String label = "";
+        if (widget.isNarrow()) {
+            switch (ViewType.values()[widgetDisplay]) {
+                case VIEW_DAILY_PERCENT:
+                    label = "";
+                    break;
+
+                case VIEW_DAILY_CHANGE:
+                    label = "DA";
+                    break;
+
+                case VIEW_PORTFOLIO_PERCENT:
+                    label = "PF T%";
+                    break;
+
+                case VIEW_PORTFOLIO_CHANGE:
+                    label = "PF TA";
+                    break;
+
+                case VIEW_PORTFOLIO_PERCENT_AER:
+                    label = "PF AER";
+                    break;
+
+                case VIEW_PL_DAILY_PERCENT:
+                    label = "P/L D%";
+                    break;
+
+                case VIEW_PL_DAILY_CHANGE:
+                    label = "P/L DA";
+                    break;
+
+                case VIEW_PL_PERCENT:
+                    label = "P/L T%";
+                    break;
+
+                case VIEW_PL_CHANGE:
+                    label = "P/L TA";
+                    break;
+
+                case VIEW_PL_PERCENT_AER:
+                    label = "P/L AER";
+                    break;
+            }
+        } else {
+            switch (ViewType.values()[widgetDisplay]) {
+                case VIEW_DAILY_PERCENT:
+                    label = "";
+                    break;
+
+                case VIEW_DAILY_CHANGE:
+                    label = "";
+                    break;
+
+                case VIEW_PORTFOLIO_PERCENT:
+                    label = "PF T";
+                    break;
+
+                case VIEW_PORTFOLIO_CHANGE:
+                    label = "PF T";
+                    break;
+
+                case VIEW_PORTFOLIO_PERCENT_AER:
+                    label = "PF AER";
+                    break;
+
+                case VIEW_PL_DAILY_PERCENT:
+                    label = "P/L D";
+                    break;
+
+                case VIEW_PL_DAILY_CHANGE:
+                    label = "P/L D";
+                    break;
+
+                case VIEW_PL_PERCENT:
+                    label = "P/L T";
+                    break;
+
+                case VIEW_PL_CHANGE:
+                    label = "P/L T";
+                    break;
+
+                case VIEW_PL_PERCENT_AER:
+                    label = "P/L AER";
+                    break;
+            }
+        }
+
+        return label;
+    }
+
+    public String getTimeStamp() {
+        String timeStamp = this.quotesTimeStamp;
+        if (!this.widget.showShortTime()) {
+            String date = new SimpleDateFormat("dd MMM").format(new Date()).toUpperCase();
+
+            // Check if we should use yesterdays date or today's time
+            String[] parts = timeStamp.split(" ");
+            String fullDate = parts[0] + " " + parts[1];
+            if (fullDate.equals(date)) {
+                timeStamp = parts[2];
+            } else {
+                timeStamp = fullDate;
+            }
+        }
+
+        return timeStamp;
     }
 
     public boolean canChangeView() {
