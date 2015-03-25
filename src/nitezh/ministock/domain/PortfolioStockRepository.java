@@ -59,7 +59,6 @@ public class PortfolioStockRepository {
     public HashMap<String, PortfolioStock> mPortfolioStockMap = new HashMap<>();
     public Set<String> mWidgetsStockMap = new HashSet<>();
     private Storage appStorage;
-    private String mStockSymbol;
 
     public PortfolioStockRepository(Storage appStorage, Cache cache, WidgetRepository widgetRepository) {
         this.appStorage = appStorage;
@@ -86,7 +85,7 @@ public class PortfolioStockRepository {
         List<Map<String, String>> info = new ArrayList<>();
         for (String symbol : this.getSortedSymbols()) {
             StockQuote quote = this.mStockData.get(symbol);
-            PortfolioStock stock = this.mPortfolioStockMap.get(symbol);
+            PortfolioStock stock = this.getStock(symbol);
             Map<String, String> itemInfo = new HashMap<>();
 
             // Add name if we have one
@@ -188,6 +187,15 @@ public class PortfolioStockRepository {
             info.add(itemInfo);
         }
         return info;
+    }
+
+    private PortfolioStock getStock(String symbol) {
+        PortfolioStock stock = this.mPortfolioStockMap.get(symbol);
+        if (stock == null) {
+            stock = new PortfolioStock(symbol, "", "", "", "", "", "", null);
+        }
+        this.mPortfolioStockMap.put(symbol, stock);
+        return stock;
     }
 
     public void backupPortfolio(Context context) {
@@ -304,15 +312,15 @@ public class PortfolioStockRepository {
         return symbols;
     }
 
-    public void updateStock(String price, String date, String quantity,
+    public void updateStock(String symbol, String price, String date, String quantity,
                             String limitHigh, String limitLow, String customDisplay) {
-        PortfolioStock portfolioStock = new PortfolioStock(mStockSymbol, price, date, quantity,
+        PortfolioStock portfolioStock = new PortfolioStock(symbol, price, date, quantity,
                 limitHigh, limitLow, customDisplay, null);
-        this.mPortfolioStockMap.put(mStockSymbol, portfolioStock);
+        this.mPortfolioStockMap.put(symbol, portfolioStock);
     }
 
-    public void updateStock() {
-        this.updateStock("", "", "", "", "", "");
+    public void updateStock(String symbol) {
+        this.updateStock(symbol, "", "", "", "", "", "");
     }
 
     public void removeUnused() {

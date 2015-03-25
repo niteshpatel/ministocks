@@ -141,7 +141,7 @@ public class PortfolioActivity extends Activity {
             Callable callable = new Callable() {
                 @Override
                 public Object call() throws Exception {
-                    portfolioRepository.updateStock();
+                    portfolioRepository.updateStock(mStockSymbol);
                     refreshView();
                     return new Object();
                 }
@@ -292,7 +292,8 @@ public class PortfolioActivity extends Activity {
                     price = price + "0";
                 }
                 // Update the actual values
-                portfolioRepository.updateStock(price, date, quantity, limitHigh, limitLow, customDisplay);
+                portfolioRepository.updateStock(mStockSymbol, price, date, quantity,
+                        limitHigh, limitLow, customDisplay);
                 refreshView();
                 portfolioItemEdit.dismiss();
             }

@@ -84,7 +84,7 @@ public class WidgetView {
 
         this.portfolioStocks = new PortfolioStockRepository(PreferenceStorage.getInstance(context),
                 new PreferenceCache(context), widgetRepository).getStocksForSymbols(symbols);
-        this.hasPortfolioData = portfolioStocks.isEmpty();
+        this.hasPortfolioData = !portfolioStocks.isEmpty();
 
         this.remoteViews = this.getBlankRemoteViews(this.widget, context.getPackageName());
         this.enabledViews = this.calculateEnabledViews(this.widget);
