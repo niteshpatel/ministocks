@@ -280,6 +280,18 @@
                     android:summary="Help on updating prices"
                     android:title="Updating prices"/>
 
+            <PreferenceCategory android:title="Online help">
+                <Preference
+                    android:key="online_help"
+                    android:summary="Online help (launches in browser)"
+                    android:title="Online help"/>
+
+                <Preference
+                    android:key="online_faqs"
+                    android:summary="Online FAQs (launches in browser)"
+                    android:title="Online FAQs"/>
+            </PreferenceCategory>
+
             <PreferenceCategory android:title="Contact us">
                 <Preference
                         android:key="feedback"

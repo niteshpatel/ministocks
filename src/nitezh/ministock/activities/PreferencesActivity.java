@@ -533,6 +533,26 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
             }
         });
 
+        // Hook the Online help preference to the online help link
+        Preference online_help = findPreference("online_help");
+        online_help.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                showOnlineHelp();
+                return true;
+            }
+        });
+
+        // Hook the Online faqs preference to the online faqs link
+        Preference online_faqs = findPreference("online_faqs");
+        online_faqs.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                showOnlineFaqs();
+                return true;
+            }
+        });
+
         // Hook the Feedback preference to the PortfolioActivity activity
         Preference feedback = findPreference("feedback");
         feedback.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -696,6 +716,16 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         String title = "BUILD " + VersionTools.BUILD;
         String body = CHANGE_LOG;
         DialogTools.showSimpleDialog(this, title, body);
+    }
+
+    private void showOnlineHelp() {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://niteshpatel.github.io/ministocks/help.html"));
+        startActivity(browserIntent);
+    }
+
+    private void showOnlineFaqs() {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://niteshpatel.github.io/ministocks/faq.html"));
+        startActivity(browserIntent);
     }
 
     private void showFeedbackOption() {
