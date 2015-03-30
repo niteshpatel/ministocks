@@ -62,7 +62,6 @@ public class FxChangeRepository {
                 changes.put(symbol, jsonChanges.getString(symbol));
             }
         } catch (JSONException e) {
-            return null;
         }
 
         return changes;

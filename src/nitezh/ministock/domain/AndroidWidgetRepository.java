@@ -108,7 +108,7 @@ public class AndroidWidgetRepository implements WidgetRepository {
         if (!ids.contains(oldId)) {
             return;
         }
-        ids.remove(oldId);
+        ids.remove((Integer) oldId);  // Need to cast otherwise 'remove' uses location
         this.setIds(ids);
     }
 
