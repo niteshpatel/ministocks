@@ -31,7 +31,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.List;
 
-import nitezh.ministock.Cache;
+import nitezh.ministock.utils.Cache;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.utils.UrlDataTools;
 

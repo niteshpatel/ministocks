@@ -40,9 +40,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import nitezh.ministock.PreferenceCache;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
+import nitezh.ministock.Storage;
+import nitezh.ministock.utils.StorageCache;
 import nitezh.ministock.WidgetProvider;
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.PortfolioStock;
@@ -82,16 +83,13 @@ public class WidgetView {
         this.updateMode = updateMode;
         this.symbols = widget.getSymbols();
 
+        Storage storage = PreferenceStorage.getInstance(context);
         this.portfolioStocks = new PortfolioStockRepository(PreferenceStorage.getInstance(context),
-                new PreferenceCache(context), widgetRepository).getStocksForSymbols(symbols);
+                new StorageCache(storage), widgetRepository).getStocksForSymbols(symbols);
         this.hasPortfolioData = !portfolioStocks.isEmpty();
 
         this.remoteViews = this.getBlankRemoteViews(this.widget, context.getPackageName());
         this.enabledViews = this.calculateEnabledViews(this.widget);
-    }
-
-    private static int getStockViewId(int line, int col) {
-        return ReflectionTools.getField("text" + line + col);
     }
 
     private RemoteViews getBlankRemoteViews(Widget widget, String packageName) {
@@ -155,7 +153,7 @@ public class WidgetView {
     }
 
     // Global formatter so we can perform global text formatting in one place
-    private SpannableString makeBold(String s) {
+    private SpannableString applyFormatting(String s) {
         SpannableString span = new SpannableString(s);
         if (this.widget.getTextStyle()) {
             span.setSpan(new StyleSpan(Typeface.BOLD), 0, s.length(), 0);
@@ -198,239 +196,161 @@ public class WidgetView {
         return enabledViews;
     }
 
-    private HashMap<String, Object> getRowInfo(String symbol, ViewType widgetView) {
-        HashMap<String, Object> rowInfo = new HashMap<>();
-
-        // Initialise columns
-        rowInfo.put("COL0_VALUE", symbol);
-        rowInfo.put("COL0_COLOUR", Color.WHITE);
-        rowInfo.put("COL1_VALUE", "");
-        rowInfo.put("COL1_COLOUR", Color.WHITE);
-        rowInfo.put("COL2_VALUE", "");
-        rowInfo.put("COL2_COLOUR", Color.WHITE);
-        rowInfo.put("COL3_VALUE", "");
-        rowInfo.put("COL3_COLOUR", Color.WHITE);
-        rowInfo.put("COL4_VALUE", "");
-        rowInfo.put("COL4_COLOUR", Color.WHITE);
-
-        // Set the stock symbol, and strip off exchange suffix
-        // if requested in the preferences
-        if (this.widget.getHideSuffix()) {
-            int dotIndex = symbol.indexOf(".");
-            if (dotIndex > -1) {
-                rowInfo.put("COL0_VALUE", symbol.substring(0, dotIndex));
-            }
-        }
+    private WidgetRow getRowInfo(String symbol, ViewType widgetView) {
+        WidgetRow widgetRow = new WidgetRow(this.widget);
+        widgetRow.setSymbol(symbol);
 
         // If there is no quote info return immediately
         StockQuote quote = this.quotes.get(symbol);
         if (quote == null || quote.getPrice() == null || quote.getPercent() == null) {
+            widgetRow.setHasNoData(true);
             if (this.widget.isNarrow()) {
-                rowInfo.put("COL1_VALUE", "no");
-                rowInfo.put("COL1_COLOUR", Color.GRAY);
-                rowInfo.put("COL2_VALUE", "data");
-                rowInfo.put("COL2_COLOUR", Color.GRAY);
+                widgetRow.setPrice("no");
+                widgetRow.setPriceColor(Color.GRAY);
+                widgetRow.setStockInfo("data");
+                widgetRow.setStockInfoColor(Color.GRAY);
             } else {
-                rowInfo.put("COL3_VALUE", "no");
-                rowInfo.put("COL3_COLOUR", Color.GRAY);
-                rowInfo.put("COL4_VALUE", "data");
-                rowInfo.put("COL4_COLOUR", Color.GRAY);
+                widgetRow.setStockInfoExtra("no");
+                widgetRow.setStockInfoExtraColor(Color.GRAY);
+                widgetRow.setStockInfo("no");
+                widgetRow.setStockInfoColor(Color.GRAY);
             }
-            return rowInfo;
+            return widgetRow;
         }
 
         // Set default values
         PortfolioStock portfolioStock = this.portfolioStocks.get(symbol);
         WidgetStock widgetStock = new WidgetStock(quote, portfolioStock);
-        rowInfo.put("COL1_VALUE", widgetStock.getPrice());
+        widgetRow.setPrice(widgetStock.getPrice());
+        widgetRow.setStockInfo(widgetStock.getDailyPercent());
+        widgetRow.setStockInfoColor(WidgetColors.NA);
         if (!widget.isNarrow()) {
-            rowInfo.put("COL0_VALUE", widgetStock.getDisplayName());
-            rowInfo.put("COL2_VALUE", widgetStock.getVolume());
-            rowInfo.put("COL2_COLOUR", WidgetColors.VOLUME);
-            rowInfo.put("COL3_VALUE", widgetStock.getDailyChange());
-            rowInfo.put("COL3_COLOUR", WidgetColors.NA);
-            rowInfo.put("COL4_VALUE", widgetStock.getDailyPercent());
-            rowInfo.put("COL4_COLOUR", WidgetColors.NA);
-        } else {
-            rowInfo.put("COL2_VALUE", widgetStock.getDailyPercent());
-            rowInfo.put("COL2_COLOUR", WidgetColors.NA);
+            widgetRow.setSymbol(widgetStock.getDisplayName());
+            widgetRow.setVolume(widgetStock.getVolume());
+            widgetRow.setVolumeColor(WidgetColors.VOLUME);
+            widgetRow.setStockInfoExtra(widgetStock.getDailyChange());
+            widgetRow.setStockInfoExtraColor(WidgetColors.NA);
         }
 
         Boolean plView = false;
         Boolean plChange = false;
-        String column1 = null;
-        String column2 = null;
-        String column3 = null;
-        String column4 = null;
+        String priceColumn = null;
+        String stockInfo = null;
+        String stockInfoExtra = null;
 
-        if (widget.isNarrow()) {
-            switch (widgetView) {
-                case VIEW_DAILY_PERCENT:
-                    column2 = widgetStock.getDailyPercent();
-                    break;
+        switch (widgetView) {
+            case VIEW_DAILY_PERCENT:
+                stockInfoExtra = widgetStock.getDailyChange();
+                stockInfo = widgetStock.getDailyPercent();
+                break;
 
-                case VIEW_DAILY_CHANGE:
-                    column2 = widgetStock.getDailyChange();
-                    break;
+            case VIEW_DAILY_CHANGE:
+                stockInfoExtra = widgetStock.getDailyPercent();
+                stockInfo = widgetStock.getDailyChange();
+                break;
 
-                case VIEW_PORTFOLIO_PERCENT:
-                    column2 = widgetStock.getTotalPercent();
-                    break;
+            case VIEW_PORTFOLIO_PERCENT:
+                stockInfoExtra = widgetStock.getTotalChange();
+                stockInfo = widgetStock.getTotalPercent();
+                break;
 
-                case VIEW_PORTFOLIO_CHANGE:
-                    column2 = widgetStock.getTotalChange();
-                    break;
+            case VIEW_PORTFOLIO_CHANGE:
+                stockInfoExtra = widgetStock.getTotalPercent();
+                stockInfo = widgetStock.getTotalChange();
+                break;
 
-                case VIEW_PORTFOLIO_PERCENT_AER:
-                    column2 = widgetStock.getTotalChangeAer();
-                    break;
+            case VIEW_PORTFOLIO_PERCENT_AER:
+                stockInfoExtra = widgetStock.getTotalChangeAer();
+                stockInfo = widgetStock.getTotalPercentAer();
+                break;
 
-                case VIEW_PL_DAILY_PERCENT:
-                    plView = true;
-                    column1 = widgetStock.getPlHolding();
-                    column2 = widgetStock.getDailyPercent();
-                    break;
+            case VIEW_PL_DAILY_PERCENT:
+                plView = true;
+                plChange = true;
+                priceColumn = widgetStock.getPlHolding();
+                stockInfoExtra = widgetStock.getPlDailyChange();
+                stockInfo = widgetStock.getDailyPercent();
+                break;
 
-                case VIEW_PL_DAILY_CHANGE:
-                    plView = true;
-                    plChange = true;
-                    column1 = widgetStock.getPlHolding();
-                    column2 = widgetStock.getPlDailyChange();
-                    break;
+            case VIEW_PL_DAILY_CHANGE:
+                plView = true;
+                plChange = true;
+                priceColumn = widgetStock.getPlHolding();
+                stockInfoExtra = widgetStock.getDailyPercent();
+                stockInfo = widgetStock.getPlDailyChange();
+                break;
 
-                case VIEW_PL_PERCENT:
-                    plView = true;
-                    column1 = widgetStock.getPlHolding();
-                    column2 = widgetStock.getTotalPercent();
-                    break;
+            case VIEW_PL_PERCENT:
+                plView = true;
+                plChange = true;
+                priceColumn = widgetStock.getPlHolding();
+                stockInfoExtra = widgetStock.getPlTotalChange();
+                stockInfo = widgetStock.getTotalPercent();
+                break;
 
-                case VIEW_PL_CHANGE:
-                    plView = true;
-                    plChange = true;
-                    column1 = widgetStock.getPlHolding();
-                    column2 = widgetStock.getTotalChange();
-                    break;
+            case VIEW_PL_CHANGE:
+                plView = true;
+                plChange = true;
+                priceColumn = widgetStock.getPlHolding();
+                stockInfoExtra = widgetStock.getTotalPercent();
+                stockInfo = widgetStock.getPlTotalChange();
+                break;
 
-                case VIEW_PL_PERCENT_AER:
-                    plView = true;
-                    column1 = widgetStock.getPlHolding();
-                    column2 = widgetStock.getTotalPercentAer();
-                    break;
-            }
-        } else {
-            switch (widgetView) {
-                case VIEW_DAILY_PERCENT:
-                    column3 = widgetStock.getDailyChange();
-                    column4 = widgetStock.getDailyPercent();
-                    break;
-
-                case VIEW_DAILY_CHANGE:
-                    column3 = widgetStock.getDailyChange();
-                    column4 = widgetStock.getDailyPercent();
-                    break;
-
-                case VIEW_PORTFOLIO_PERCENT:
-                    column3 = widgetStock.getTotalChange();
-                    column4 = widgetStock.getTotalPercent();
-                    break;
-
-                case VIEW_PORTFOLIO_CHANGE:
-                    column3 = widgetStock.getTotalChange();
-                    column4 = widgetStock.getTotalPercent();
-                    break;
-
-                case VIEW_PORTFOLIO_PERCENT_AER:
-                    column3 = widgetStock.getTotalChangeAer();
-                    column4 = widgetStock.getTotalPercentAer();
-                    break;
-
-                case VIEW_PL_DAILY_PERCENT:
-                    plView = true;
-                    plChange = true;
-                    column1 = widgetStock.getPlHolding();
-                    column3 = widgetStock.getPlDailyChange();
-                    column4 = widgetStock.getDailyPercent();
-                    break;
-
-                case VIEW_PL_DAILY_CHANGE:
-                    plView = true;
-                    plChange = true;
-                    column1 = widgetStock.getPlHolding();
-                    column3 = widgetStock.getPlDailyChange();
-                    column4 = widgetStock.getDailyPercent();
-                    break;
-
-                case VIEW_PL_PERCENT:
-                    plView = true;
-                    plChange = true;
-                    column1 = widgetStock.getPlHolding();
-                    column3 = widgetStock.getPlTotalChange();
-                    column4 = widgetStock.getTotalPercent();
-                    break;
-
-                case VIEW_PL_CHANGE:
-                    plView = true;
-                    plChange = true;
-                    column1 = widgetStock.getPlHolding();
-                    column3 = widgetStock.getPlTotalChange();
-                    column4 = widgetStock.getTotalPercent();
-                    break;
-
-                case VIEW_PL_PERCENT_AER:
-                    plView = true;
-                    plChange = true;
-                    column1 = widgetStock.getPlHolding();
-                    column3 = widgetStock.getPlTotalChangeAer();
-                    column4 = widgetStock.getTotalPercentAer();
-                    break;
-            }
+            case VIEW_PL_PERCENT_AER:
+                plView = true;
+                plChange = true;
+                priceColumn = widgetStock.getPlHolding();
+                stockInfoExtra = widgetStock.getPlTotalChangeAer();
+                stockInfo = widgetStock.getTotalPercentAer();
+                break;
         }
+
 
         // Set the price column colour if we have hit an alert
         // (this is only relevant for non-profit and loss views)
         if (widgetStock.getLimitHighTriggered() && !plView) {
-            rowInfo.put("COL1_COLOUR", WidgetColors.HIGH_ALERT);
+            widgetRow.setPriceColor(WidgetColors.HIGH_ALERT);
         }
         if (widgetStock.getLimitLowTriggered() && !plView) {
-            rowInfo.put("COL1_COLOUR", WidgetColors.LOW_ALERT);
+            widgetRow.setPriceColor(WidgetColors.LOW_ALERT);
         }
 
         // Set the price column to the holding value and colour
         // the column blue if we have no holdings
-        if (plView && column1 == null) {
-            rowInfo.put("COL1_COLOUR", WidgetColors.NA);
+        if (plView && priceColumn == null) {
+            widgetRow.setPriceColor(WidgetColors.NA);
         }
 
         // Add currency symbol if we have a holding
-        if (column1 != null) {
-            rowInfo.put("COL1_VALUE", CurrencyTools.addCurrencyToSymbol(column1, symbol));
+        if (priceColumn != null) {
+            widgetRow.setPrice(CurrencyTools.addCurrencyToSymbol(priceColumn, symbol));
         }
 
         // Set the value and colour for the change values
         if (!widget.isNarrow()) {
-            if (column3 != null) {
+            if (stockInfoExtra != null) {
                 if (plChange) {
-                    rowInfo.put("COL3_VALUE", CurrencyTools.addCurrencyToSymbol(column3, symbol));
+                    widgetRow.setStockInfoExtra(CurrencyTools.addCurrencyToSymbol(stockInfoExtra, symbol));
                 } else {
-                    rowInfo.put("COL3_VALUE", column3);
+                    widgetRow.setStockInfoExtra(stockInfoExtra);
                 }
-                rowInfo.put("COL3_COLOUR", getColourForChange(column3));
+                widgetRow.setStockInfoExtraColor(getColourForChange(stockInfoExtra));
             }
-            if (column4 != null) {
-                rowInfo.put("COL4_VALUE", column4);
-                rowInfo.put("COL4_COLOUR", getColourForChange(column4));
+            if (stockInfo != null) {
+                widgetRow.setStockInfo(stockInfo);
+                widgetRow.setStockInfoColor(getColourForChange(stockInfo));
             }
         } else {
-            if (column2 != null) {
+            if (stockInfo != null) {
                 if (plChange) {
-                    rowInfo.put("COL2_VALUE", CurrencyTools.addCurrencyToSymbol(column2, symbol));
+                    widgetRow.setStockInfo(CurrencyTools.addCurrencyToSymbol(stockInfo, symbol));
                 } else {
-                    rowInfo.put("COL2_VALUE", column2);
+                    widgetRow.setStockInfo(stockInfo);
                 }
-                rowInfo.put("COL2_COLOUR", getColourForChange(column2));
+                widgetRow.setStockInfoColor(getColourForChange(stockInfo));
             }
         }
-        return rowInfo;
+        return widgetRow;
     }
 
     private int getColourForChange(String value) {
@@ -450,7 +370,7 @@ public class WidgetView {
         int columnCount = (!widget.isNarrow()) ? 6 : 4;
         for (int i = 1; i < this.widget.getSymbolCount() + 1; i++) {
             for (int j = 1; j < columnCount; j++) {
-                this.remoteViews.setTextViewText(getStockViewId(i, j), "");
+                this.setStockRowItemText(i, j, "");
             }
         }
     }
@@ -494,6 +414,16 @@ public class WidgetView {
         return currentView;
     }
 
+    public void setStockRowItemText(int row, int col, Object text) {
+        this.remoteViews.setTextViewText(
+                ReflectionTools.getField("text" + row + col),
+                !text.equals("") ? applyFormatting((String) text) : "");
+    }
+
+    public void setStockRowItemColor(int row, int col, int color) {
+        this.remoteViews.setTextColor(ReflectionTools.getField("text" + row + col), color);
+    }
+
     public void applyPendingChanges() {
         int widgetDisplay = this.getNextView(this.updateMode);
         this.clear();
@@ -506,44 +436,41 @@ public class WidgetView {
 
             // Get the info for this quote
             lineNo++;
-            HashMap<String, Object> rowInfo = getRowInfo(symbol, ViewType.values()[widgetDisplay]);
+            WidgetRow rowInfo = getRowInfo(symbol, ViewType.values()[widgetDisplay]);
 
             // Values
-            remoteViews.setTextViewText(getStockViewId(lineNo, 1), makeBold((String) rowInfo.get("COL0_VALUE")));
-            remoteViews.setTextViewText(getStockViewId(lineNo, 2), makeBold((String) rowInfo.get("COL1_VALUE")));
-            remoteViews.setTextViewText(getStockViewId(lineNo, 3), makeBold((String) rowInfo.get("COL2_VALUE")));
+            setStockRowItemText(lineNo, 1, rowInfo.getSymbol());
+            setStockRowItemText(lineNo, 2, rowInfo.getPrice());
 
-            // Add the other values if we have a wide widget
-            if (!widget.isNarrow()) {
-                remoteViews.setTextViewText(getStockViewId(lineNo, 4), makeBold((String) rowInfo.get("COL3_VALUE")));
-                remoteViews.setTextViewText(getStockViewId(lineNo, 5), makeBold((String) rowInfo.get("COL4_VALUE")));
+            if (widget.isNarrow()) {
+                setStockRowItemText(lineNo, 3, rowInfo.getStockInfo());
+            } else {
+                setStockRowItemText(lineNo, 3, rowInfo.getVolume());
+                setStockRowItemText(lineNo, 4, rowInfo.getStockInfoExtra());
+                setStockRowItemText(lineNo, 5, rowInfo.getStockInfo());
             }
 
             // Colours
-            remoteViews.setTextColor(getStockViewId(lineNo, 1), (Integer) rowInfo.get("COL0_COLOUR"));
+            setStockRowItemColor(lineNo, 1, rowInfo.getSymbolDisplayColor());
             if (!this.widget.getColorsOnPrices()) {
+                setStockRowItemColor(lineNo, 2, rowInfo.getPriceColor());
+
                 if (widget.isNarrow()) {
-                    remoteViews.setTextColor(getStockViewId(lineNo, 2), (Integer) rowInfo.get("COL1_COLOUR"));
-                    remoteViews.setTextColor(getStockViewId(lineNo, 3), (Integer) rowInfo.get("COL2_COLOUR"));
+                    setStockRowItemColor(lineNo, 3, rowInfo.getStockInfoColor());
                 } else {
-                    remoteViews.setTextColor(getStockViewId(lineNo, 2), (Integer) rowInfo.get("COL1_COLOUR"));
-                    remoteViews.setTextColor(getStockViewId(lineNo, 3), (Integer) rowInfo.get("COL2_COLOUR"));
-                    remoteViews.setTextColor(getStockViewId(lineNo, 4), (Integer) rowInfo.get("COL3_COLOUR"));
-                    remoteViews.setTextColor(getStockViewId(lineNo, 5), (Integer) rowInfo.get("COL4_COLOUR"));
+                    setStockRowItemColor(lineNo, 3, rowInfo.getVolumeColor());
+                    setStockRowItemColor(lineNo, 4, rowInfo.getStockInfoExtraColor());
+                    setStockRowItemColor(lineNo, 5, rowInfo.getStockInfoColor());
                 }
             } else {
+                setStockRowItemColor(lineNo, 2, rowInfo.getStockInfoColor());
 
-                // Narrow widget
                 if (widget.isNarrow()) {
-                    remoteViews.setTextColor(getStockViewId(lineNo, 3), (Integer) rowInfo.get("COL1_COLOUR"));
-                    remoteViews.setTextColor(getStockViewId(lineNo, 2), (Integer) rowInfo.get("COL2_COLOUR"));
-                }
-
-                // Wide widget
-                else {
-                    remoteViews.setTextColor(getStockViewId(lineNo, 2), (Integer) rowInfo.get("COL4_COLOUR"));
-                    remoteViews.setTextColor(getStockViewId(lineNo, 4), (Integer) rowInfo.get("COL1_COLOUR"));
-                    remoteViews.setTextColor(getStockViewId(lineNo, 5), (Integer) rowInfo.get("COL1_COLOUR"));
+                    setStockRowItemColor(lineNo, 3, rowInfo.getPriceColor());
+                } else {
+                    setStockRowItemColor(lineNo, 3, rowInfo.getVolumeColor());
+                    setStockRowItemColor(lineNo, 4, rowInfo.getPriceColor());
+                    setStockRowItemColor(lineNo, 5, rowInfo.getPriceColor());
                 }
             }
         }
@@ -563,11 +490,11 @@ public class WidgetView {
 
                 // Set time stamp
                 int footerColor = this.getFooterColor();
-                remoteViews.setTextViewText(R.id.text5, makeBold(this.getTimeStamp()));
+                remoteViews.setTextViewText(R.id.text5, applyFormatting(this.getTimeStamp()));
                 remoteViews.setTextColor(R.id.text5, footerColor);
 
                 // Set the view label
-                remoteViews.setTextViewText(R.id.text6, makeBold(this.getLabel(widgetDisplay)));
+                remoteViews.setTextViewText(R.id.text6, applyFormatting(this.getLabel(widgetDisplay)));
                 remoteViews.setTextColor(R.id.text6, footerColor);
                 break;
         }

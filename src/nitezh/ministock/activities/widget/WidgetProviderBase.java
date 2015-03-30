@@ -36,9 +36,9 @@ import java.util.HashMap;
 import java.util.concurrent.RejectedExecutionException;
 
 import nitezh.ministock.CustomAlarmManager;
-import nitezh.ministock.PreferenceCache;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.Storage;
+import nitezh.ministock.utils.StorageCache;
 import nitezh.ministock.UserData;
 import nitezh.ministock.activities.PreferencesActivity;
 import nitezh.ministock.domain.AndroidWidgetRepository;
@@ -225,8 +225,9 @@ public class WidgetProviderBase extends AppWidgetProvider {
         @Override
         protected Void doInBackground(Object... params) {
             WidgetRepository widgetRepository = new AndroidWidgetRepository(this.context);
+            Storage storage = PreferenceStorage.getInstance(this.context);
             StockQuoteRepository quoteRepository = new StockQuoteRepository(
-                    PreferenceStorage.getInstance(this.context), new PreferenceCache(this.context),
+                    PreferenceStorage.getInstance(this.context), new StorageCache(storage),
                     widgetRepository);
 
             this.quotes = quoteRepository.getQuotes(

@@ -49,7 +49,8 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import nitezh.ministock.DialogTools;
-import nitezh.ministock.PreferenceCache;
+import nitezh.ministock.Storage;
+import nitezh.ministock.utils.StorageCache;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.activities.widget.WidgetProviderBase;
@@ -68,9 +69,10 @@ public class PortfolioActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Storage storage = PreferenceStorage.getInstance(this);
         this.portfolioRepository = new PortfolioStockRepository(
-                PreferenceStorage.getInstance(this),
-                new PreferenceCache(this),
+                storage,
+                new StorageCache(storage),
                 new AndroidWidgetRepository(this)
         );
         this.refreshView();

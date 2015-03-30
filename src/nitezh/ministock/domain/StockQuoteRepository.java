@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import nitezh.ministock.Cache;
+import nitezh.ministock.utils.Cache;
 import nitezh.ministock.Storage;
 import nitezh.ministock.dataaccess.FxChangeRepository;
 import nitezh.ministock.dataaccess.GoogleStockQuoteRepository;

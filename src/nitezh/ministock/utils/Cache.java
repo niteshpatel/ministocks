@@ -22,7 +22,7 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock;
+package nitezh.ministock.utils;
 
 
 import org.json.JSONException;

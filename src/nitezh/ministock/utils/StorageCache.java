@@ -22,21 +22,46 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock.tests.mocks;
+package nitezh.ministock.utils;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import nitezh.ministock.utils.Cache;
+import nitezh.ministock.Storage;
 
 
-public class MockCache extends Cache {
+public class StorageCache extends Cache {
 
-    @Override
-    protected JSONObject loadCache() {
-        return new JSONObject();
+    public static final String JSON_CACHE = "JsonCache";
+    private static String mCache = "";
+    private Storage storage = null;
+
+    public StorageCache(Storage storage) {
+        if (storage != null) {
+            this.storage = storage;
+        }
     }
 
     @Override
     protected void persistCache(JSONObject cache) {
+        mCache = cache.toString();
+        if (this.storage != null) {
+            this.storage.putString(JSON_CACHE, mCache);
+            this.storage.apply();
+        }
+    }
+
+    @Override
+    protected JSONObject loadCache() {
+        if (storage != null && mCache.equals("")) {
+            mCache = storage.getString(JSON_CACHE, "");
+        }
+        JSONObject cache = new JSONObject();
+        try {
+            cache = new JSONObject(mCache);
+        } catch (JSONException ignore) {
+        }
+
+        return cache;
     }
 }

@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import nitezh.ministock.Cache;
+import nitezh.ministock.utils.Cache;
 import nitezh.ministock.DialogTools;
 import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;

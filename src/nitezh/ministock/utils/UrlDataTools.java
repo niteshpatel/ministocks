@@ -31,8 +31,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 
-import nitezh.ministock.Cache;
-
 
 public class UrlDataTools {
 
