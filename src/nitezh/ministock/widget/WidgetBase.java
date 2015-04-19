@@ -41,14 +41,21 @@ import android.text.style.StyleSpan;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.RemoteViews;
-import nitezh.ministock.*;
-import nitezh.ministock.DataSource.StockField;
-import nitezh.ministock.UserData.PortfolioField;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.RejectedExecutionException;
+
+import nitezh.ministock.DataSource;
+import nitezh.ministock.DataSource.StockField;
+import nitezh.ministock.Preferences;
+import nitezh.ministock.R;
+import nitezh.ministock.Tools;
+import nitezh.ministock.UserData;
+import nitezh.ministock.UserData.PortfolioField;
+import nitezh.ministock.Widget;
 
 public class WidgetBase extends AppWidgetProvider {
 
@@ -1154,11 +1161,14 @@ public class WidgetBase extends AppWidgetProvider {
         }
 
         // Perform updates as appropriate
-        if (doUpdates)
-            updateWidgets(context, VIEW_UPDATE);
+        try {
+            if (doUpdates)
+                updateWidgets(context, VIEW_UPDATE);
 
-        else
-            updateWidgets(context, VIEW_NO_UPDATE);
+            else
+                updateWidgets(context, VIEW_NO_UPDATE);
+        } catch (RejectedExecutionException ignored) {
+        }
     }
 
     private static void updateAlarmManager(Context context) {
