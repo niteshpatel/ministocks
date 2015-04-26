@@ -120,9 +120,7 @@ public class DialogTools {
                     try {
                         callable.setInputValue(choices[which].toString());
                         callable.call();
-                    } catch (Exception e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                    } catch (Exception ignored) {
                     }
                 }
             }

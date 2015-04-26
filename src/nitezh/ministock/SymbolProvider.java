@@ -168,7 +168,6 @@ public class SymbolProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        // TODO Auto-generated method stub
         return true;
     }
 }
