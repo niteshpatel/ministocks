@@ -73,7 +73,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     // Private
     private static boolean mPendingUpdate = false;
     private static String mSymbolSearchKey = "";
-    private final String CHANGE_LOG = "• Bug-fixes and optimisations.<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>";
+    private final String CHANGE_LOG = "• Experimental Backup and Restore option added.<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>";
     // Fields for time pickers
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
     private String mTimePickerKey = null;

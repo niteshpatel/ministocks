@@ -208,8 +208,7 @@ public class PortfolioStockRepository {
     public void restorePortfolio(Context context) {
         mDirtyPortfolioStockMap = true;
         String rawJson = UserData.readInternalStorage(context, PORTFOLIO_JSON);
-        this.appStorage.putString(PORTFOLIO_JSON, rawJson);
-        this.appStorage.apply();
+        this.appStorage.putString(PORTFOLIO_JSON, rawJson).apply();
         DialogTools.showSimpleDialog(context, "PortfolioActivity restored",
                 "Your portfolio settings have been restored from internal appStorage.");
     }

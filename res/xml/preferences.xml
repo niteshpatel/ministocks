@@ -227,27 +227,27 @@
                         android:summaryOn="Update prices on the weekend"
                         android:title="Weekend updates"/>
             </PreferenceScreen>
-        </PreferenceScreen>
-        <PreferenceScreen
+            <PreferenceScreen
                 android:key="backup_restore"
-                android:summary="Backup and Restore widgets and portfolio"
-                android:title="Backup and Restore">
-            <Preference
+                android:summary="This is an experimental feature"
+                android:title="Backup and Restore (BETA)">
+                <Preference
                     android:key="backup_portfolio"
                     android:summary="Backup portfolio to cloud"
                     android:title="Backup portfolio"/>
-            <Preference
+                <Preference
                     android:key="restore_portfolio"
                     android:summary="Restore portfolio from cloud"
                     android:title="Restore portfolio"/>
-            <Preference
+                <Preference
                     android:key="backup_widget"
                     android:summary="Backup this widget to cloud"
                     android:title="Backup widget"/>
-            <Preference
+                <Preference
                     android:key="restore_widget"
                     android:summary="Restore a widget from cloud"
                     android:title="Restore widget"/>
+            </PreferenceScreen>
         </PreferenceScreen>
         <Preference
                 android:key="portfolio"

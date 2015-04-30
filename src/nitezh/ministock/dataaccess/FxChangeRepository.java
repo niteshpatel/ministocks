@@ -37,7 +37,7 @@ import nitezh.ministock.utils.UrlDataTools;
 
 public class FxChangeRepository {
 
-    private static final String BASE_URL = "http://ministocks-app.appspot.com/getcurrencydata";
+    private static final String BASE_URL = "http://ministocks-app-hrd.appspot.com/getcurrencydata";
 
     private boolean hasFxSymbols(List<String> symbols) {
         for (String s : symbols) {
@@ -57,11 +57,11 @@ public class FxChangeRepository {
         try {
             JSONObject jsonChanges = retrieveChangesAsJson(cache);
             String symbol;
-            for (Iterator<String> iter = jsonChanges.keys(); iter.hasNext(); ) {
-                symbol = iter.next();
+            for (Iterator iter = jsonChanges.keys(); iter.hasNext(); ) {
+                symbol = (String) iter.next();
                 changes.put(symbol, jsonChanges.getString(symbol));
             }
-        } catch (JSONException e) {
+        } catch (JSONException ignored) {
         }
 
         return changes;
