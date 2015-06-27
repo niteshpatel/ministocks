@@ -90,9 +90,7 @@ public class PortfolioActivity extends Activity {
                         "buyPrice",
                         "date",
                         "limitHigh",
-                        "limitHigh_label",
                         "limitLow",
-                        "limitLow_label",
                         "quantity",
                         "currentPrice",
                         "lastChange",
@@ -105,9 +103,7 @@ public class PortfolioActivity extends Activity {
                         R.id.portfolio_list_item_buy_price,
                         R.id.portfolio_list_item_date,
                         R.id.portfolio_list_item_limit_high,
-                        R.id.portfolio_list_item_limit_high_label,
                         R.id.portfolio_list_item_limit_low,
-                        R.id.portfolio_list_item_limit_low_label,
                         R.id.portfolio_list_item_quantity,
                         R.id.portfolio_list_item_current_price,
                         R.id.portfolio_list_item_last_change,
@@ -168,7 +164,7 @@ public class PortfolioActivity extends Activity {
         mStockSymbol = stockMap.get("symbol");
 
         // Get current data for this stock
-        StockQuote data = this.portfolioRepository.mStockData.get(mStockSymbol);
+        StockQuote data = this.portfolioRepository.stocksQuotes.get(mStockSymbol);
         String currentPrice = "";
         if (data != null)
             currentPrice = data.getPrice();
