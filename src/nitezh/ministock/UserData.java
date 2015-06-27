@@ -41,6 +41,7 @@ import java.util.Iterator;
 
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.PortfolioStockRepository;
+import nitezh.ministock.domain.Widget;
 import nitezh.ministock.domain.WidgetRepository;
 
 
@@ -50,85 +51,106 @@ public class UserData {
     public static final Object sFileBackupLock = new Object();
 
     public static void cleanupPreferenceFiles(Context context) {
-        // Remove old preferences if we are upgrading
-        ArrayList<String> l = new ArrayList<>();
+        ArrayList<String> preferencesPathsInUse = getPreferencesPathsInUse(context);
+        String sharedPrefsPath = context.getFilesDir().getParentFile().getPath() + "/shared_prefs";
+        removeFilesExceptWhitelist(sharedPrefsPath, preferencesPathsInUse);
+    }
 
-        // Shared preferences is never deleted
-        l.add(context.getString(R.string.prefs_name) + ".xml");
-        WidgetRepository repository = new AndroidWidgetRepository(context);
-        for (int id : repository.getIds())
-            l.add(context.getString(R.string.prefs_name) + id + ".xml");
-
-        // Remove files we do not have an active widget for
-        String appDir = context.getFilesDir().getParentFile().getPath();
-        File f_shared_preferences = new File(appDir + "/shared_prefs");
-
-        // Check if shared_preferences exists
-        // TODO: Work out why this is ever null and an alternative strategy
-        if (f_shared_preferences.exists())
-            for (File f : f_shared_preferences.listFiles())
-                if (!l.contains(f.getName()))
-                    //noinspection ResultOfMethodCallIgnored
+    private static void removeFilesExceptWhitelist(String sharedPrefsFolder, ArrayList<String> preferencesFilenames) {
+        File sharedPrefsDir = new File(sharedPrefsFolder);
+        if (sharedPrefsDir.exists()) {
+            for (File f : sharedPrefsDir.listFiles()) {
+                if (!preferencesFilenames.contains(f.getName())) {
                     f.delete();
+                }
+            }
+        }
+    }
+
+    private static ArrayList<String> getPreferencesPathsInUse(Context context) {
+        ArrayList<String> filenames = new ArrayList<>();
+
+        filenames.add(context.getString(R.string.prefs_name) + ".xml");
+        for (int id : new AndroidWidgetRepository(context).getIds()) {
+            filenames.add(context.getString(R.string.prefs_name) + id + ".xml");
+        }
+
+        return filenames;
     }
 
     public static void backupWidget(Context context, int appWidgetId, String backupName) {
         try {
-            // Get existing data collection from storage if present
-            JSONObject backupContainer = new JSONObject();
-            String rawJson = readInternalStorage(context, PortfolioStockRepository.WIDGET_JSON);
-            if (rawJson != null) {
-                backupContainer = new JSONObject(rawJson);
-            }
-            // Now get data for current widget, append to existing data and write to storage
-            WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
-            JSONObject backupJson = widgetRepository.getWidget(appWidgetId).getWidgetPreferencesAsJson();
-            backupContainer.put(backupName, backupJson);
-            writeInternalStorage(context, backupContainer.toString(), PortfolioStockRepository.WIDGET_JSON);
+            JSONObject jsonForAllWidgets = getJsonBackupsForAllWidgets(context);
+            JSONObject jsonForWidget = getJsonForWidget(context, appWidgetId);
+
+            jsonForAllWidgets.put(backupName, jsonForWidget);
+            setJsonForAllWidgets(context, jsonForAllWidgets);
         } catch (JSONException ignored) {
         }
+    }
+
+    private static void setJsonForAllWidgets(Context context, JSONObject jsonForAllWidgets) {
+        writeInternalStorage(context, jsonForAllWidgets.toString(), PortfolioStockRepository.WIDGET_JSON);
+    }
+
+    private static JSONObject getJsonForWidget(Context context, int appWidgetId) {
+        WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
+        return widgetRepository.getWidget(appWidgetId).getWidgetPreferencesAsJson();
+    }
+
+    private static JSONObject getJsonBackupsForAllWidgets(Context context) throws JSONException {
+        JSONObject backupContainer = new JSONObject();
+        String rawJson = readInternalStorage(context, PortfolioStockRepository.WIDGET_JSON);
+        if (rawJson != null) {
+            backupContainer = new JSONObject(rawJson);
+        }
+
+        return backupContainer;
     }
 
     public static void restoreWidget(Context context, int appWidgetId, String backupName) {
         try {
-            // Get existing data collection from storage
-            JSONObject backupContainer = new JSONObject(readInternalStorage(context, PortfolioStockRepository.WIDGET_JSON));
+            JSONObject jsonBackupsForAllWidgets = getJsonBackupsForAllWidgets(context);
 
-            // Update widget with preferences from backup
-            WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
-            widgetRepository.getWidget(appWidgetId).setWidgetPreferencesFromJson(
-                    backupContainer.getJSONObject(backupName));
+            Widget widget = new AndroidWidgetRepository(context).getWidget(appWidgetId);
+            widget.setWidgetPreferencesFromJson(
+                    jsonBackupsForAllWidgets.getJSONObject(backupName));
 
-            // Show confirmation to user
-            DialogTools.showSimpleDialog(context, "AppWidgetProvider restored",
-                    "The current widget preferences have been restored from your selected backup.");
-
-            // restart activity to force reload of preferences
-            Activity activity = ((Activity) context);
-            Intent intent = activity.getIntent();
-            activity.finish();
-            activity.startActivity(intent);
+            InformUserWidgetBackupRestored(context);
+            ReloadPreferences((Activity) context);
         } catch (JSONException ignored) {
         }
     }
 
+    private static void InformUserWidgetBackupRestored(Context context) {
+        DialogTools.showSimpleDialog(context, "AppWidgetProvider restored",
+                "The current widget preferences have been restored from your selected backup.");
+    }
+
+    private static void ReloadPreferences(Activity activity) {
+        Intent intent = activity.getIntent();
+        activity.finish();
+        activity.startActivity(intent);
+    }
+
     public static CharSequence[] getWidgetBackupNames(Context context) {
-        // Get existing data collection from storage
         try {
             String rawJson = readInternalStorage(context, PortfolioStockRepository.WIDGET_JSON);
             if (rawJson == null) {
                 return null;
             }
-            JSONObject backupContainer = new JSONObject(readInternalStorage(context, PortfolioStockRepository.WIDGET_JSON));
-            Iterator<String> iterator = backupContainer.keys();
+
+            JSONObject jsonBackupsForAllWidgets = getJsonBackupsForAllWidgets(context);
+            Iterator iterator = jsonBackupsForAllWidgets.keys();
             ArrayList<String> backupList = new ArrayList<>();
             while (iterator.hasNext()) {
-                backupList.add(iterator.next());
+                backupList.add((String) iterator.next());
             }
-            CharSequence[] backupNames = new String[backupList.size()];
-            return backupList.toArray(backupNames);
+
+            return backupList.toArray(new String[backupList.size()]);
         } catch (JSONException ignored) {
         }
+
         return null;
     }
 
@@ -140,8 +162,7 @@ public class UserData {
                 fos.write(stringData.getBytes());
                 fos.close();
             }
-            BackupManager backupManager = new BackupManager(context);
-            backupManager.dataChanged();
+            new BackupManager(context).dataChanged();
         } catch (IOException ignored) {
         }
     }
