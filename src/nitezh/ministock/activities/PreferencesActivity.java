@@ -455,6 +455,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
             }
         });
 
+        /*
         // Hook the Backup portfolio option to the backup portfolio method
         Preference backup_portfolio = findPreference("backup_portfolio");
         backup_portfolio.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -467,6 +468,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 return true;
             }
         });
+
 
         // Hook the Restore portfolio option to the restore portfolio method
         Preference restore_portfolio = findPreference("restore_portfolio");
@@ -522,6 +524,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 return true;
             }
         });
+        */
 
         // Hook Rate MinistocksActivity preference to the market link
         Preference rate_app = findPreference("rate_app");

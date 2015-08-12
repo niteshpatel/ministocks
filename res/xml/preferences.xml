@@ -227,6 +227,7 @@
                         android:summaryOn="Update prices on the weekend"
                         android:title="Weekend updates"/>
             </PreferenceScreen>
+            <!--
             <PreferenceScreen
                 android:key="backup_restore"
                 android:summary="This is an experimental feature"
@@ -248,6 +249,7 @@
                     android:summary="Restore a widget from cloud"
                     android:title="Restore widget"/>
             </PreferenceScreen>
+            -->
         </PreferenceScreen>
         <Preference
                 android:key="portfolio"
