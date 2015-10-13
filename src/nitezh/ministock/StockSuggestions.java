@@ -44,7 +44,7 @@ import nitezh.ministock.utils.UrlDataTools;
 
 class StockSuggestions {
 
-    private static final String BASE_URL = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?callback=YAHOO.Finance.SymbolSuggest.ssCallback&query=";
+    private static final String BASE_URL = "https://s.yimg.com/aq/autoc?callback=YAHOO.Finance.SymbolSuggest.ssCallback&region=&lang=&query=";
     private static final Pattern PATTERN_RESPONSE = Pattern.compile("YAHOO\\.Finance\\.SymbolSuggest\\.ssCallback\\((\\{.*?\\})\\)");
 
     public static List<Map<String, String>> getSuggestions(String query) {
