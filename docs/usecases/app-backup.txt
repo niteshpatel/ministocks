@@ -1,0 +1,42 @@
+User journeys
+-------------
+1) User uses the application for the first time and with an empty portfolio:
+	a) Selects 'Backup portfolio' option
+		expected action:
+			Portfolio is backed up to local storage and cloud
+	b) Selects 'Restore portfolio' option (without previous backup)
+		expected action:
+			The user is informed that no existing backup exists.
+	b) Selects 'Restore portfolio' option (with previous backup)
+		expected action:
+			* This use case does not exist for user using application for the first time
+	c) Selects 'Backup widget' option
+		expected action:
+			User enters name for backup, and widget is backed up to local storage and cloud
+	d) Selects 'Restore widget' option (without previous backup)
+		expected action:
+			User is shown dialog stating that no backups are available for restore
+	e) Selects 'Restore widget' option (with previous backup)
+		expected action:
+			User is shown dialog listing all previous backups, selecting a backup restores the current widget settings with the settings from the chosen backup
+
+2) User uses the application with a pre-existing portfolio:
+	a) Selects 'Backup portfolio' option
+		expected action:
+			Portfolio is backed up to local storage and cloud
+	b) Selects 'Restore portfolio' option (without previous backup)
+		expected action:
+			The user is informed that no existing backup exists
+	b) Selects 'Restore portfolio' option (with previous backup)
+		expected action:
+			The existing portfolio is auto-saved, and the backed up portfolio is restored.  The user is informed of both actions
+	c) Selects 'Backup widget' option
+		expected action:
+			User enters name for backup, and widget is backed up to local storage and cloud
+	d) Selects 'Restore widget' option (without previous backup)
+		expected action:
+			User is shown dialog stating that no backups are available for restore
+	e) Selects 'Restore widget' option (with previous backup)
+		expected action:
+			User is shown dialog listing all previous backups, selecting a backup restores the current widget settings with the settings from the chosen backup.  The current widget is also auto-saved and the user is informed of this
+
