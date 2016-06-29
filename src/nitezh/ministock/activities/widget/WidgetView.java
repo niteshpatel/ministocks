@@ -198,49 +198,31 @@ public class WidgetView {
 
     private WidgetRow getRowInfo(String symbol, ViewType widgetView) {
         WidgetRow widgetRow = new WidgetRow(this.widget);
+        StockQuote quote = this.quotes.get(symbol);
+
         widgetRow.setSymbol(symbol);
 
-        // If there is no quote info return immediately
-        StockQuote quote = this.quotes.get(symbol);
-        if (quote == null || quote.getPrice() == null || quote.getPercent() == null) {
-            widgetRow.setHasNoData(true);
-            if (this.widget.isNarrow()) {
-                widgetRow.setPrice("no");
-                widgetRow.setPriceColor(Color.GRAY);
-                widgetRow.setStockInfo("data");
-                widgetRow.setStockInfoColor(Color.GRAY);
-            } else {
-                widgetRow.setStockInfoExtra("no");
-                widgetRow.setStockInfoExtraColor(Color.GRAY);
-                widgetRow.setStockInfo("no");
-                widgetRow.setStockInfoColor(Color.GRAY);
-            }
+        if (isQuoteMissingPriceOrChange(quote)) {
+            updateWidgetRowWithNoData(widgetRow);
             return widgetRow;
         }
 
-        // Set default values
         PortfolioStock portfolioStock = this.portfolioStocks.get(symbol);
         WidgetStock widgetStock = new WidgetStock(quote, portfolioStock);
-        widgetRow.setPrice(widgetStock.getPrice());
-        widgetRow.setStockInfo(widgetStock.getDailyPercent());
-        widgetRow.setStockInfoColor(WidgetColors.NA);
-        if (!widget.isNarrow()) {
-            widgetRow.setSymbol(widgetStock.getDisplayName());
-            widgetRow.setVolume(widgetStock.getVolume());
-            widgetRow.setVolumeColor(WidgetColors.VOLUME);
-            widgetRow.setStockInfoExtra(widgetStock.getDailyChange());
-            widgetRow.setStockInfoExtraColor(WidgetColors.NA);
-        }
+
+        updateWidgetRowWithDefaults(widgetRow, widgetStock);
 
         Boolean plView = false;
-        Boolean plChange = false;
+
         String priceColumn = null;
         String stockInfo = null;
         String stockInfoExtra = null;
 
+        Boolean stockInfoIsCurrency = false;
+        Boolean stockInfoExtraIsCurrency = false;
+
         switch (widgetView) {
             case VIEW_DAILY_PERCENT:
-                stockInfoExtra = widgetStock.getDailyChange();
                 stockInfo = widgetStock.getDailyPercent();
                 break;
 
@@ -250,7 +232,6 @@ public class WidgetView {
                 break;
 
             case VIEW_PORTFOLIO_PERCENT:
-                stockInfoExtra = widgetStock.getTotalChange();
                 stockInfo = widgetStock.getTotalPercent();
                 break;
 
@@ -266,91 +247,129 @@ public class WidgetView {
 
             case VIEW_PL_DAILY_PERCENT:
                 plView = true;
-                plChange = true;
                 priceColumn = widgetStock.getPlHolding();
-                stockInfoExtra = widgetStock.getPlDailyChange();
                 stockInfo = widgetStock.getDailyPercent();
                 break;
 
             case VIEW_PL_DAILY_CHANGE:
                 plView = true;
-                plChange = true;
                 priceColumn = widgetStock.getPlHolding();
                 stockInfoExtra = widgetStock.getDailyPercent();
                 stockInfo = widgetStock.getPlDailyChange();
+                stockInfoIsCurrency = true;
                 break;
 
             case VIEW_PL_PERCENT:
                 plView = true;
-                plChange = true;
                 priceColumn = widgetStock.getPlHolding();
-                stockInfoExtra = widgetStock.getPlTotalChange();
                 stockInfo = widgetStock.getTotalPercent();
                 break;
 
             case VIEW_PL_CHANGE:
                 plView = true;
-                plChange = true;
                 priceColumn = widgetStock.getPlHolding();
                 stockInfoExtra = widgetStock.getTotalPercent();
                 stockInfo = widgetStock.getPlTotalChange();
+                stockInfoIsCurrency = true;
                 break;
 
             case VIEW_PL_PERCENT_AER:
                 plView = true;
-                plChange = true;
                 priceColumn = widgetStock.getPlHolding();
                 stockInfoExtra = widgetStock.getPlTotalChangeAer();
+                stockInfoExtraIsCurrency = true;
                 stockInfo = widgetStock.getTotalPercentAer();
                 break;
         }
 
+        SetPriceColumnColourIfLimitTriggered(widgetRow, widgetStock, plView);
+        SetPriceColumnColourIfNoHoldings(widgetRow, plView, priceColumn);
+        AddCurrencySymbolToPriceColumnIfHaveHoldings(symbol, widgetRow, priceColumn);
 
-        // Set the price column colour if we have hit an alert
-        // (this is only relevant for non-profit and loss views)
+        SetStockInfoExtraTextAndColourForWideWidget(symbol, widgetRow, stockInfoExtra, stockInfoExtraIsCurrency);
+        SetStockInfoTextAndColour(symbol, widgetRow, stockInfo, stockInfoIsCurrency);
+
+        return widgetRow;
+    }
+
+    private void SetStockInfoExtraTextAndColourForWideWidget(String symbol, WidgetRow widgetRow, String stockInfoExtra, Boolean stockInfoExtraIsCurrency) {
+        if (!widget.isNarrow()) {
+            if (stockInfoExtra != null) {
+                String infoExtraText = stockInfoExtra;
+                if (stockInfoExtraIsCurrency) {
+                    infoExtraText = CurrencyTools.addCurrencyToSymbol(stockInfoExtra, symbol);
+                }
+
+                widgetRow.setStockInfoExtra(infoExtraText);
+                widgetRow.setStockInfoExtraColor(getColourForChange(stockInfoExtra));
+            }
+
+        }
+    }
+
+    private void SetStockInfoTextAndColour(String symbol, WidgetRow widgetRow, String stockInfo, Boolean stockInfoIsCurrency) {
+        if (stockInfo != null) {
+            String infoText = stockInfo;
+            if (stockInfoIsCurrency) {
+                infoText = CurrencyTools.addCurrencyToSymbol(stockInfo, symbol);
+            }
+
+            widgetRow.setStockInfo(infoText);
+            widgetRow.setStockInfoColor(getColourForChange(stockInfo));
+        }
+    }
+
+    private void AddCurrencySymbolToPriceColumnIfHaveHoldings(String symbol, WidgetRow widgetRow, String priceColumn) {
+        if (priceColumn != null) {
+            widgetRow.setPrice(CurrencyTools.addCurrencyToSymbol(priceColumn, symbol));
+        }
+    }
+
+    private void SetPriceColumnColourIfNoHoldings(WidgetRow widgetRow, Boolean plView, String priceColumn) {
+        if (plView && priceColumn == null) {
+            widgetRow.setPriceColor(WidgetColors.NA);
+        }
+    }
+
+    private void SetPriceColumnColourIfLimitTriggered(WidgetRow widgetRow, WidgetStock widgetStock, Boolean plView) {
         if (widgetStock.getLimitHighTriggered() && !plView) {
             widgetRow.setPriceColor(WidgetColors.HIGH_ALERT);
         }
         if (widgetStock.getLimitLowTriggered() && !plView) {
             widgetRow.setPriceColor(WidgetColors.LOW_ALERT);
         }
+    }
 
-        // Set the price column to the holding value and colour
-        // the column blue if we have no holdings
-        if (plView && priceColumn == null) {
-            widgetRow.setPriceColor(WidgetColors.NA);
-        }
-
-        // Add currency symbol if we have a holding
-        if (priceColumn != null) {
-            widgetRow.setPrice(CurrencyTools.addCurrencyToSymbol(priceColumn, symbol));
-        }
-
-        // Set the value and colour for the change values
+    private void updateWidgetRowWithDefaults(WidgetRow widgetRow, WidgetStock widgetStock) {
+        widgetRow.setPrice(widgetStock.getPrice());
+        widgetRow.setStockInfo(widgetStock.getDailyPercent());
+        widgetRow.setStockInfoColor(WidgetColors.NA);
         if (!widget.isNarrow()) {
-            if (stockInfoExtra != null) {
-                if (plChange) {
-                    widgetRow.setStockInfoExtra(CurrencyTools.addCurrencyToSymbol(stockInfoExtra, symbol));
-                } else {
-                    widgetRow.setStockInfoExtra(stockInfoExtra);
-                }
-                widgetRow.setStockInfoExtraColor(getColourForChange(stockInfoExtra));
-            }
-            if (stockInfo != null) {
-                widgetRow.setStockInfo(stockInfo);
-                widgetRow.setStockInfoColor(getColourForChange(stockInfo));
-            }
-        } else {
-            if (stockInfo != null) {
-                if (plChange) {
-                    widgetRow.setStockInfo(CurrencyTools.addCurrencyToSymbol(stockInfo, symbol));
-                } else {
-                    widgetRow.setStockInfo(stockInfo);
-                }
-                widgetRow.setStockInfoColor(getColourForChange(stockInfo));
-            }
+            widgetRow.setSymbol(widgetStock.getDisplayName());
+            widgetRow.setVolume(widgetStock.getVolume());
+            widgetRow.setVolumeColor(WidgetColors.VOLUME);
+            widgetRow.setStockInfoExtra(widgetStock.getDailyChange());
+            widgetRow.setStockInfoExtraColor(WidgetColors.NA);
         }
-        return widgetRow;
+    }
+
+    private void updateWidgetRowWithNoData(WidgetRow widgetRow) {
+        widgetRow.setHasNoData(true);
+        if (this.widget.isNarrow()) {
+            widgetRow.setPrice("no");
+            widgetRow.setPriceColor(Color.GRAY);
+            widgetRow.setStockInfo("data");
+            widgetRow.setStockInfoColor(Color.GRAY);
+        } else {
+            widgetRow.setStockInfoExtra("no");
+            widgetRow.setStockInfoExtraColor(Color.GRAY);
+            widgetRow.setStockInfo("no");
+            widgetRow.setStockInfoColor(Color.GRAY);
+        }
+    }
+
+    private boolean isQuoteMissingPriceOrChange(StockQuote quote) {
+        return quote == null || quote.getPrice() == null || quote.getPercent() == null;
     }
 
     private int getColourForChange(String value) {
