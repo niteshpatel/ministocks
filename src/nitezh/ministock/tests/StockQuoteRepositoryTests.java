@@ -71,7 +71,7 @@ public class StockQuoteRepositoryTests extends TestCase {
         StockQuote googQuote = quotes.get("GOOG");
         assertEquals("GOOG", googQuote.getSymbol());
         assertTrue(Arrays.asList("NasdaqNM", "NMS").contains(googQuote.getExchange()));
-        assertEquals("Google Inc.", googQuote.getName());
+        assertEquals("Alphabet Inc.", googQuote.getName());
 
         StockQuote djiQuote = quotes.get("^DJI");
         assertEquals("^DJI", djiQuote.getSymbol());
@@ -100,7 +100,7 @@ public class StockQuoteRepositoryTests extends TestCase {
         StockQuote googQuote = quotes.get("GOOG");
         assertEquals("GOOG", googQuote.getSymbol());
         assertTrue(Arrays.asList("NasdaqNM", "NMS").contains(googQuote.getExchange()));
-        assertEquals("Google Inc.", googQuote.getName());
+        assertEquals("Alphabet Inc.", googQuote.getName());
 
         StockQuote djiQuote = quotes.get("^DJI");
         assertEquals("^DJI", djiQuote.getSymbol());

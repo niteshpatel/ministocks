@@ -72,7 +72,7 @@ public class YahooStockQuoteRepositoryTests extends TestCase {
         JSONObject googJson = json.optJSONObject(1);
         assertEquals("GOOG", googJson.optString("symbol"));
         assertTrue(Arrays.asList("NasdaqNM", "NMS").contains(googJson.optString("exchange")));
-        assertEquals("Google Inc.", googJson.optString("name"));
+        assertEquals("Alphabet Inc.", googJson.optString("name"));
     }
 
     public void testGetQuotes() {
@@ -93,6 +93,6 @@ public class YahooStockQuoteRepositoryTests extends TestCase {
         StockQuote googQuote = stockQuotes.get("GOOG");
         assertEquals("GOOG", googQuote.getSymbol());
         assertTrue(Arrays.asList("NasdaqNM", "NMS").contains(googQuote.getExchange()));
-        assertEquals("Google Inc.", googQuote.getName());
+        assertEquals("Alphabet Inc.", googQuote.getName());
     }
 }
