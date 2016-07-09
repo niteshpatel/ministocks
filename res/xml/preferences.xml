@@ -274,10 +274,6 @@
                     android:key="help_prices"
                     android:summary="Help on updating prices"
                     android:title="Updating prices"/>
-            <Preference
-                    android:key="backup_widget"
-                    android:summary="Backup Widget"
-                    android:title="Backup Widget"/>
 
             <PreferenceCategory android:title="Contact us">
                 <Preference
