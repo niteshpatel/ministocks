@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
   The MIT License
 
   Copyright (c) 2013 Nitesh Patel http://niteshpatel.github.io/ministocks
@@ -24,304 +23,306 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:key="MainPreferences"
-                  android:summary="Preferences"
-                  android:title="Preferences">
+    android:key="MainPreferences"
+    android:summary="Preferences"
+    android:title="Preferences">
 
     <PreferenceCategory
-            android:key="widget_settings"
-            android:title="Widget settings">
+        android:key="widget_settings"
+        android:title="Widget settings">
         <PreferenceScreen
-                android:key="stock_setup"
-                android:summary="Setup the stocks for this widget"
-                android:title="Stocks setup">
+            android:key="stock_setup"
+            android:summary="Setup the stocks for this widget"
+            android:title="Stocks setup">
             <Preference
-                    android:defaultValue="^DJI"
-                    android:key="Stock1"
-                    android:summary="Set symbol"
-                    android:title="Stock 1"/>
+                android:defaultValue="^DJI"
+                android:key="Stock1"
+                android:summary="Set symbol"
+                android:title="Stock 1" />
             <Preference
-                    android:key="Stock2"
-                    android:summary="Set symbol"
-                    android:title="Stock 2"/>
+                android:key="Stock2"
+                android:summary="Set symbol"
+                android:title="Stock 2" />
             <Preference
-                    android:key="Stock3"
-                    android:summary="Set symbol"
-                    android:title="Stock 3"/>
+                android:key="Stock3"
+                android:summary="Set symbol"
+                android:title="Stock 3" />
             <Preference
-                    android:key="Stock4"
-                    android:summary="Set symbol"
-                    android:title="Stock 4"/>
+                android:key="Stock4"
+                android:summary="Set symbol"
+                android:title="Stock 4" />
             <Preference
-                    android:key="Stock5"
-                    android:summary="Set symbol"
-                    android:title="Stock 5"/>
+                android:key="Stock5"
+                android:summary="Set symbol"
+                android:title="Stock 5" />
             <Preference
-                    android:key="Stock6"
-                    android:summary="Set symbol"
-                    android:title="Stock 6"/>
+                android:key="Stock6"
+                android:summary="Set symbol"
+                android:title="Stock 6" />
             <Preference
-                    android:key="Stock7"
-                    android:summary="Set symbol"
-                    android:title="Stock 7"/>
+                android:key="Stock7"
+                android:summary="Set symbol"
+                android:title="Stock 7" />
             <Preference
-                    android:key="Stock8"
-                    android:summary="Set symbol"
-                    android:title="Stock 8"/>
+                android:key="Stock8"
+                android:summary="Set symbol"
+                android:title="Stock 8" />
             <Preference
-                    android:key="Stock9"
-                    android:summary="Set symbol"
-                    android:title="Stock 9"/>
+                android:key="Stock9"
+                android:summary="Set symbol"
+                android:title="Stock 9" />
             <Preference
-                    android:key="Stock10"
-                    android:summary="Set symbol"
-                    android:title="Stock 10"/>
+                android:key="Stock10"
+                android:summary="Set symbol"
+                android:title="Stock 10" />
         </PreferenceScreen>
         <PreferenceScreen
-                android:key="advanced"
-                android:summary="Advanced widget settings"
-                android:title="Settings">
+            android:key="advanced"
+            android:summary="Advanced widget settings"
+            android:title="Settings">
             <PreferenceScreen
-                    android:key="widget_views"
-                    android:summary="Choose which widget views to use"
-                    android:title="Widget views">
+                android:key="widget_views"
+                android:summary="Choose which widget views to use"
+                android:title="Widget views">
                 <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="show_percent_change"
-                        android:summaryOff="Daily change % view"
-                        android:summaryOn="Daily change % view"
-                        android:title="Daily change %"/>
+                    android:defaultValue="false"
+                    android:key="show_percent_change"
+                    android:summaryOff="Daily change % view"
+                    android:summaryOn="Daily change % view"
+                    android:title="Daily change %" />
                 <CheckBoxPreference
-                        android:defaultValue="true"
-                        android:key="show_absolute_change"
-                        android:summaryOff="Daily change view"
-                        android:summaryOn="Daily change view"
-                        android:title="Daily change"/>
+                    android:defaultValue="true"
+                    android:key="show_absolute_change"
+                    android:summaryOff="Daily change view"
+                    android:summaryOn="Daily change view"
+                    android:title="Daily change" />
                 <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="show_portfolio_change"
-                        android:summaryOff="Portfolio total change % view"
-                        android:summaryOn="Portfolio total change % view"
-                        android:title="Total change %"/>
+                    android:defaultValue="false"
+                    android:key="show_portfolio_change"
+                    android:summaryOff="Portfolio total change % view"
+                    android:summaryOn="Portfolio total change % view"
+                    android:title="Total change %" />
                 <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="show_portfolio_abs"
-                        android:summaryOff="Portfolio total change view"
-                        android:summaryOn="Portfolio total change view"
-                        android:title="Total change"/>
+                    android:defaultValue="false"
+                    android:key="show_portfolio_abs"
+                    android:summaryOff="Portfolio total change view"
+                    android:summaryOn="Portfolio total change view"
+                    android:title="Total change" />
                 <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="show_portfolio_aer"
-                        android:summaryOff="Portfolio annualised change view"
-                        android:summaryOn="Portfolio annualised change view"
-                        android:title="Total change AER"/>
+                    android:defaultValue="false"
+                    android:key="show_portfolio_aer"
+                    android:summaryOff="Portfolio annualised change view"
+                    android:summaryOn="Portfolio annualised change view"
+                    android:title="Total change AER" />
                 <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="show_profit_daily_change"
-                        android:summaryOff="Profit and loss daily change % view"
-                        android:summaryOn="Profit and loss daily change % view"
-                        android:title="P/L daily change %"/>
+                    android:defaultValue="false"
+                    android:key="show_profit_daily_change"
+                    android:summaryOff="Profit and loss daily change % view"
+                    android:summaryOn="Profit and loss daily change % view"
+                    android:title="P/L daily change %" />
                 <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="show_profit_daily_abs"
-                        android:summaryOff="Profit and loss daily change view"
-                        android:summaryOn="Profit and loss daily change view"
-                        android:title="P/L daily change"/>
+                    android:defaultValue="false"
+                    android:key="show_profit_daily_abs"
+                    android:summaryOff="Profit and loss daily change view"
+                    android:summaryOn="Profit and loss daily change view"
+                    android:title="P/L daily change" />
                 <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="show_profit_change"
-                        android:summaryOff="Profit and loss total change % view"
-                        android:summaryOn="Profit and loss total change % view"
-                        android:title="P/L total change %"/>
+                    android:defaultValue="false"
+                    android:key="show_profit_change"
+                    android:summaryOff="Profit and loss total change % view"
+                    android:summaryOn="Profit and loss total change % view"
+                    android:title="P/L total change %" />
                 <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="show_profit_abs"
-                        android:summaryOff="Profit and loss total change view"
-                        android:summaryOn="Profit and loss total change view"
-                        android:title="P/L total change"/>
+                    android:defaultValue="false"
+                    android:key="show_profit_abs"
+                    android:summaryOff="Profit and loss total change view"
+                    android:summaryOn="Profit and loss total change view"
+                    android:title="P/L total change" />
                 <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="show_profit_aer"
-                        android:summaryOff="Profit and loss annualised change view"
-                        android:summaryOn="Profit and loss annualised change view"
-                        android:title="P/L total change AER"/>
+                    android:defaultValue="false"
+                    android:key="show_profit_aer"
+                    android:summaryOff="Profit and loss annualised change view"
+                    android:summaryOn="Profit and loss annualised change view"
+                    android:title="P/L total change AER" />
             </PreferenceScreen>
             <PreferenceScreen
-                    android:key="appearance"
-                    android:summary="Customise widget appearance"
-                    android:title="Appearance">
+                android:key="appearance"
+                android:summary="Customise widget appearance"
+                android:title="Appearance">
                 <ListPreference
-                        android:defaultValue="transparent"
-                        android:entries="@array/background_entries"
-                        android:entryValues="@array/background_entryvalues"
-                        android:key="background"
-                        android:title="Widget background"/>
+                    android:defaultValue="transparent"
+                    android:entries="@array/background_entries"
+                    android:entryValues="@array/background_entryvalues"
+                    android:key="background"
+                    android:title="Widget background" />
                 <ListPreference
-                        android:defaultValue="normal"
-                        android:entries="@array/text_style_entries"
-                        android:entryValues="@array/text_style_entryvalues"
-                        android:key="text_style"
-                        android:title="Widget text style"/>
+                    android:defaultValue="normal"
+                    android:entries="@array/text_style_entries"
+                    android:entryValues="@array/text_style_entryvalues"
+                    android:key="text_style"
+                    android:title="Widget text style" />
                 <ListPreference
-                        android:defaultValue="light"
-                        android:entries="@array/updated_colour_entries"
-                        android:entryValues="@array/updated_colour_entryvalues"
-                        android:key="updated_colour"
-                        android:title="Footer colour"/>
+                    android:defaultValue="light"
+                    android:entries="@array/updated_colour_entries"
+                    android:entryValues="@array/updated_colour_entryvalues"
+                    android:key="updated_colour"
+                    android:title="Footer colour" />
                 <ListPreference
-                        android:defaultValue="visible"
-                        android:entries="@array/updated_display_entries"
-                        android:entryValues="@array/updated_display_entryvalues"
-                        android:key="updated_display"
-                        android:title="Footer display"/>
+                    android:defaultValue="visible"
+                    android:entries="@array/updated_display_entries"
+                    android:entryValues="@array/updated_display_entryvalues"
+                    android:key="updated_display"
+                    android:title="Footer display" />
                 <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="large_font"
-                        android:summaryOff="Use a slightly larger font"
-                        android:summaryOn="Use a slightly larger font"
-                        android:title="Use large font"/>
+                    android:defaultValue="false"
+                    android:key="large_font"
+                    android:summaryOff="Use a slightly larger font"
+                    android:summaryOn="Use a slightly larger font"
+                    android:title="Use large font" />
                 <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="colours_on_prices"
-                        android:summaryOff="Use colours on prices not changes"
-                        android:summaryOn="Use colours on prices not changes"
-                        android:title="Use colours on prices"/>
+                    android:defaultValue="false"
+                    android:key="colours_on_prices"
+                    android:summaryOff="Use colours on prices not changes"
+                    android:summaryOn="Use colours on prices not changes"
+                    android:title="Use colours on prices" />
                 <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="short_time"
-                        android:summaryOff="Show date even if prices updated today"
-                        android:summaryOn="Show date even if prices updated today"
-                        android:title="Use full date"/>
+                    android:defaultValue="false"
+                    android:key="short_time"
+                    android:summaryOff="Show date even if prices updated today"
+                    android:summaryOn="Show date even if prices updated today"
+                    android:title="Use full date" />
                 <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="hide_suffix"
-                        android:summaryOff="Hide stock exchange code"
-                        android:summaryOn="Hide stock exchange code"
-                        android:title="Hide exchange code"/>
+                    android:defaultValue="false"
+                    android:key="hide_suffix"
+                    android:summaryOff="Hide stock exchange code"
+                    android:summaryOn="Hide stock exchange code"
+                    android:title="Hide exchange code" />
             </PreferenceScreen>
             <PreferenceScreen
-                    android:key="update_schedule"
-                    android:summary="Set widget update schedule"
-                    android:title="Update schedule">
+                android:key="update_schedule"
+                android:summary="Set widget update schedule"
+                android:title="Update schedule">
                 <ListPreference
-                        android:defaultValue="1800000"
-                        android:entries="@array/update_interval_entries"
-                        android:entryValues="@array/update_interval_entryvalues"
-                        android:key="update_interval"
-                        android:title="Update interval"/>
+                    android:defaultValue="1800000"
+                    android:entries="@array/update_interval_entries"
+                    android:entryValues="@array/update_interval_entryvalues"
+                    android:key="update_interval"
+                    android:title="Update interval" />
 
                 <Preference
-                        android:key="update_start"
-                        android:summary="Time set: 00:00"
-                        android:title="Start update time"/>
+                    android:key="update_start"
+                    android:summary="Time set: 00:00"
+                    android:title="Start update time" />
                 <Preference
-                        android:defaultValue="23:59"
-                        android:key="update_end"
-                        android:summary="Time set: 23:59"
-                        android:title="Finish update time"/>
+                    android:defaultValue="23:59"
+                    android:key="update_end"
+                    android:summary="Time set: 23:59"
+                    android:title="Finish update time" />
 
                 <CheckBoxPreference
-                        android:defaultValue="true"
-                        android:key="update_weekend"
-                        android:summaryOff="Update prices on the weekend"
-                        android:summaryOn="Update prices on the weekend"
-                        android:title="Weekend updates"/>
+                    android:defaultValue="true"
+                    android:key="update_weekend"
+                    android:summaryOff="Update prices on the weekend"
+                    android:summaryOn="Update prices on the weekend"
+                    android:title="Weekend updates" />
             </PreferenceScreen>
-            <PreferenceScreen
+            <PreferenceCategory
+                android:key="cat_experimental"
+                android:title="Experimental settings">
+                <PreferenceScreen
                     android:key="backup_restore"
                     android:summary="This is an experimental feature"
                     android:title="Backup and Restore (BETA)">
-                <!--<Preference
-                    android:key="backup_portfolio"
-                    android:summary="Backup portfolio to cloud"
-                    android:title="Backup portfolio"/>
-                <Preference
-                    android:key="restore_portfolio"
-                    android:summary="Restore portfolio from cloud"
-                    android:title="Restore portfolio"/>
-                    -->
-                <Preference
+                    <!--<Preference
+                        android:key="backup_portfolio"
+                        android:summary="Backup portfolio to cloud"
+                        android:title="Backup portfolio"/>
+                    <Preference
+                        android:key="restore_portfolio"
+                        android:summary="Restore portfolio from cloud"
+                        android:title="Restore portfolio"/>
+                        -->
+                    <Preference
                         android:key="backup_widget"
-                        android:summary="Backup this widget to cloud"
-                        android:title="Backup widget"/>
-                -->
-                <Preference
+                        android:summary="Backup this widget"
+                        android:title="Backup widget" />
+                    <Preference
                         android:key="restore_widget"
-                        android:summary="Restore a widget from cloud"
-                        android:title="Restore widget"/>
-            </PreferenceScreen>
-            -->
+                        android:summary="Restore a widget"
+                        android:title="Restore widget" />
+                </PreferenceScreen>
+            </PreferenceCategory>
         </PreferenceScreen>
         <Preference
-                android:key="portfolio"
-                android:summary="Setup your stock purchase details"
-                android:title="Portfolio"/>
+            android:key="portfolio"
+            android:summary="Setup your stock purchase details"
+            android:title="Portfolio" />
         <Preference
-                android:key="update_now"
-                android:summary="Update prices and return to home screen"
-                android:title="Update prices now"/>
+            android:key="update_now"
+            android:summary="Update prices and return to home screen"
+            android:title="Update prices now" />
     </PreferenceCategory>
     <PreferenceCategory android:title="General">
         <PreferenceScreen
-                android:key="help_menu"
-                android:summary="View help and support options"
-                android:title="Help">
+            android:key="help_menu"
+            android:summary="View help and support options"
+            android:title="Help">
             <Preference
-                    android:key="help"
-                    android:summary="Help with setting up the widget"
-                    android:title="Entering stocks"/>
+                android:key="help"
+                android:summary="Help with setting up the widget"
+                android:title="Entering stocks" />
             <Preference
-                    android:key="help_usage"
-                    android:summary="Help with using the widget views"
-                    android:title="Selecting widget views"/>
+                android:key="help_usage"
+                android:summary="Help with using the widget views"
+                android:title="Selecting widget views" />
             <Preference
-                    android:key="help_portfolio"
-                    android:summary="Help with setting up the portfolio"
-                    android:title="Using the portfolio"/>
+                android:key="help_portfolio"
+                android:summary="Help with setting up the portfolio"
+                android:title="Using the portfolio" />
             <Preference
-                    android:key="help_prices"
-                    android:summary="Help on updating prices"
-                    android:title="Updating prices"/>
+                android:key="help_prices"
+                android:summary="Help on updating prices"
+                android:title="Updating prices" />
 
             <PreferenceCategory android:title="Online help">
                 <Preference
-                        android:key="online_help"
-                        android:summary="Online help (launches in browser)"
-                        android:title="Online help"/>
+                    android:key="online_help"
+                    android:summary="Online help (launches in browser)"
+                    android:title="Online help" />
 
                 <Preference
-                        android:key="online_faqs"
-                        android:summary="Online FAQs (launches in browser)"
-                        android:title="Online FAQs"/>
+                    android:key="online_faqs"
+                    android:summary="Online FAQs (launches in browser)"
+                    android:title="Online FAQs" />
             </PreferenceCategory>
 
             <PreferenceCategory android:title="Contact us">
                 <Preference
-                        android:key="feedback"
-                        android:summary="Will launch your e-mail application"
-                        android:title="Support and feedback"/>
+                    android:key="feedback"
+                    android:summary="Will launch your e-mail application"
+                    android:title="Support and feedback" />
             </PreferenceCategory>
         </PreferenceScreen>
         <PreferenceScreen
-                android:key="about_menu"
-                android:summary="About Ministocks and disclaimer"
-                android:title="About">
+            android:key="about_menu"
+            android:summary="About Ministocks and disclaimer"
+            android:title="About">
             <Preference
-                    android:enabled="false"
-                    android:key="version"
-                    android:title="Ministocks"/>
+                android:enabled="false"
+                android:key="version"
+                android:title="Ministocks" />
             <Preference
-                    android:key="rate_app"
-                    android:summary="Support Ministocks with a top rating"
-                    android:title="Rate Ministocks"/>
+                android:key="rate_app"
+                android:summary="Support Ministocks with a top rating"
+                android:title="Rate Ministocks" />
             <Preference
-                    android:key="change_history"
-                    android:summary="View changes for this version"
-                    android:title="Recent changes"/>
+                android:key="change_history"
+                android:summary="View changes for this version"
+                android:title="Recent changes" />
             <Preference
-                    android:key="about"
-                    android:summary="View the license"
-                    android:title="License"/>
+                android:key="about"
+                android:summary="View the license"
+                android:title="License" />
         </PreferenceScreen>
     </PreferenceCategory>
 

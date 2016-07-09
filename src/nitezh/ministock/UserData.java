@@ -38,6 +38,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.Callable;
 
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.PortfolioStockRepository;
@@ -116,15 +117,26 @@ public class UserData {
             widget.setWidgetPreferencesFromJson(
                     jsonBackupsForAllWidgets.getJSONObject(backupName));
 
-            InformUserWidgetBackupRestored(context);
-            ReloadPreferences((Activity) context);
+            InformUserWidgetBackupRestoredAndReloadPreferences(context);
         } catch (JSONException ignored) {
         }
     }
 
-    private static void InformUserWidgetBackupRestored(Context context) {
-        DialogTools.showSimpleDialog(context, "AppWidgetProvider restored",
-                "The current widget preferences have been restored from your selected backup.");
+    private static void InformUserWidgetBackupRestoredAndReloadPreferences(Context context) {
+        final Context finalContext = context;
+        Callable callable = new Callable() {
+            @Override
+            public Object call() throws Exception {
+                ReloadPreferences((Activity) finalContext);
+                return new Object();
+            }
+        };
+
+        DialogTools.alertWithCallback(context,
+                "Widget restored",
+                "The current widget preferences have been restored from your selected backup.",
+                "Close", null,
+                callable, null);
     }
 
     private static void ReloadPreferences(Activity activity) {

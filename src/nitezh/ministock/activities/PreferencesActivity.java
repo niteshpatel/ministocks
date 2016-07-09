@@ -496,7 +496,11 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                         return new Object();
                     }
                 };
-                DialogTools.inputWithCallback(PreferencesActivity.this, "Backup this widget", "Please enter a name for this backup:", "OK", "Cancel", "AppWidgetProvider backup from " + DateTools.getNowAsString(), callable);
+                DialogTools.inputWithCallback(PreferencesActivity.this,
+                        "Backup this widget", "Please enter a name for this backup:",
+                        "OK", "Cancel",
+                        "Widget <" + mAppWidgetId + "> from " + DateTools.getNowAsString(),
+                        callable);
                 return true;
             }
         });
