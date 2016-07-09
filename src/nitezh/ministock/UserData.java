@@ -27,17 +27,22 @@ package nitezh.ministock;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Resources;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 public class UserData {
 
-    private static final HashMap<String, HashMap<PortfolioField, String>> mPortfolioStockMap = new HashMap<String, HashMap<PortfolioField, String>>();
+    private static final HashMap<String, HashMap<PortfolioField, String>> mPortfolioStockMap = new HashMap<>();
     // Cache markers
     private static boolean mDirtyPortfolioStockMap = true;
+    public static final Object sFileBackupLock = new Object();
 
     public static void addAppWidgetSize(
             Context context,
@@ -81,7 +86,7 @@ public class UserData {
         // Get the existing widgetIds from the preferences
         SharedPreferences preferences = Tools.getAppPreferences(context);
 
-        ArrayList<String> newAppWidgetIds = new ArrayList<String>();
+        ArrayList<String> newAppWidgetIds = new ArrayList<>();
         Collections.addAll(newAppWidgetIds, preferences.getString("appWidgetIds", "").split(","));
 
         // Remove the one to remove
@@ -126,7 +131,7 @@ public class UserData {
 
     public static Set<String> getWidgetsStockSymbols(Context context) {
 
-        Set<String> widgetStockSymbols = new HashSet<String>();
+        Set<String> widgetStockSymbols = new HashSet<>();
         SharedPreferences widgetPreferences;
 
         // Add the stock symbols from the widget preferences
@@ -177,8 +182,7 @@ public class UserData {
                 String[] stockInfo = stockArray[1].split("\\|");
                 if (stockInfo.length > 0 && stockInfo[0] != null) {
 
-                    HashMap<PortfolioField, String> stockInfoMap =
-                            new HashMap<PortfolioField, String>();
+                    HashMap<PortfolioField, String> stockInfoMap = new HashMap<>();
                     for (PortfolioField f : PortfolioField.values()) {
                         String data = "";
                         if (stockInfo.length > f.ordinal()
@@ -212,8 +216,7 @@ public class UserData {
                     e.printStackTrace();
                 }
 
-                HashMap<PortfolioField, String> stockInfoMap =
-                        new HashMap<PortfolioField, String>();
+                HashMap<PortfolioField, String> stockInfoMap = new HashMap<>();
                 for (PortfolioField f : PortfolioField.values()) {
                     String data = "";
                     try {
@@ -287,8 +290,7 @@ public class UserData {
     public static HashMap<String, HashMap<PortfolioField, String>>
     getPortfolioStockMapForWidget(Context context, String[] symbols) {
 
-        HashMap<String, HashMap<PortfolioField, String>> portfolioStockMapForWidget =
-                new HashMap<String, HashMap<PortfolioField, String>>();
+        HashMap<String, HashMap<PortfolioField, String>> portfolioStockMapForWidget = new HashMap<>();
         HashMap<String, HashMap<PortfolioField, String>> portfolioStockMap =
                 getPortfolioStockMap(context);
 
@@ -307,7 +309,7 @@ public class UserData {
     public static void cleanupPreferenceFiles(Context context) {
 
         // Remove old preferences if we are upgrading
-        ArrayList<String> l = new ArrayList<String>();
+        ArrayList<String> l = new ArrayList<>();
 
         // Shared preferences is never deleted
         l.add(context.getString(R.string.prefs_name) + ".xml");
@@ -328,5 +330,89 @@ public class UserData {
 
     public enum PortfolioField {
         PRICE, DATE, QUANTITY, LIMIT_HIGH, LIMIT_LOW, CUSTOM_DISPLAY, SYMBOL_2
+    }
+
+    public static JSONObject getWidgetPreferencesAsJson(Context context, int widgetId) {
+        SharedPreferences widgetPreferences;
+        try {
+            widgetPreferences = context.getApplicationContext().getSharedPreferences(context.getString(R.string.prefs_name) + widgetId, 0);
+        } catch (Resources.NotFoundException ignored) {
+            widgetPreferences = null;
+        }
+
+        PreferencesStorage storage = new PreferencesStorage(widgetPreferences);
+
+        JSONObject jsonPrefs = new JSONObject();
+        for (Map.Entry<String, ?> entry : storage.getAll().entrySet()) {
+            try {
+                jsonPrefs.put(entry.getKey(), entry.getValue());
+            } catch (JSONException ignored) {
+            }
+        }
+
+        return jsonPrefs;
+    }
+
+
+    public static void backupWidget(Context context, int appWidgetId) {
+        try {
+            JSONObject jsonForAllWidgets = getJsonBackupsForAllWidgets(context);
+            JSONObject jsonForWidget = getWidgetPreferencesAsJson(context, appWidgetId);
+
+            jsonForAllWidgets.put("AppWidgetId_" + appWidgetId, jsonForWidget);
+            setJsonForAllWidgets(context, jsonForAllWidgets);
+        } catch (JSONException ignored) {
+        }
+    }
+
+    public static void backupAllWidgets(Context context) {
+        for (int widgetId : UserData.getAppWidgetIds2(context)) {
+            backupWidget(context, widgetId);
+        }
+    }
+
+    private static void setJsonForAllWidgets(Context context, JSONObject jsonForAllWidgets) {
+        writeInternalStorage(context, jsonForAllWidgets.toString(), "widgetJson");
+    }
+
+    private static JSONObject getJsonBackupsForAllWidgets(Context context) throws JSONException {
+        JSONObject backupContainer = new JSONObject();
+        String rawJson = readInternalStorage(context, "widgetJson");
+        if (rawJson != null) {
+            backupContainer = new JSONObject(rawJson);
+        }
+
+        return backupContainer;
+    }
+
+    public static void writeInternalStorage(Context context, String stringData, String filename) {
+        try {
+            synchronized (UserData.sFileBackupLock) {
+                FileOutputStream fos;
+                fos = context.openFileOutput(filename, Context.MODE_PRIVATE);
+                fos.write(stringData.getBytes());
+                fos.close();
+            }
+        } catch (IOException ignored) {
+        }
+    }
+
+    public static String readInternalStorage(Context context, String filename) {
+        try {
+            StringBuffer fileContent = new StringBuffer();
+            synchronized (UserData.sFileBackupLock) {
+                FileInputStream fis;
+                fis = context.openFileInput(filename);
+                byte[] buffer = new byte[1024];
+                while (fis.read(buffer) != -1) {
+                    fileContent.append(new String(buffer));
+                }
+            }
+
+            return new String(fileContent);
+        } catch (IOException ignored) {
+        }
+
+        return null;
     }
 }

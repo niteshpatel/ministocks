@@ -687,6 +687,10 @@ public class Preferences extends PreferenceActivity
                 });
     }
 
+    private void backupAllWidgets() {
+        UserData.backupAllWidgets(this);
+    }
+
     void updateSummaries(SharedPreferences sharedPreferences, String key) {
 
         // Initialise the Stock summaries
@@ -814,6 +818,8 @@ public class Preferences extends PreferenceActivity
         String title = "BUILD " + Tools.BUILD;
         String body = CHANGE_LOG;
         Tools.showSimpleDialog(this, title, body);
+
+        UserData.backupAllWidgets(this);
     }
 
     private void showFeedbackOption() {
