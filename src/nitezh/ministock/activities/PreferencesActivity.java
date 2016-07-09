@@ -44,17 +44,12 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import nitezh.ministock.utils.Cache;
 import nitezh.ministock.DialogTools;
-import nitezh.ministock.utils.StorageCache;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
 import nitezh.ministock.activities.widget.WidgetProviderBase;
-import nitezh.ministock.domain.AndroidWidgetRepository;
-import nitezh.ministock.domain.PortfolioStockRepository;
-import nitezh.ministock.domain.WidgetRepository;
 import nitezh.ministock.utils.DateTools;
 import nitezh.ministock.utils.VersionTools;
 
@@ -513,7 +508,8 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 CharSequence[] backupNames = UserData.getWidgetBackupNames(PreferencesActivity.this);
                 // If there are no backups show an appropriate dialog
                 if (backupNames == null) {
-                    DialogTools.showSimpleDialog(PreferencesActivity.this, "No backups available", "There were no widget backups to restore.");
+                    DialogTools.showSimpleDialog(PreferencesActivity.this,
+                            "No backups available", "There were no widget backups to restore.");
                     return true;
                 }
 
@@ -525,11 +521,38 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                         return new Object();
                     }
                 };
-                DialogTools.choiceWithCallback(PreferencesActivity.this, "Select a widget backup to restore", "Cancel", backupNames, callable);
+                DialogTools.choiceWithCallback(PreferencesActivity.this,
+                        "Select a widget backup to restore", "Cancel", backupNames, callable);
                 return true;
             }
         });
 
+        // Hook the Delete widget backup option to the delete widget backup method
+        Preference delete_widget_backup = findPreference("delete_widget_backup");
+        delete_widget_backup.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                CharSequence[] backupNames = UserData.getWidgetBackupNames(PreferencesActivity.this);
+                // If there are no backups show an appropriate dialog
+                if (backupNames == null) {
+                    DialogTools.showSimpleDialog(PreferencesActivity.this,
+                            "No backups available to delete", "There were no widget backups to delete.");
+                    return true;
+                }
+
+                // If there are backups then show the list
+                DialogTools.InputAlertCallable callable = new DialogTools.InputAlertCallable() {
+                    @Override
+                    public Object call() throws Exception {
+                        UserData.deleteWidgetBackup(PreferencesActivity.this, this.getInputValue());
+                        return new Object();
+                    }
+                };
+                DialogTools.choiceWithCallback(PreferencesActivity.this,
+                        "Select a widget backup to delete", "Cancel", backupNames, callable);
+                return true;
+            }
+        });
 
         // Hook Rate MinistocksActivity preference to the market link
         Preference rate_app = findPreference("rate_app");

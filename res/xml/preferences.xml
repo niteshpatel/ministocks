@@ -250,6 +250,10 @@
                         android:key="restore_widget"
                         android:summary="Restore a widget"
                         android:title="Restore widget" />
+                    <Preference
+                        android:key="delete_widget_backup"
+                        android:summary="Delete a widget backup"
+                        android:title="Delete widget backup" />
                 </PreferenceScreen>
             </PreferenceCategory>
         </PreferenceScreen>

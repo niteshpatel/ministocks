@@ -29,6 +29,10 @@ import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.Intent;
 
+import nitezh.ministock.domain.AndroidWidgetRepository;
+import nitezh.ministock.domain.PortfolioStockRepository;
+import nitezh.ministock.domain.Widget;
+import nitezh.ministock.domain.WidgetRepository;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,11 +43,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
-
-import nitezh.ministock.domain.AndroidWidgetRepository;
-import nitezh.ministock.domain.PortfolioStockRepository;
-import nitezh.ministock.domain.Widget;
-import nitezh.ministock.domain.WidgetRepository;
 
 
 public class UserData {
@@ -118,6 +117,16 @@ public class UserData {
                     jsonBackupsForAllWidgets.getJSONObject(backupName));
 
             InformUserWidgetBackupRestoredAndReloadPreferences(context);
+        } catch (JSONException ignored) {
+        }
+    }
+
+    public static void deleteWidgetBackup(Context context, String backupName) {
+        try {
+            JSONObject jsonForAllWidgets = getJsonBackupsForAllWidgets(context);
+
+            jsonForAllWidgets.remove(backupName);
+            setJsonForAllWidgets(context, jsonForAllWidgets);
         } catch (JSONException ignored) {
         }
     }
