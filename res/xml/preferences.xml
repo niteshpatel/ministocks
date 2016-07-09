@@ -227,12 +227,11 @@
                         android:summaryOn="Update prices on the weekend"
                         android:title="Weekend updates"/>
             </PreferenceScreen>
-            <!--
             <PreferenceScreen
-                android:key="backup_restore"
-                android:summary="This is an experimental feature"
-                android:title="Backup and Restore (BETA)">
-                <Preference
+                    android:key="backup_restore"
+                    android:summary="This is an experimental feature"
+                    android:title="Backup and Restore (BETA)">
+                <!--<Preference
                     android:key="backup_portfolio"
                     android:summary="Backup portfolio to cloud"
                     android:title="Backup portfolio"/>
@@ -240,14 +239,16 @@
                     android:key="restore_portfolio"
                     android:summary="Restore portfolio from cloud"
                     android:title="Restore portfolio"/>
+                    -->
                 <Preference
-                    android:key="backup_widget"
-                    android:summary="Backup this widget to cloud"
-                    android:title="Backup widget"/>
+                        android:key="backup_widget"
+                        android:summary="Backup this widget to cloud"
+                        android:title="Backup widget"/>
+                -->
                 <Preference
-                    android:key="restore_widget"
-                    android:summary="Restore a widget from cloud"
-                    android:title="Restore widget"/>
+                        android:key="restore_widget"
+                        android:summary="Restore a widget from cloud"
+                        android:title="Restore widget"/>
             </PreferenceScreen>
             -->
         </PreferenceScreen>
@@ -284,14 +285,14 @@
 
             <PreferenceCategory android:title="Online help">
                 <Preference
-                    android:key="online_help"
-                    android:summary="Online help (launches in browser)"
-                    android:title="Online help"/>
+                        android:key="online_help"
+                        android:summary="Online help (launches in browser)"
+                        android:title="Online help"/>
 
                 <Preference
-                    android:key="online_faqs"
-                    android:summary="Online FAQs (launches in browser)"
-                    android:title="Online FAQs"/>
+                        android:key="online_faqs"
+                        android:summary="Online FAQs (launches in browser)"
+                        android:title="Online FAQs"/>
             </PreferenceCategory>
 
             <PreferenceCategory android:title="Contact us">

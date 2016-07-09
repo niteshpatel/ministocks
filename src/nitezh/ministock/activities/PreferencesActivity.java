@@ -482,6 +482,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 return true;
             }
         });
+        */
 
         // Hook the Backup widget option to the backup widget method
         Preference backup_widget = findPreference("backup_widget");
@@ -524,7 +525,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 return true;
             }
         });
-        */
+
 
         // Hook Rate MinistocksActivity preference to the market link
         Preference rate_app = findPreference("rate_app");
