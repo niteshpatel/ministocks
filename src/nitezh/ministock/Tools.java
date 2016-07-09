@@ -191,7 +191,7 @@ public class Tools {
     }
 
     public static SharedPreferences getAppPreferences(Context context) {
-        return context.getSharedPreferences(
+        return context.getApplicationContext().getSharedPreferences(
                 context.getString(R.string.prefs_name),
                 0);
     }

@@ -817,9 +817,9 @@ public class Preferences extends PreferenceActivity
     private void showChangeLog() {
         String title = "BUILD " + Tools.BUILD;
         String body = CHANGE_LOG;
-        Tools.showSimpleDialog(this, title, body);
-
         UserData.backupAllWidgets(this);
+
+        Tools.showSimpleDialog(this, title, body);
     }
 
     private void showFeedbackOption() {
