@@ -60,7 +60,7 @@ public class AndroidWidget implements Widget {
     public Storage getStorage() {
         SharedPreferences widgetPreferences = null;
         try {
-            widgetPreferences = context.getSharedPreferences(context.getString(R.string.prefs_name) + this.id, 0);
+            widgetPreferences = context.getApplicationContext().getSharedPreferences(context.getString(R.string.prefs_name) + this.id, 0);
         } catch (Resources.NotFoundException ignored) {
         }
 
