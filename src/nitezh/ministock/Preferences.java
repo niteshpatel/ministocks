@@ -56,7 +56,7 @@ public class Preferences extends PreferenceActivity
     private static boolean mStocksDirty = false;
     private static String mSymbolSearchKey = "";
     private final String CHANGE_LOG =
-            "• Priority bug-fix for symbol suggestions.<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>";
+            "• Added auto-backup of widget symbols for use in the next release.<br /><br /><i>The next release will include a manual widget backup/restore function, please look forward to it!</i><br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>";
     // Fields for time pickers
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
     private String mTimePickerKey = null;
@@ -687,10 +687,6 @@ public class Preferences extends PreferenceActivity
                 });
     }
 
-    private void backupAllWidgets() {
-        UserData.backupAllWidgets(this);
-    }
-
     void updateSummaries(SharedPreferences sharedPreferences, String key) {
 
         // Initialise the Stock summaries
@@ -797,6 +793,12 @@ public class Preferences extends PreferenceActivity
                     mAppWidgetId,
                     WidgetBase.VIEW_NO_UPDATE);
         }
+
+        try {
+            UserData.backupAllWidgets(this);
+        } catch (Exception ignored) {
+        }
+
         finish();
     }
 
@@ -817,8 +819,6 @@ public class Preferences extends PreferenceActivity
     private void showChangeLog() {
         String title = "BUILD " + Tools.BUILD;
         String body = CHANGE_LOG;
-        UserData.backupAllWidgets(this);
-
         Tools.showSimpleDialog(this, title, body);
     }
 
