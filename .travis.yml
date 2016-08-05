@@ -22,7 +22,8 @@ android:
     # if you need to run emulator(s) during your tests
     - sys-img-armeabi-v7a-android-21
     # - sys-img-x86-android-17
-
+jdk:
+  - oraclejdk8
 addons:
   sonarqube: true
 env:
