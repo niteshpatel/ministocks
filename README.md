@@ -1,3 +1,5 @@
+https://travis-ci.org/niteshpatel/ministocks.svg?branch=master
+
 ministocks
 ==========
 
