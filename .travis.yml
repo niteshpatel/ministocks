@@ -1,34 +1,14 @@
 language: android
 android:
   components:
-    # Uncomment the lines below if you want to
-    # use the latest revision of Android SDK Tools
-    # - platform-tools
-    # - tools
-
-    # The BuildTools version used by your project
-    - build-tools-21.1.2
-
-    # The SDK version used to compile your project
-    - android-21
-
-    # Additional components
-    # - extra-google-google_play_services
-    # - extra-google-m2repository
-    # - extra-android-m2repository
-    # - addon-google_apis-google-19
-
-    # Specify at least one system image,
-    # if you need to run emulator(s) during your tests
-    - sys-img-armeabi-v7a-android-21
-    # - sys-img-x86-android-17
+  - build-tools-21.1.2
+  - android-21
+  - sys-img-armeabi-v7a-android-21
 jdk:
-  - oraclejdk8
+- oraclejdk8
 addons:
   sonarqube: true
-env:
-  global:
-    - secure: "i6hA50B2B/wR3/FAtyd2RHTj2Kj60Q+XY9F+iLUiSt1dvMlInk1ZMRoAIR4OHWq7O8kBeqBPftnXE6HmTiHYuu5Dv9u2AStdJeNc0VAfKEV/UNfEJ/4w0aGLz0iZMWbGaRPm2+sktPbm/FXDHx7ND/Poxn68fPEvDQFBd4cUIArdk6bi+bmThh2XxiMZ2ValDNOjFAmaG5nnmayMyBkwvb6LIfM8GVC9gdJ1AOZHJOlQKb8CsJF4xnhKL3OCOlnd+x5wYZxHRybfnV9LWXIwaeE5BgC57AULXHmqaHzxGONndAbF6+8DIuFQac/HaIHAGYlfc0XL3/NedTlWXoQgYnUEBqa2D8+5fceGyWVd7q8fhgIrvyhnTLBm/QD84ElG4hnUZY1/4UbI1Ze7/GQMINDE91F2YanhIpSE8dN6pbhnyGFufdbZp17E6lwwtRmCmy6d4Yh6VUaIQl+abce2mwPapKRrn05XmedAieCJkzAXlzEsd3wg4Sdk1mUspzF/VyfPm7WvPwCeLU22kuJ4JwMvdCeq6BnDZaxEoffzueumirBk7AzchstH/NeXEOpMsevmOgPgBG5QqmS5wPi15IBObqt02gvwbF4FxfxVnmNN2JczB7yT2pmX+iXUkA7JxBGAsXJWITQNvjT9P3sEQzAjJV5O9QkxDbQr/A9B9U0=" # defines SONAR_TOKEN=abcdef0123456789
 script:
-  # other script steps might be done before running the actual SonarQube analysis
-  - sonar-scanner -Dsonar.login=$SONAR_TOKEN
+- sonar-scanner -Dsonar.login=$SONAR_TOKEN
+dd:
+  secure: dM2NAhLPtQX5QyaDLo0KRBNM7dxX0k5RN97BfircoD76oD3O5pJKZQLUmVQerviaKLXWCfeNoaf89b5xkX0SvZH4sYqlkdK+sU2Vtsko9bbdf9V69b+6DzE/EpOJLEMS14lBeY2w5IoNAlwsv7vuWoQ3EdnZ2NHRMruf5YWhVnGccDWzMqKdl0Tr9OOLZwHID/d+qx/0iHuP+8M3z4w3m625QEn/6yBJq1/AI7GteamjiOx70DYxG66RTeAlxzbs+c5sfi7YEWA14cD2xDrUMKtpbzbReiJsgg9zRPp9dzdEK4SSbF3FVPfbvy8DhqXyRYqIVYCQ5ixwQzq9AFiVFgPmW6/YJ5369k46qXyNRWCK707yp1kTUN83pwgCBF/l2ZGFEcviXO2LysKuuIYi5IYjBtk0o1FOeqvt2wVjHb2nvDyUZNe3qOMUZAlBOeS1aXHuRysXzqgK7nkSYNXCAJAbp/kXRsSe3hdBRfMRVI2PFPsY9zC/tveKgJ+HbJuqRiljFvP53YxHevlug/IOBla1px/xLLGZBdyFKymtvAHGJx0qG+Q7Qs044rkvWiMDYHhwrlv4EEmRVTsd9VfURBdSjdnFrB9p/K3TP600JavQTFjxDIw5EAe+wZYIbw0C3Bm57xNxP5s8lC1IBNHDOZGuG7ItMibYv/3UtNbgwzw=
