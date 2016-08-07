@@ -16,4 +16,4 @@ script:
 - sonar-scanner -Dsonar.login=$SONAR_TOKEN
 
 notifications:
-  slack: 'niteshpatel:$SLACK_TOKEN'
+  slack: $SLACK_TOKEN
