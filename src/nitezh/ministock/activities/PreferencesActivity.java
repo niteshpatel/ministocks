@@ -69,7 +69,8 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     private static boolean mPendingUpdate = false;
     private static String mSymbolSearchKey = "";
     private final String CHANGE_LOG =
-            "• Major rewrite to support future enhancements"
+            "• Fix to remove unused permissions (UPDATE)<br/><br/>"
+                    + "• Major rewrite to support future enhancements"
                     //+ "<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>"
                     + "<br/><br/>IMPORTANT - "
                     + "You will need to re-create your widgets."
