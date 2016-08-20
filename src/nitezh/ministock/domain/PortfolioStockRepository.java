@@ -343,7 +343,8 @@ public class PortfolioStockRepository {
     }
 
     public void removeUnused() {
-        for (String symbol : this.portfolioStocksInfo.keySet()) {
+        List<String> symbols = new ArrayList<>(this.portfolioStocksInfo.keySet());
+        for (String symbol : symbols) {
             String price = this.portfolioStocksInfo.get(symbol).getPrice();
             if ((price == null || price.equals("")) && !this.widgetsStockSymbols.contains(symbol)) {
                 this.portfolioStocksInfo.remove(symbol);
