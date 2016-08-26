@@ -30,8 +30,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import nitezh.ministock.StockSuggestions;
 import nitezh.ministock.utils.Cache;
 import nitezh.ministock.Storage;
 import nitezh.ministock.dataaccess.FxChangeRepository;
@@ -86,9 +88,31 @@ public class StockQuoteRepository {
                     .replace(".DJI", "^DJI")
                     .replace(".IXIC", "^IXIC");
             quote.setSymbol(newSymbol);
+            if ("N/A".equalsIgnoreCase(quote.getName())) {
+                String nameFromStockSuggestions = getNameFromStockSuggestions(newSymbol);
+                if (!nameFromStockSuggestions.isEmpty()){
+                    quote.setName(nameFromStockSuggestions);
+                }
+            }
             newQuotes.put(newSymbol, quote);
         }
         return newQuotes;
+    }
+
+    private String getNameFromStockSuggestions(String symbol) {
+        String name = "";
+
+        if (symbol != null && !symbol.isEmpty()) {
+            List<Map<String, String>> suggestions = StockSuggestions.getSuggestions(symbol);
+            for (Map<String, String> suggestion : suggestions) {
+                if (symbol.equals(suggestion.get("symbol"))) {
+                    name = suggestion.get("name");
+                    break;
+                }
+            }
+        }
+
+        return name;
     }
 
     private List<String> convertRequestSymbols(List<String> symbols) {
