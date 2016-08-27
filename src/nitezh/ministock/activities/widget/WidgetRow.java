@@ -42,8 +42,6 @@ public class WidgetRow {
     String stockInfoExtra;
     int stockInfoExtraColor;
 
-    private boolean hasNoData;
-
     public WidgetRow(Widget widget) {
         this.widget = widget;
 
@@ -58,15 +56,10 @@ public class WidgetRow {
         this.stockInfoExtra = "";
         this.stockInfoExtraColor = Color.WHITE;
 
-        this.hasNoData = false;
     }
 
     public int getSymbolDisplayColor() {
         return symbolDisplayColor;
-    }
-
-    public void setSymbolDisplayColor(int symbolDisplayColor) {
-        this.symbolDisplayColor = symbolDisplayColor;
     }
 
     public int getPriceColor() {
@@ -101,12 +94,7 @@ public class WidgetRow {
         this.stockInfoExtraColor = stockInfoExtraColor;
     }
 
-    public boolean isHasNoData() {
-        return hasNoData;
-    }
-
-    public void setHasNoData(boolean hasNoData) {
-        this.hasNoData = hasNoData;
+    public void setHasNoData() {
     }
 
     public String getSymbol() {

@@ -188,7 +188,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
         UserData.cleanupPreferenceFiles(context);
     }
 
-    public static enum ViewType {
+    public enum ViewType {
         VIEW_DAILY_PERCENT,
         VIEW_DAILY_CHANGE,
         VIEW_PORTFOLIO_PERCENT,
@@ -201,7 +201,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
         VIEW_PL_PERCENT_AER
     }
 
-    public static enum UpdateType {
+    public enum UpdateType {
         VIEW_UPDATE,
         VIEW_NO_UPDATE,
         VIEW_CHANGE
