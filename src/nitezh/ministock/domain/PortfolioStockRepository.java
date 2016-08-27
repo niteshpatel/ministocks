@@ -26,53 +26,55 @@ package nitezh.ministock.domain;
 
 import android.content.Context;
 
+import nitezh.ministock.utils.StorageCache;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.RuleBasedCollator;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import nitezh.ministock.DialogTools;
 import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
-import nitezh.ministock.utils.Cache;
 import nitezh.ministock.utils.CurrencyTools;
 import nitezh.ministock.utils.NumberTools;
 
 public class PortfolioStockRepository {
     public static final String PORTFOLIO_JSON = "portfolioJson";
     public static final String WIDGET_JSON = "widgetJson";
-    public HashMap<String, StockQuote> stocksQuotes = new HashMap<>();
 
+    public HashMap<String, StockQuote> stocksQuotes = new HashMap<>();
     public HashMap<String, PortfolioStock> portfolioStocksInfo = new HashMap<>();
     public Set<String> widgetsStockSymbols = new HashSet<>();
 
     private static final HashMap<String, PortfolioStock> mPortfolioStocks = new HashMap<>();
     private static boolean mDirtyPortfolioStockMap = true;
+
+    private final WidgetRepository widgetRepository;
     private Storage mAppStorage;
 
-    public PortfolioStockRepository(Storage appStorage, Cache cache, WidgetRepository widgetRepository) {
+    public PortfolioStockRepository(Storage appStorage, WidgetRepository widgetRepository) {
         this.mAppStorage = appStorage;
+        this.widgetRepository = widgetRepository;
 
         this.widgetsStockSymbols = widgetRepository.getWidgetsStockSymbols();
         this.portfolioStocksInfo = getPortfolioStocksInfo(widgetsStockSymbols);
-        this.stocksQuotes = getStocksQuotes(appStorage, cache, widgetRepository);
     }
 
-    private HashMap<String, StockQuote> getStocksQuotes(Storage appStorage, Cache cache, WidgetRepository widgetRepository) {
+    public void updateStocksQuotes() {
+        if (this.stocksQuotes.isEmpty())
+            this.stocksQuotes = getStocksQuotes();
+    }
+
+    private HashMap<String, StockQuote> getStocksQuotes() {
+        StockQuoteRepository stockQuoteRepository = new StockQuoteRepository(
+                this.mAppStorage, new StorageCache(this.mAppStorage), this.widgetRepository);
+
         Set<String> symbolSet = portfolioStocksInfo.keySet();
 
-        return new StockQuoteRepository(appStorage, cache, widgetRepository)
+        return stockQuoteRepository
                 .getQuotes(Arrays.asList(symbolSet.toArray(new String[symbolSet.size()])), false);
     }
 

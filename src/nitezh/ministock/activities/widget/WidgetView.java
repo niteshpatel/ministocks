@@ -34,27 +34,18 @@ import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.RemoteViews;
+import nitezh.ministock.PreferenceStorage;
+import nitezh.ministock.R;
+import nitezh.ministock.WidgetProvider;
+import nitezh.ministock.domain.*;
+import nitezh.ministock.utils.CurrencyTools;
+import nitezh.ministock.utils.NumberTools;
+import nitezh.ministock.utils.ReflectionTools;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
-import nitezh.ministock.PreferenceStorage;
-import nitezh.ministock.R;
-import nitezh.ministock.Storage;
-import nitezh.ministock.utils.StorageCache;
-import nitezh.ministock.WidgetProvider;
-import nitezh.ministock.domain.AndroidWidgetRepository;
-import nitezh.ministock.domain.PortfolioStock;
-import nitezh.ministock.domain.PortfolioStockRepository;
-import nitezh.ministock.domain.StockQuote;
-import nitezh.ministock.domain.Widget;
-import nitezh.ministock.domain.WidgetRepository;
-import nitezh.ministock.domain.WidgetStock;
-import nitezh.ministock.utils.CurrencyTools;
-import nitezh.ministock.utils.NumberTools;
-import nitezh.ministock.utils.ReflectionTools;
 
 import static nitezh.ministock.activities.widget.WidgetProviderBase.UpdateType;
 import static nitezh.ministock.activities.widget.WidgetProviderBase.ViewType;
@@ -83,9 +74,8 @@ public class WidgetView {
         this.updateMode = updateMode;
         this.symbols = widget.getSymbols();
 
-        Storage storage = PreferenceStorage.getInstance(context);
-        this.portfolioStocks = new PortfolioStockRepository(PreferenceStorage.getInstance(context),
-                new StorageCache(storage), widgetRepository).getStocksForSymbols(symbols);
+        this.portfolioStocks = new PortfolioStockRepository(
+                PreferenceStorage.getInstance(context), widgetRepository).getStocksForSymbols(symbols);
         this.hasPortfolioData = !portfolioStocks.isEmpty();
 
         this.remoteViews = this.getBlankRemoteViews(this.widget, context.getPackageName());
@@ -354,7 +344,7 @@ public class WidgetView {
     }
 
     private void updateWidgetRowWithNoData(WidgetRow widgetRow) {
-        widgetRow.setHasNoData(true);
+        widgetRow.setHasNoData();
         if (this.widget.isNarrow()) {
             widgetRow.setPrice("no");
             widgetRow.setPriceColor(Color.GRAY);

@@ -27,7 +27,6 @@ package nitezh.ministock.tests;
 import junit.framework.TestCase;
 import nitezh.ministock.domain.PortfolioStock;
 import nitezh.ministock.domain.PortfolioStockRepository;
-import nitezh.ministock.tests.mocks.MockCache;
 import nitezh.ministock.tests.mocks.MockStorage;
 import nitezh.ministock.tests.mocks.MockWidgetRepository;
 
@@ -39,7 +38,6 @@ public class PortfolioStockRepositoryTests extends TestCase {
     public void setUp() {
         this.stockRepository = new PortfolioStockRepository(
                 new MockStorage(),
-                new MockCache(),
                 new MockWidgetRepository());
     }
 

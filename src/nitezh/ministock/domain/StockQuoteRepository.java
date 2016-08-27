@@ -25,18 +25,15 @@
 package nitezh.ministock.domain;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import nitezh.ministock.utils.Cache;
 import nitezh.ministock.Storage;
 import nitezh.ministock.dataaccess.FxChangeRepository;
 import nitezh.ministock.dataaccess.GoogleStockQuoteRepository;
 import nitezh.ministock.dataaccess.YahooStockQuoteRepository;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class StockQuoteRepository {
@@ -108,7 +105,7 @@ public class StockQuoteRepository {
             Set<String> widgetSymbols = this.widgetRepository.getWidgetsStockSymbols();
             widgetSymbols.add("^DJI");
             widgetSymbols.addAll(new PortfolioStockRepository(
-                    this.appStorage, this.appCache, this.widgetRepository).getStocks().keySet());
+                    this.appStorage, this.widgetRepository).getStocks().keySet());
             quotes = getLiveQuotes(new ArrayList<>(widgetSymbols));
         }
 
@@ -128,25 +125,38 @@ public class StockQuoteRepository {
     }
 
     private HashMap<String, StockQuote> loadQuotes() {
-        if (mCachedQuotes != null) {
+        if (mCachedQuotes != null && !mCachedQuotes.isEmpty()) {
             return mCachedQuotes;
         }
 
         HashMap<String, StockQuote> quotes = new HashMap<>();
-        String savedQuotes = this.appStorage.getString("savedQuotes", "");
+        String savedQuotesString = this.appStorage.getString("savedQuotes", "");
         String timeStamp = this.appStorage.getString("savedQuotesTime", "");
-        if (!savedQuotes.equals("")) {
+
+        if (!savedQuotesString.equals("")) {
+            JSONObject savedQuotes = new JSONObject();
             try {
-                for (String line : savedQuotes.split("\n")) {
-                    String[] values = line.split(";");
-                    quotes.put(values[0], new StockQuote(
-                            values[0],
-                            values[1],
-                            values[2],
-                            values[3],
-                            values[4],
-                            values[5],
-                            values[6]));
+                savedQuotes = new JSONObject(savedQuotesString);
+            } catch (JSONException ignored) {
+            }
+
+            try {
+                String key;
+                JSONObject details;
+
+                for (Iterator iter = savedQuotes.keys(); iter.hasNext(); ) {
+                    key = (String) iter.next();
+                    details = savedQuotes.getJSONObject(key);
+
+                    quotes.put(key, new StockQuote(
+                            details.getString("symbol"),
+                            details.getString("price"),
+                            details.getString("change"),
+                            details.getString("percent"),
+                            details.getString("exchange"),
+                            details.getString("volume"),
+                            details.getString("name")
+                    ));
                 }
             } catch (Exception e) {
                 quotes = new HashMap<>();
@@ -166,19 +176,29 @@ public class StockQuoteRepository {
         mCachedQuotes = quotes;
         mTimeStamp = timeStamp;
 
-        StringBuilder savedQuotes = new StringBuilder();
+        JSONObject savedQuotes = new JSONObject();
         for (String symbol : quotes.keySet()) {
+            try {
+                savedQuotes.put(symbol, new JSONObject());
+
+            } catch (JSONException ignored) {
+            }
+
             StockQuote quote = quotes.get(symbol);
-            savedQuotes.append(String.format("%s;%s;%s;%s;%s;%s;%s\n",
-                    quote.getSymbol() != null ? quote.getSymbol() : "",
-                    quote.getPrice() != null ? quote.getPrice() : "",
-                    quote.getChange() != null ? quote.getChange() : "",
-                    quote.getPercent() != null ? quote.getPercent() : "",
-                    quote.getExchange() != null ? quote.getExchange() : "",
-                    quote.getVolume() != null ? quote.getVolume() : "",
-                    quote.getName() != null ? quote.getName() : ""));
+            try {
+                savedQuotes.getJSONObject(symbol).put("symbol", quote.getSymbol());
+                savedQuotes.getJSONObject(symbol).put("price", quote.getPrice());
+                savedQuotes.getJSONObject(symbol).put("change", quote.getChange());
+                savedQuotes.getJSONObject(symbol).put("percent", quote.getPercent());
+                savedQuotes.getJSONObject(symbol).put("exchange", quote.getExchange());
+                savedQuotes.getJSONObject(symbol).put("volume", quote.getVolume());
+                savedQuotes.getJSONObject(symbol).put("name", quote.getName());
+
+            } catch (JSONException ignored) {
+            }
         }
-        this.appStorage.putString("savedQuotes", savedQuotes.toString().trim());
+
+        this.appStorage.putString("savedQuotes", savedQuotes.toString());
         this.appStorage.putString("savedQuotesTime", timeStamp);
         this.appStorage.apply();
     }
