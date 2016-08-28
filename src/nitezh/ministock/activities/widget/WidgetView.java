@@ -346,14 +346,14 @@ public class WidgetView {
     private void updateWidgetRowWithNoData(WidgetRow widgetRow) {
         widgetRow.setHasNoData();
         if (this.widget.isNarrow()) {
-            widgetRow.setPrice("no");
+            widgetRow.setPrice("-");
             widgetRow.setPriceColor(Color.GRAY);
-            widgetRow.setStockInfo("data");
+            widgetRow.setStockInfo("-");
             widgetRow.setStockInfoColor(Color.GRAY);
         } else {
-            widgetRow.setStockInfoExtra("no");
+            widgetRow.setStockInfoExtra("-");
             widgetRow.setStockInfoExtraColor(Color.GRAY);
-            widgetRow.setStockInfo("no");
+            widgetRow.setStockInfo("-");
             widgetRow.setStockInfoColor(Color.GRAY);
         }
     }
