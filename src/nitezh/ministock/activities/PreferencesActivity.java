@@ -69,7 +69,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     private static boolean mPendingUpdate = false;
     private static String mSymbolSearchKey = "";
     private final String CHANGE_LOG = ""
-                    + "• Fix bug where last known prices were not being loaded in some locales<br/><br/>"
+                    + "• Bug fixes for localisation issues<br/><br/>"
                     + "• Major rewrite to support future enhancements"
                     //+ "<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>"
                     + "<br/><br/>IMPORTANT - "
