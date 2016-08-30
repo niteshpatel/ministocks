@@ -24,8 +24,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
           package="nitezh.ministock"
-          android:versionCode="65"
-          android:versionName="65">
+          android:versionCode="66"
+          android:versionName="66">
 
     <uses-sdk android:minSdkVersion="10"/>
 
