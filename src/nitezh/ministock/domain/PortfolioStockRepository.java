@@ -90,7 +90,7 @@ public class PortfolioStockRepository {
     }
 
     public List<Map<String, String>> getDisplayInfo() {
-        NumberFormat numberFormat = NumberFormat.getInstance();
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
 
         List<Map<String, String>> info = new ArrayList<>();
         for (String symbol : this.getSortedSymbols()) {

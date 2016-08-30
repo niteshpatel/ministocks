@@ -28,34 +28,33 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.method.DigitsKeyListener;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
+import nitezh.ministock.DialogTools;
+import nitezh.ministock.PreferenceStorage;
+import nitezh.ministock.R;
+import nitezh.ministock.Storage;
+import nitezh.ministock.activities.widget.WidgetProviderBase;
+import nitezh.ministock.domain.AndroidWidgetRepository;
+import nitezh.ministock.domain.PortfolioStockRepository;
+import nitezh.ministock.domain.StockQuote;
+import nitezh.ministock.utils.InputTools;
+import nitezh.ministock.utils.NumberTools;
 
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-
-import nitezh.ministock.DialogTools;
-import nitezh.ministock.Storage;
-import nitezh.ministock.PreferenceStorage;
-import nitezh.ministock.R;
-import nitezh.ministock.activities.widget.WidgetProviderBase;
-import nitezh.ministock.domain.AndroidWidgetRepository;
-import nitezh.ministock.domain.PortfolioStockRepository;
-import nitezh.ministock.domain.StockQuote;
 
 
 public class PortfolioActivity extends Activity {
@@ -186,7 +185,7 @@ public class PortfolioActivity extends Activity {
         }
         // Initialise the price
         EditText priceEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_price);
-        priceEditText.setInputType(InputType.TYPE_CLASS_NUMBER + InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        priceEditText.setKeyListener(InputTools.getDecimalKeyListener());
         priceEditText.setText(price);
 
         // Initialise the date if the price has been set
@@ -198,19 +197,19 @@ public class PortfolioActivity extends Activity {
 
         // Initialise the quantity if the price has been set
         EditText quantityEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_quantity);
-        quantityEditText.setInputType(InputType.TYPE_CLASS_NUMBER + InputType.TYPE_NUMBER_FLAG_SIGNED + InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        quantityEditText.setKeyListener(InputTools.getSignedDecimalKeyListener());
         if (!quantity.equals("") && !price.equals(""))
             quantityEditText.setText(quantity);
 
         // Initialise the limit high if the price has been set
         EditText limitHighEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_limit_high);
-        limitHighEditText.setInputType(InputType.TYPE_CLASS_NUMBER + InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        limitHighEditText.setKeyListener(InputTools.getDecimalKeyListener());
         if (!limitHigh.equals("") && !price.equals(""))
             limitHighEditText.setText(limitHigh);
 
         // Initialise the limit low if the price has been set
         EditText limitLowEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_limit_low);
-        limitLowEditText.setInputType(InputType.TYPE_CLASS_NUMBER + InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        limitLowEditText.setKeyListener(InputTools.getDecimalKeyListener());
         if (!limitLow.equals("") && !price.equals(""))
             limitLowEditText.setText(limitLow);
 
@@ -261,7 +260,8 @@ public class PortfolioActivity extends Activity {
                     try {
                         // First validate and parse the data, if this fails then
                         // dismiss the dialog without making any changes
-                        price = Double.toString(Double.parseDouble(price));
+
+                        price = NumberTools.validatedDoubleString(price);
 
                         // Allow a blank date
                         if (!date.equals("")) {
@@ -270,15 +270,15 @@ public class PortfolioActivity extends Activity {
                         }
                         // Allow a blank quantity
                         if (!quantity.equals("")) {
-                            quantity = Double.toString(Double.parseDouble(quantity));
+                            quantity = NumberTools.validatedDoubleString(quantity);
                         }
                         // Allow a blank limitHigh
                         if (!limitHigh.equals("")) {
-                            limitHigh = Double.toString(Double.parseDouble(limitHigh));
+                            limitHigh = NumberTools.validatedDoubleString(limitHigh);
                         }
                         // Allow a blank limitLow
                         if (!limitLow.equals("")) {
-                            limitLow = Double.toString(Double.parseDouble(limitLow));
+                            limitLow = NumberTools.validatedDoubleString(limitLow);
                         }
                     } catch (Exception e) {
                         // On error just ignore the input and close the dialog

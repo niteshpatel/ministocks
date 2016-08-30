@@ -155,7 +155,8 @@ public class StockQuoteRepository {
                             details.getString("percent"),
                             details.getString("exchange"),
                             details.getString("volume"),
-                            details.getString("name")
+                            details.getString("name"),
+                            Locale.getDefault()
                     ));
                 }
             } catch (Exception e) {

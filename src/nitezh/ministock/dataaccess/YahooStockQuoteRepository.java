@@ -30,6 +30,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import nitezh.ministock.utils.Cache;
 import nitezh.ministock.domain.StockQuote;
@@ -66,7 +67,8 @@ public class YahooStockQuoteRepository {
                             quoteJson.optString("exchange"),
                             quoteJson.optString("volume"),
                             quoteJson.optString("name"),
-                            fxChanges.get(quoteJson.optString("symbol")));
+                            fxChanges.get(quoteJson.optString("symbol")),
+                            Locale.US);
                     quotes.put(quote.getSymbol(), quote);
                 }
             }

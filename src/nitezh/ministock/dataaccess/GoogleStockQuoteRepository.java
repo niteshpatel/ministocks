@@ -30,6 +30,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import nitezh.ministock.utils.Cache;
 import nitezh.ministock.utils.UrlDataTools;
@@ -55,7 +56,8 @@ public class GoogleStockQuoteRepository {
                         quoteJson.optString("cp"),
                         quoteJson.optString("e").replace("INDEX", ""),
                         "0",
-                        quoteJson.optString("e"));
+                        quoteJson.optString("e"),
+                        Locale.US);
                 quotes.put(quote.getSymbol(), quote);
             }
         } catch (JSONException e) {

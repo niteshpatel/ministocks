@@ -51,12 +51,12 @@ public class WidgetStock {
     public WidgetStock(StockQuote quote, PortfolioStock portfolioStock) {
 
         price = quote.getPrice();
+
         displayName = quote.getName();
         if (portfolioStock != null && !portfolioStock.getCustomName().equals("")) {
             displayName = portfolioStock.getCustomName();
         }
 
-        displayName = quote.getName();
         dailyChange = quote.getChange();
         dailyPercent = quote.getPercent();
         volume = NumberTools.getNormalisedVolume(quote.getVolume());

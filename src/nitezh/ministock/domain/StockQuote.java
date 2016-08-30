@@ -26,6 +26,9 @@ package nitezh.ministock.domain;
 
 import nitezh.ministock.utils.NumberTools;
 
+import java.text.ParseException;
+import java.util.Locale;
+
 
 public class StockQuote {
 
@@ -37,13 +40,40 @@ public class StockQuote {
     private String volume;
     private String name;
 
-    public StockQuote(String symbol, String price, String change, String percent, String exchange,
-                      String volume, String name) {
-        this(symbol, price, change, percent, exchange, volume, name, null);
+    public StockQuote(
+            String symbol,
+            String price,
+            String change,
+            String percent,
+            String exchange,
+            String volume,
+            String name,
+            Locale locale) {
+
+        this(
+                symbol,
+                price,
+                change,
+                percent,
+                exchange,
+                volume,
+                name,
+                null,
+                locale
+        );
     }
 
-    public StockQuote(String symbol, String price, String change, String percent, String exchange,
-                      String volume, String name, String previousPrice) {
+    public StockQuote(
+            String symbol,
+            String price,
+            String change,
+            String percent,
+            String exchange,
+            String volume,
+            String name,
+            String previousPrice,
+            Locale locale) {
+
         this.symbol = symbol;
         this.exchange = exchange;
         this.volume = volume;
@@ -54,7 +84,7 @@ public class StockQuote {
         boolean isFx = symbol.contains("=");
         if (isFx) {
             try {
-                p0 = Double.parseDouble(previousPrice);
+                p0 = NumberTools.tryParseDouble(previousPrice, locale);
             } catch (Exception ignored) {
             }
         }
@@ -63,7 +93,7 @@ public class StockQuote {
         Double p = null;
         if (!price.equals("0.00")) {
             try {
-                p = Double.parseDouble(price);
+                p = NumberTools.tryParseDouble(price, locale);
                 if (isFx) {
                     this.price = NumberTools.getTrimmedDouble2(p, 6);
                 } else {
@@ -85,7 +115,10 @@ public class StockQuote {
         // Changes are only set to 5 significant figures
         Double c = null;
         if (this.isNonEmptyNumber(change)) {
-            c = Double.parseDouble(change);
+            try {
+                c = NumberTools.tryParseDouble(change, locale);
+            } catch (ParseException ignored) {
+            }
         } else if (p0 != null && p != null) {
             c = p - p0;
         }
@@ -100,7 +133,11 @@ public class StockQuote {
         // Percentage changes are only set to one decimal place
         Double pc = null;
         if (this.isNonEmptyNumber(percent)) {
-            pc = Double.parseDouble(percent.replace("%", ""));
+            try {
+                pc = NumberTools.tryParseDouble(percent.replace("%", ""), locale);
+            } catch (ParseException ignored) {
+
+            }
         } else {
             if (c != null && p != null) {
                 pc = (c / p) * 100;

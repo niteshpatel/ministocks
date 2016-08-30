@@ -26,6 +26,8 @@ package nitezh.ministock.utils;
 
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Locale;
 
 
 public class NumberTools {
@@ -143,5 +145,24 @@ public class NumberTools {
         } catch (Exception ignored) {
         }
         return value;
+    }
+
+    public static String validatedDoubleString(String value) throws ParseException {
+        NumberFormat format = NumberFormat.getNumberInstance();
+
+        return format.format(tryParseDouble(value));
+    }
+
+    public static Double tryParseDouble(String value) throws ParseException {
+        return tryParseDouble(value, Locale.getDefault());
+    }
+
+    public static Double tryParseDouble(String value, Locale locale) throws ParseException {
+        NumberFormat format = NumberFormat.getNumberInstance(locale);
+
+        // Double.parse handles '+' but NumberFormat.parse does not, so do it here
+        Number number = format.parse(value.replace("+", ""));
+
+        return number.doubleValue();
     }
 }
