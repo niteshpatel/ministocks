@@ -69,16 +69,9 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     private static boolean mPendingUpdate = false;
     private static String mSymbolSearchKey = "";
     private final String CHANGE_LOG = ""
-                    + "• Bug fixes for localisation issues<br/><br/>"
-                    + "• Major rewrite to support future enhancements"
-                    //+ "<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>"
-                    + "<br/><br/>IMPORTANT - "
-                    + "You will need to re-create your widgets."
-                    + "<br/><br/>Apologies, but for this release you will need to delete your existing "
-                    + "widgets and add them again. This won't be required in the future. We tried to "
-                    + "create a work around for this but it wasn't possible. Sorry once again."
-                    + "<br/><br/>I have added an option in the widget menu that will help restore your "
-                    + "old widget settings: Settings > Backup and Restore > Restore Widget";
+            + "• Minor enhancements<br/><br/>";
+    //+ "<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>"
+
     // Fields for time pickers
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
     private String mTimePickerKey = null;
