@@ -24,7 +24,6 @@
 
 package nitezh.ministock.tests;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import java.text.ParseException;
@@ -42,7 +41,7 @@ public class NumberToolsTests extends TestCase {
         String result = NumberTools.trim("9.1", Locale.US);
 
         // Assert
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
 
     public void testTrimWithNumberLessThan10AndScale2() throws ParseException {
@@ -53,7 +52,7 @@ public class NumberToolsTests extends TestCase {
         String result = NumberTools.trim("8.99", Locale.US);
 
         // Assert
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
 
     public void testTrimWithNumberLessThan10AndScale4() throws ParseException {
@@ -64,7 +63,7 @@ public class NumberToolsTests extends TestCase {
         String result = NumberTools.trim("2.5900", Locale.US);
 
         // Assert
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
 
     public void testTrimWithNumberLessThan10AndScale5() throws ParseException {
@@ -75,7 +74,7 @@ public class NumberToolsTests extends TestCase {
         String result = NumberTools.trim("9.34512", Locale.US);
 
         // Assert
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
 
     public void testTrimWithNumberLessThan100AndScale1() throws ParseException {
@@ -86,7 +85,7 @@ public class NumberToolsTests extends TestCase {
         String result = NumberTools.trim("12.3", Locale.US);
 
         // Assert
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
 
     public void testTrimWithNumberLessThan100AndScale2() throws ParseException {
@@ -97,7 +96,7 @@ public class NumberToolsTests extends TestCase {
         String result = NumberTools.trim("21.23", Locale.US);
 
         // Assert
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
 
     public void testTrimWithNumberLessThan100AndScale4() throws ParseException {
@@ -108,7 +107,7 @@ public class NumberToolsTests extends TestCase {
         String result = NumberTools.trim("43.2572", Locale.US);
 
         // Assert
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
 
     public void testTrimWithNumberLessThan100AndScale5() throws ParseException {
@@ -119,6 +118,6 @@ public class NumberToolsTests extends TestCase {
         String result = NumberTools.trim("98.33442", Locale.US);
 
         // Assert
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
 }
