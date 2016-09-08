@@ -24,7 +24,6 @@
 
 package nitezh.ministock.domain;
 
-import nitezh.ministock.utils.ExchangeTools;
 import nitezh.ministock.utils.NumberTools;
 
 import java.text.ParseException;
@@ -98,7 +97,7 @@ public class StockQuote {
                 if (isFx) {
                     this.price = NumberTools.getTrimmedDouble2(p, 6);
                 } else {
-                    this.price = NumberTools.getTrimmedDouble(p, 6, ExchangeTools.getPrecisionForExchange(exchange, 4));
+                    this.price = NumberTools.trim(price, locale);
                 }
             } catch (Exception e) {
                 this.price = "0.00";
@@ -125,11 +124,7 @@ public class StockQuote {
         }
         if (c != null) {
             if (p != null && (p < 10 || isFx)) {
-                if (isFx) {
-                    this.change = NumberTools.getTrimmedDouble(c, 5, 3);
-                } else {
-                    this.change = NumberTools.getTrimmedDouble(c, 5, ExchangeTools.getPrecisionForExchange(exchange, 3));
-                }
+                this.change = NumberTools.getTrimmedDouble(c, 5, 3);
             } else {
                 this.change = NumberTools.getTrimmedDouble(c, 5);
             }
