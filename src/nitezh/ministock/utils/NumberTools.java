@@ -102,11 +102,13 @@ public class NumberTools {
         if ((Math.abs(number) >= 10 || maxPrecision == null) && (numberAsString.length() - 1 < digits)) {
             return String.format("%.2f", number);
         }
+
         // If the number is greater than zero than the max precision is 2
         int precision = digits - decimalPos;
         if (Math.abs(number) >= 10 || maxPrecision == null) {
             precision = Math.min(precision, 2);
         }
+
         // Ignore maxPrecision = 0
         if (maxPrecision == null)
             maxPrecision = precision;
@@ -132,6 +134,7 @@ public class NumberTools {
         Double volume;
         try {
             volume = parseDouble(value);
+
             if (volume > 999999999999D)
                 value = String.format("%.0fT", volume / 1000000000000D);
             else if (volume > 999999999D)
@@ -164,5 +167,14 @@ public class NumberTools {
         Number number = format.parse(value.replace("+", ""));
 
         return number.doubleValue();
+    }
+
+    public static String trim(String value, Locale locale) throws ParseException {
+        int digitsAfterDecimal = value.length() - value.indexOf(".") - 1;
+
+        Double p = NumberTools.tryParseDouble(value, locale);
+        String trimmed = NumberTools.getTrimmedDouble(p, 6, Math.min(4, digitsAfterDecimal));
+
+        return trimmed;
     }
 }

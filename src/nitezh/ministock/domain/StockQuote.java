@@ -97,7 +97,7 @@ public class StockQuote {
                 if (isFx) {
                     this.price = NumberTools.getTrimmedDouble2(p, 6);
                 } else {
-                    this.price = NumberTools.getTrimmedDouble(p, 6, 4);
+                    this.price = NumberTools.trim(price, locale);
                 }
             } catch (Exception e) {
                 this.price = "0.00";
