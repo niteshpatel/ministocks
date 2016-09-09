@@ -34,6 +34,7 @@ import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.RemoteViews;
+
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.WidgetProvider;
@@ -46,6 +47,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import static nitezh.ministock.activities.widget.WidgetProviderBase.UpdateType;
 import static nitezh.ministock.activities.widget.WidgetProviderBase.ViewType;
@@ -334,8 +336,11 @@ public class WidgetView {
         widgetRow.setPrice(widgetStock.getPrice());
         widgetRow.setStockInfo(widgetStock.getDailyPercent());
         widgetRow.setStockInfoColor(WidgetColors.NA);
+        if (widget.isNarrow()) {
+            widgetRow.setSymbol(widgetStock.getShortName());
+        }
         if (!widget.isNarrow()) {
-            widgetRow.setSymbol(widgetStock.getDisplayName());
+            widgetRow.setSymbol(widgetStock.getLongName());
             widgetRow.setVolume(widgetStock.getVolume());
             widgetRow.setVolumeColor(WidgetColors.VOLUME);
             widgetRow.setStockInfoExtra(widgetStock.getDailyChange());
@@ -616,7 +621,8 @@ public class WidgetView {
     public String getTimeStamp() {
         String timeStamp = this.quotesTimeStamp;
         if (!this.widget.showShortTime()) {
-            String date = new SimpleDateFormat("dd MMM").format(new Date()).toUpperCase();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM", Locale.getDefault());
+            String date = dateFormat.format(new Date()).toUpperCase();
 
             // Check if we should use yesterdays date or today's time
             String[] parts = timeStamp.split(" ");

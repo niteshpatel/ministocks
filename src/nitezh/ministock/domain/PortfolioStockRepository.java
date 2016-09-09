@@ -27,6 +27,7 @@ package nitezh.ministock.domain;
 import android.content.Context;
 
 import nitezh.ministock.utils.StorageCache;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -144,7 +145,7 @@ public class PortfolioStockRepository {
         try {
             Double holdingQuanta = NumberTools.parseDouble(stock.getQuantity());
             Double holdingPrice = numberFormat.parse(currentPrice).doubleValue();
-            holdingValue = CurrencyTools.addCurrencyToSymbol(String.format("%.0f", (holdingQuanta * holdingPrice)), symbol);
+            holdingValue = CurrencyTools.addCurrencyToSymbol(String.format(Locale.getDefault(), "%.0f", (holdingQuanta * holdingPrice)), symbol);
         } catch (Exception ignored) {
         }
         itemInfo.put("holdingValue", holdingValue);
@@ -158,7 +159,7 @@ public class PortfolioStockRepository {
                 try {
                     Double change = numberFormat.parse(quote.getChange()).doubleValue();
                     Double totalChange = NumberTools.parseDouble(stock.getQuantity()) * change;
-                    lastChange += " / " + CurrencyTools.addCurrencyToSymbol(String.format("%.0f", (totalChange)), symbol);
+                    lastChange += " / " + CurrencyTools.addCurrencyToSymbol(String.format(Locale.getDefault(), "%.0f", (totalChange)), symbol);
                 } catch (Exception ignored) {
                 }
             }
@@ -174,12 +175,12 @@ public class PortfolioStockRepository {
             Double price = numberFormat.parse(currentPrice).doubleValue();
             Double buy = Double.parseDouble(buyPrice);
             Double totalPercentChange = price - buy;
-            totalChange = String.format("%.0f", 100 * totalPercentChange / buy) + "%";
+            totalChange = String.format(Locale.getDefault(), "%.0f", 100 * totalPercentChange / buy) + "%";
 
             // Calculate change
             try {
                 Double quanta = NumberTools.parseDouble(stock.getQuantity());
-                totalChange += " / " + CurrencyTools.addCurrencyToSymbol(String.format("%.0f", quanta * totalPercentChange), symbol);
+                totalChange += " / " + CurrencyTools.addCurrencyToSymbol(String.format(Locale.getDefault(), "%.0f", quanta * totalPercentChange), symbol);
             } catch (Exception ignored) {
             }
         } catch (Exception ignored) {

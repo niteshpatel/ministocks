@@ -28,12 +28,14 @@ import nitezh.ministock.utils.NumberTools;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 
 public class WidgetStock {
-
+    String symbol;
     String price;
-    String displayName;
+    String name;
+    String customName;
     String dailyChange;
     String dailyPercent;
     String volume;
@@ -52,9 +54,10 @@ public class WidgetStock {
 
         price = quote.getPrice();
 
-        displayName = quote.getName();
+        symbol = quote.getSymbol();
+        name = quote.getName();
         if (portfolioStock != null && !portfolioStock.getCustomName().equals("")) {
-            displayName = portfolioStock.getCustomName();
+            customName = portfolioStock.getCustomName();
         }
 
         dailyChange = quote.getChange();
@@ -84,7 +87,8 @@ public class WidgetStock {
         }
 
         try {
-            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(portfolioStock.getDate());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = dateFormat.parse(portfolioStock.getDate());
             double elapsed = (new Date().getTime() - date.getTime()) / 1000;
             elapsedYears = elapsed / 31536000;
         } catch (Exception ignored) {
@@ -95,7 +99,7 @@ public class WidgetStock {
         }
 
         if (priceChangeValue != null) {
-            totalPercent = String.format("%.1f", 100 * (priceChangeValue / buyPriceValue)) + "%";
+            totalPercent = String.format(Locale.getDefault(), "%.1f", 100 * (priceChangeValue / buyPriceValue)) + "%";
         }
 
         if (priceChangeValue != null && elapsedYears != null) {
@@ -103,23 +107,23 @@ public class WidgetStock {
         }
 
         if (priceChangeValue != null && elapsedYears != null) {
-            totalPercentAer = String.format("%.1f", (100 * (priceChangeValue / buyPriceValue)) / elapsedYears) + "%";
+            totalPercentAer = String.format(Locale.getDefault(), "%.1f", (100 * (priceChangeValue / buyPriceValue)) / elapsedYears) + "%";
         }
 
         if (quantityValue != null) {
-            plHolding = String.format("%.0f", priceValue * quantityValue);
+            plHolding = String.format(Locale.getDefault(), "%.0f", priceValue * quantityValue);
         }
 
         if (dailyChangeValue != null && quantityValue != null) {
-            plDailyChange = String.format("%.0f", dailyChangeValue * quantityValue);
+            plDailyChange = String.format(Locale.getDefault(), "%.0f", dailyChangeValue * quantityValue);
         }
 
         if (priceChangeValue != null && quantityValue != null) {
-            plTotalChange = String.format("%.0f", priceChangeValue * quantityValue);
+            plTotalChange = String.format(Locale.getDefault(), "%.0f", priceChangeValue * quantityValue);
         }
 
         if (priceChangeValue != null && quantityValue != null && elapsedYears != null) {
-            plTotalChangeAer = String.format("%.0f", (priceChangeValue * quantityValue) / elapsedYears);
+            plTotalChangeAer = String.format(Locale.getDefault(), "%.0f", (priceChangeValue * quantityValue) / elapsedYears);
         }
 
         if (limitHighValue != null) {
@@ -135,8 +139,20 @@ public class WidgetStock {
         return price;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getShortName() {
+        if (customName != null) {
+            return customName;
+        }
+
+        return symbol;
+    }
+
+    public String getLongName() {
+        if (customName != null) {
+            return customName;
+        }
+
+        return name;
     }
 
     public String getDailyChange() {
