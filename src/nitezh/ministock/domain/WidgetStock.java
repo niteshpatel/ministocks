@@ -106,7 +106,7 @@ public class WidgetStock {
             totalPercentAer = String.format("%.1f", (100 * (priceChangeValue / buyPriceValue)) / elapsedYears) + "%";
         }
 
-        if (priceValue != null && quantityValue != null) {
+        if (quantityValue != null) {
             plHolding = String.format("%.0f", priceValue * quantityValue);
         }
 
@@ -122,11 +122,11 @@ public class WidgetStock {
             plTotalChangeAer = String.format("%.0f", (priceChangeValue * quantityValue) / elapsedYears);
         }
 
-        if (priceValue != null && limitHighValue != null) {
+        if (limitHighValue != null) {
             limitHighTriggered = priceValue > limitHighValue;
         }
 
-        if (priceValue != null && limitLowValue != null) {
+        if (limitLowValue != null) {
             limitLowTriggered = priceValue < limitLowValue;
         }
     }

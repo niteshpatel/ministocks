@@ -53,7 +53,7 @@ public class PortfolioStockRepository {
     private static boolean mDirtyPortfolioStockMap = true;
 
     private final WidgetRepository widgetRepository;
-    private Storage mAppStorage;
+    private final Storage mAppStorage;
 
     public PortfolioStockRepository(Storage appStorage, WidgetRepository widgetRepository) {
         this.mAppStorage = appStorage;

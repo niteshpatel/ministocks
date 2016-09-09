@@ -604,9 +604,6 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 try {
                     startActivity(intent);
                     return true;
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
                 } catch (Throwable e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();

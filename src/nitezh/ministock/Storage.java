@@ -31,21 +31,21 @@ public interface Storage {
 
     HashMap<String, ?> getAll();
 
-    public int getInt(String widgetSize, int defaultVal);
+    int getInt(String widgetSize, int defaultVal);
 
-    public String getString(String key, String defaultVal);
+    String getString(String key, String defaultVal);
 
-    public boolean getBoolean(String large_font, boolean defaultVal);
+    boolean getBoolean(String large_font, boolean defaultVal);
 
-    public Storage putInt(String key, int value);
+    Storage putInt(String key, int value);
 
-    public Storage putString(String key, String value);
+    Storage putString(String key, String value);
 
-    public Storage putBoolean(String key, Boolean value);
+    Storage putBoolean(String key, Boolean value);
 
-    public Storage putFloat(String key, Float value);
+    Storage putFloat(String key, Float value);
 
-    public Storage putLong(String key, Long value);
+    Storage putLong(String key, Long value);
 
     void apply();
 }

@@ -28,15 +28,26 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.text.InputType;
-import android.text.method.DigitsKeyListener;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.*;
+import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
 import nitezh.ministock.DialogTools;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
@@ -47,14 +58,6 @@ import nitezh.ministock.domain.PortfolioStockRepository;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.utils.InputTools;
 import nitezh.ministock.utils.NumberTools;
-
-import java.text.DecimalFormatSymbols;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
 
 
 public class PortfolioActivity extends Activity {

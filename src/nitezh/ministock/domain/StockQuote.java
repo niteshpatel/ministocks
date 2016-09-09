@@ -36,9 +36,9 @@ public class StockQuote {
     private String price;
     private String change;
     private String percent;
-    private String exchange;
-    private String volume;
-    private String name;
+    private final String exchange;
+    private final String volume;
+    private final String name;
 
     public StockQuote(
             String symbol,

@@ -33,7 +33,7 @@ import java.util.Map;
 
 public class PreferenceStorage implements Storage {
 
-    private SharedPreferences preferences;
+    private final SharedPreferences preferences;
     private SharedPreferences.Editor editor;
 
     public PreferenceStorage(SharedPreferences preferences) {

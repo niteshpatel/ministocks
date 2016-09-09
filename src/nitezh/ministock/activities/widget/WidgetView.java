@@ -61,7 +61,7 @@ public class WidgetView {
     private final UpdateType updateMode;
     private final String quotesTimeStamp;
     private final Context context;
-    private HashMap<ViewType, Boolean> enabledViews;
+    private final HashMap<ViewType, Boolean> enabledViews;
 
     public WidgetView(Context context, int appWidgetId, UpdateType updateMode,
                       HashMap<String, StockQuote> quotes, String quotesTimeStamp) {
