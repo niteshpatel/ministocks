@@ -3,5 +3,3 @@ Ministocks [![Build Status](https://img.shields.io/travis/niteshpatel/ministocks
 
 Any new features will be targeted at api-level 10 (Android 2.3.3)
 
-[Sonarqube Link](https://sonarqube.com/overview?id=ministocks)
-[Travis Link](https://travis-ci.org/niteshpatel/ministocks)
