@@ -336,11 +336,14 @@ public class WidgetView {
         widgetRow.setPrice(widgetStock.getPrice());
         widgetRow.setStockInfo(widgetStock.getDailyPercent());
         widgetRow.setStockInfoColor(WidgetColors.NA);
-        if (widget.isNarrow()) {
+
+        if (widget.isNarrow() || widget.alwaysUseShortName()) {
             widgetRow.setSymbol(widgetStock.getShortName());
-        }
-        if (!widget.isNarrow()) {
+        } else {
             widgetRow.setSymbol(widgetStock.getLongName());
+        }
+        
+        if (!widget.isNarrow()) {
             widgetRow.setVolume(widgetStock.getVolume());
             widgetRow.setVolumeColor(WidgetColors.VOLUME);
             widgetRow.setStockInfoExtra(widgetStock.getDailyChange());

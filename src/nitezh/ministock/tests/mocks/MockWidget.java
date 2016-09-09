@@ -168,6 +168,11 @@ public class MockWidget implements Widget {
     }
 
     @Override
+    public boolean alwaysUseShortName() {
+        return false;
+    }
+
+    @Override
     public void enablePercentChangeView() {
     }
 

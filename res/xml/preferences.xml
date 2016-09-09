@@ -197,6 +197,12 @@
                     android:summaryOff="Hide stock exchange code"
                     android:summaryOn="Hide stock exchange code"
                     android:title="Hide exchange code" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="always_use_short_name"
+                    android:summaryOff="Use stock symbol instead of name"
+                    android:summaryOn="Use stock symbol instead of name"
+                    android:title="Use symbol for display" />
             </PreferenceScreen>
             <PreferenceScreen
                 android:key="update_schedule"

@@ -77,4 +77,6 @@ public interface Widget {
     boolean hasTotalPlChangeView();
 
     boolean hasTotalPlPercentAerView();
+
+    boolean alwaysUseShortName();
 }
