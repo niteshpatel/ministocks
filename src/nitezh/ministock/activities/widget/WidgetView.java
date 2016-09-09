@@ -342,7 +342,7 @@ public class WidgetView {
         } else {
             widgetRow.setSymbol(widgetStock.getLongName());
         }
-        
+
         if (!widget.isNarrow()) {
             widgetRow.setVolume(widgetStock.getVolume());
             widgetRow.setVolumeColor(WidgetColors.VOLUME);

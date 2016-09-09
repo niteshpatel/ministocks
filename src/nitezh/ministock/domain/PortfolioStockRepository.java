@@ -198,13 +198,15 @@ public class PortfolioStockRepository {
     }
 
     private void populateDisplayNames(StockQuote quote, PortfolioStock stock, Map<String, String> itemInfo) {
-        String name = "No description";
+        String defaultName = "No description";
+        String name = defaultName;
+
         if (quote != null) {
             if (!stock.getCustomName().equals("")) {
                 name = stock.getCustomName();
                 itemInfo.put("customName", name);
             }
-            if (name.equals("")) {
+            if (name.equals(defaultName)) {
                 name = quote.getName();
             }
         }
