@@ -677,51 +677,59 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 preference.setTitle(value);
                 preference.setSummary(summary);
             }
-        }
-        // Initialise the ListPreference summaries
-        else if (key.startsWith("background") || key.startsWith("updated_colour") || key.startsWith("updated_display") || key.startsWith("text_style")) {
-            String value = sharedPreferences.getString(key, "");
-            findPreference(key).setSummary("Selected: " + value.substring(0, 1).toUpperCase() + value.substring(1));
-        }
-        // Initialise the Update interval
-        else if (key.startsWith("update_interval")) {
-            // Update summary based on selected value
-            String displayValue = "30 minutes";
-            String value = getAppPreferences().getString(key, "1800000");
-            if (value.equals("300000")) {
-                displayValue = "5 minutes";
-            } else if (value.equals("900000")) {
-                displayValue = "15 minutes";
-            } else if (value.equals("1800000")) {
-                displayValue = "30 minutes";
-            } else if (value.equals("3600000")) {
-                displayValue = "One hour";
-            } else if (value.equals("10800000")) {
-                displayValue = "Three hours";
-            } else if (value.equals("86400000")) {
-                displayValue = "Daily";
-            }
-            findPreference(key).setSummary("Selected: " + displayValue);
 
-            // Update the value of the update interval
-            updateFromGlobal(sharedPreferences, "update_interval", LIST_TYPE);
-        }
-        // Update time picker summaries
-        else if (key.equals("update_start") || key.equals("update_end")) {
-            String value = getAppPreferences().getString(key, null);
-            mHour = 0;
-            mMinute = 0;
-            if (value != null) {
-                String[] items = value.split(":");
-                mHour = Integer.parseInt(items[0]);
-                mMinute = Integer.parseInt(items[1]);
+            // Initialise the ListPreference summaries
+            else if (key.startsWith("background") || key.startsWith("updated_colour") || key.startsWith("updated_display") || key.startsWith("text_style")) {
+                String value = sharedPreferences.getString(key, "");
+                preference.setSummary("Selected: " + value.substring(0, 1).toUpperCase() + value.substring(1));
             }
-            findPreference(key).setSummary("Time set: " + DateTools.timeDigitPad(mHour) + ":" + DateTools.timeDigitPad(mMinute));
+            // Initialise the Update interval
+            else if (key.startsWith("update_interval")) {
+                // Update summary based on selected value
+                String displayValue = "30 minutes";
+                String value = getAppPreferences().getString(key, "1800000");
+                switch (value) {
+                    case "300000":
+                        displayValue = "5 minutes";
+                        break;
+                    case "900000":
+                        displayValue = "15 minutes";
+                        break;
+                    case "1800000":
+                        displayValue = "30 minutes";
+                        break;
+                    case "3600000":
+                        displayValue = "One hour";
+                        break;
+                    case "10800000":
+                        displayValue = "Three hours";
+                        break;
+                    case "86400000":
+                        displayValue = "Daily";
+                        break;
+                }
+                preference.setSummary("Selected: " + displayValue);
 
-            // Update the value of the update limits
-            updateFromGlobal(sharedPreferences, key, STRING_TYPE);
-        } else if (key.equals("update_weekend")) {
-            updateFromGlobal(sharedPreferences, key, CHECKBOX_TYPE);
+                // Update the value of the update interval
+                updateFromGlobal(sharedPreferences, "update_interval", LIST_TYPE);
+            }
+            // Update time picker summaries
+            else if (key.equals("update_start") || key.equals("update_end")) {
+                String value = getAppPreferences().getString(key, null);
+                mHour = 0;
+                mMinute = 0;
+                if (value != null) {
+                    String[] items = value.split(":");
+                    mHour = Integer.parseInt(items[0]);
+                    mMinute = Integer.parseInt(items[1]);
+                }
+                preference.setSummary("Time set: " + DateTools.timeDigitPad(mHour) + ":" + DateTools.timeDigitPad(mMinute));
+
+                // Update the value of the update limits
+                updateFromGlobal(sharedPreferences, key, STRING_TYPE);
+            } else if (key.equals("update_weekend")) {
+                updateFromGlobal(sharedPreferences, key, CHECKBOX_TYPE);
+            }
         }
     }
 
