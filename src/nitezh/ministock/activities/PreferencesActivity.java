@@ -649,23 +649,28 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     }
 
     void updateSummaries(SharedPreferences sharedPreferences, String key) {
-        // Initialise the Stock summaries
-        if (key.startsWith("Stock") && !key.endsWith("_summary")) {
-            // Update the summary based on the stock value
-            String value = sharedPreferences.getString(key, "");
-            String summary = sharedPreferences.getString(key + "_summary", "");
+        Preference preference = findPreference(key);
+        if (preference != null) {
 
-            // Set the title
-            if (value.equals("")) {
-                value = key.replace("Stock", "Stock ");
-                summary = "Set symbol";
+            // Initialise the Stock summaries
+            if (sharedPreferences.contains(key) && key.startsWith("Stock") && !key.endsWith("_summary")) {
+                // Update the summary based on the stock value
+                String value = sharedPreferences.getString(key, "");
+                String summary = sharedPreferences.getString(key + "_summary", "");
+
+                // Set the title
+                if (value.equals("")) {
+                    value = key.replace("Stock", "Stock ");
+                    summary = "Set symbol";
+                }
+                // Set the summary appropriately
+                else if (summary.equals("")) {
+                    summary = "No description";
+                }
+
+                preference.setTitle(value);
+                preference.setSummary(summary);
             }
-            // Set the summary appropriately
-            else if (summary.equals("")) {
-                summary = "No description";
-            }
-            findPreference(key).setTitle(value);
-            findPreference(key).setSummary(summary);
         }
         // Initialise the ListPreference summaries
         else if (key.startsWith("background") || key.startsWith("updated_colour") || key.startsWith("updated_display") || key.startsWith("text_style")) {

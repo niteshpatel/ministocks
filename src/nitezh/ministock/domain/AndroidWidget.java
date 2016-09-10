@@ -33,6 +33,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,9 @@ public class AndroidWidget implements Widget {
     private final Storage storage;
     private final Context context;
     private final int id;
+
+    private final List<String> preferencesToNotRestore = Arrays.asList("widgetSize", "widgetView");
+
     private int size;
 
     public AndroidWidget(Context context, int id) {
@@ -70,8 +74,13 @@ public class AndroidWidget implements Widget {
     @Override
     public void setWidgetPreferencesFromJson(JSONObject jsonPrefs) {
         String key;
-        for (Iterator iter = jsonPrefs.keys(); iter.hasNext(); ) {
-            key = (String) iter.next();
+        for (Iterator preferenceKey = jsonPrefs.keys(); preferenceKey.hasNext(); ) {
+            key = (String) preferenceKey.next();
+
+            if (preferencesToNotRestore.contains(key)) {
+                continue;
+            }
+
             try {
                 Object value = jsonPrefs.get(key);
                 if (value instanceof String) {
@@ -81,7 +90,7 @@ public class AndroidWidget implements Widget {
                 } else if (value instanceof Integer) {
                     this.storage.putInt(key, (Integer) value);
                 } else if (value instanceof Double) {
-                    this.storage.putFloat(key, (Float) value);
+                    this.storage.putFloat(key, ((Double) value).floatValue());
                 } else if (value instanceof Long) {
                     this.storage.putLong(key, (Long) value);
                 }

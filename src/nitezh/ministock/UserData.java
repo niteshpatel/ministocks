@@ -33,6 +33,7 @@ import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.PortfolioStockRepository;
 import nitezh.ministock.domain.Widget;
 import nitezh.ministock.domain.WidgetRepository;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -116,7 +117,10 @@ public class UserData {
             widget.setWidgetPreferencesFromJson(
                     jsonBackupsForAllWidgets.getJSONObject(backupName));
 
-            InformUserWidgetBackupRestoredAndReloadPreferences(context);
+            Boolean areAllStocksRestored = widget.getSymbolCount() == 10
+                    && !widget.getStock(4).equals("");
+
+            InformUserWidgetBackupRestoredAndReloadPreferences(context, areAllStocksRestored);
         } catch (JSONException ignored) {
         }
     }
@@ -131,7 +135,7 @@ public class UserData {
         }
     }
 
-    private static void InformUserWidgetBackupRestoredAndReloadPreferences(Context context) {
+    private static void InformUserWidgetBackupRestoredAndReloadPreferences(Context context, Boolean areAllStocksRestored) {
         final Context finalContext = context;
         Callable callable = new Callable() {
             @Override
@@ -141,9 +145,14 @@ public class UserData {
             }
         };
 
+        String msg = "The current widget preferences have been restored from your selected backup.";
+        if (!areAllStocksRestored) {
+            msg += "<br/><br/>Note: The backup had more stocks than your current widget, so not all stocks were restored.";
+        }
+
         DialogTools.alertWithCallback(context,
                 "Widget restored",
-                "The current widget preferences have been restored from your selected backup.",
+                msg,
                 "Close", null,
                 callable, null);
     }
