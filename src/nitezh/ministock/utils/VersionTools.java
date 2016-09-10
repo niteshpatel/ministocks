@@ -27,7 +27,7 @@ package nitezh.ministock.utils;
 
 public class VersionTools {
 
-    public static final String BUILD = "66";
+    public static final String BUILD = "67";
 
     private VersionTools() {
     }
