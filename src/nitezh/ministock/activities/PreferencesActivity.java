@@ -74,7 +74,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
             + "• Partial support for restoring widget backups to different widget sizes.<br/><br/>"
             + "• Custom names are now shown in the narrow widgets as well as the wide widgets.<br/><br/>"
             + "• Removed additional decimal places where the incoming data did not have them.<br/><br/>"
-            + "• Allow stock symbols to be displayed for wide widgets instead of the name.<br/><br/>";
+            + "• Allow stock symbols to be displayed for wide widgets instead of the name.";
     //+ "<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>"
 
     // Fields for time pickers
