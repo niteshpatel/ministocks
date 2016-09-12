@@ -29,7 +29,7 @@ import android.graphics.Color;
 import nitezh.ministock.domain.Widget;
 
 class WidgetRow {
-    private Widget widget;
+    private final Widget widget;
 
     private String symbol;
     private int symbolDisplayColor;

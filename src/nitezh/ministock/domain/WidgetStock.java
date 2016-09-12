@@ -32,13 +32,14 @@ import java.util.Locale;
 
 
 public class WidgetStock {
-    private String symbol;
-    private String price;
-    private String name;
+    private final String symbol;
+    private final String price;
+    private final String name;
+    private final String dailyChange;
+    private final String dailyPercent;
+    private final String volume;
+
     private String customName;
-    private String dailyChange;
-    private String dailyPercent;
-    private String volume;
     private String totalChange;
     private String totalPercent;
     private String totalChangeAer;
