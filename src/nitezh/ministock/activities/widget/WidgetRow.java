@@ -94,9 +94,6 @@ class WidgetRow {
         this.stockInfoExtraColor = stockInfoExtraColor;
     }
 
-    public void setHasNoData() {
-    }
-
     public String getSymbol() {
         return symbol;
     }

@@ -352,7 +352,6 @@ class WidgetView {
     }
 
     private void updateWidgetRowWithNoData(WidgetRow widgetRow) {
-        widgetRow.setHasNoData();
         if (this.widget.isNarrow()) {
             widgetRow.setPrice("—");
             widgetRow.setPriceColor(Color.GRAY);
