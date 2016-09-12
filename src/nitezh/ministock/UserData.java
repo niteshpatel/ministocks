@@ -62,6 +62,7 @@ public class UserData {
         if (sharedPrefsDir.exists()) {
             for (File f : sharedPrefsDir.listFiles()) {
                 if (!preferencesFilenames.contains(f.getName())) {
+                    //noinspection ResultOfMethodCallIgnored
                     f.delete();
                 }
             }
