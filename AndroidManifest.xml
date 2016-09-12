@@ -22,171 +22,191 @@
   THE SOFTWARE.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="nitezh.ministock"
-          android:versionCode="67"
-          android:versionName="67">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="nitezh.ministock"
+    android:versionCode="67"
+    android:versionName="67">
 
-    <uses-sdk android:minSdkVersion="10"/>
+    <uses-sdk android:minSdkVersion="10" />
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
-    <application android:icon="@drawable/icon"
-                 android:label="@string/app_name"
-                 android:allowBackup="true">
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name">
 
-        <activity android:name=".activities.MinistocksActivity"
-                  android:configChanges="orientation"
-                  android:label="@string/app_name"
-                  android:theme="@android:style/Theme.Dialog">
+        <activity
+            android:name=".activities.MinistocksActivity"
+            android:configChanges="orientation"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Dialog">
 
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.PortfolioActivity"
-                  android:configChanges="orientation"
-                  android:label="Portfolio"
-                  android:launchMode="singleInstance">
+        <activity
+            android:name=".activities.PortfolioActivity"
+            android:configChanges="orientation"
+            android:label="Portfolio"
+            android:launchMode="singleInstance">
 
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.PreferencesActivity"
-                  android:clearTaskOnLaunch="true"
-                  android:configChanges="orientation"
-                  android:finishOnTaskLaunch="true"
-                  android:label="Preferences"
-                  android:launchMode="singleInstance">
+        <activity
+            android:name=".activities.PreferencesActivity"
+            android:clearTaskOnLaunch="true"
+            android:configChanges="orientation"
+            android:finishOnTaskLaunch="true"
+            android:label="Preferences"
+            android:launchMode="singleInstance">
 
             <intent-filter>
-                <action android:name="android.intent.action.EDIT"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.PICK"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.PICK" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.SEARCH" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <meta-data android:name="android.app.searchable"
-                       android:resource="@xml/searchable"/>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
-        <activity android:name=".activities.configure.ConfigureActivity1x2"
-                  android:theme="@android:style/Theme.Dialog">
+        <activity
+            android:name=".activities.configure.ConfigureActivity1x2"
+            android:theme="@android:style/Theme.Dialog">
 
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
-            </intent-filter>
-        </activity>
-        <activity android:name=".activities.configure.ConfigureActivity2x2"
-                  android:theme="@android:style/Theme.Dialog">
-
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.configure.ConfigureActivity1x4"
-                  android:theme="@android:style/Theme.Dialog">
+        <activity
+            android:name=".activities.configure.ConfigureActivity2x2"
+            android:theme="@android:style/Theme.Dialog">
 
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.configure.ConfigureActivity2x4"
-                  android:theme="@android:style/Theme.Dialog">
+        <activity
+            android:name=".activities.configure.ConfigureActivity1x4"
+            android:theme="@android:style/Theme.Dialog">
 
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.SymbolSearchableActivity"
-                  android:configChanges="orientation"
-                  android:excludeFromRecents="true"
-                  android:launchMode="singleTop"
-                  android:theme="@android:style/Theme.NoTitleBar">
+        <activity
+            android:name=".activities.configure.ConfigureActivity2x4"
+            android:theme="@android:style/Theme.Dialog">
 
             <intent-filter>
-                <action android:name="android.intent.action.EDIT"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.SymbolSearchableActivity"
+            android:configChanges="orientation"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop"
+            android:theme="@android:style/Theme.NoTitleBar">
+
+            <intent-filter>
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.PICK"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.PICK" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.SEARCH" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-            <meta-data android:name="android.app.searchable"
-                       android:resource="@xml/searchable"/>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
 
         <!-- Provides search suggestions for words and their definitions. -->
-        <provider android:name=".SymbolProvider"
-                  android:authorities="nitezh.ministocks.stocksymbols"
-                  android:syncable="false"
-                  tools:ignore="ExportedContentProvider"/>
+        <provider
+            android:name=".SymbolProvider"
+            android:authorities="nitezh.ministocks.stocksymbols"
+            android:syncable="false"
+            tools:ignore="ExportedContentProvider" />
 
         <!-- Receivers -->
-        <receiver android:name=".WidgetProvider"
-                  android:label="Ministocks">
+        <receiver
+            android:name=".WidgetProvider"
+            android:label="Ministocks">
 
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-                <action android:name="nitezh.ministock.ASYNC_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="nitezh.ministock.ASYNC_UPDATE" />
             </intent-filter>
             <intent-filter>
-                <action android:name="nitezh.ministock.ALARM_UPDATE"/>
+                <action android:name="nitezh.ministock.ALARM_UPDATE" />
             </intent-filter>
 
-            <meta-data android:name="android.appwidget.provider"
-                       android:resource="@xml/widget_1x2"/>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_1x2" />
         </receiver>
-        <receiver android:name=".activities.widget.WidgetProvider1x4"
-                  android:label="Ministocks (wide)">
+        <receiver
+            android:name=".activities.widget.WidgetProvider1x4"
+            android:label="Ministocks (wide)">
 
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <intent-filter>
-                <action android:name="nitezh.ministocks.ALARM_UPDATE"/>
+                <action android:name="nitezh.ministocks.ALARM_UPDATE" />
             </intent-filter>
 
-            <meta-data android:name="android.appwidget.provider"
-                       android:resource="@xml/widget_1x4"/>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_1x4" />
         </receiver>
-        <receiver android:name=".activities.widget.WidgetProvider2x2"
-                  android:label="Ministocks (tall)">
+        <receiver
+            android:name=".activities.widget.WidgetProvider2x2"
+            android:label="Ministocks (tall)">
 
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <intent-filter>
-                <action android:name="nitezh.ministocks.ALARM_UPDATE"/>
+                <action android:name="nitezh.ministocks.ALARM_UPDATE" />
             </intent-filter>
 
-            <meta-data android:name="android.appwidget.provider"
-                       android:resource="@xml/widget_2x2"/>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_2x2" />
         </receiver>
-        <receiver android:name=".activities.widget.WidgetProvider2x4"
-                  android:label="Ministocks (wide/tall)">
+        <receiver
+            android:name=".activities.widget.WidgetProvider2x4"
+            android:label="Ministocks (wide/tall)">
 
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <intent-filter>
-                <action android:name="nitezh.ministocks.ALARM_UPDATE"/>
+                <action android:name="nitezh.ministocks.ALARM_UPDATE" />
             </intent-filter>
 
-            <meta-data android:name="android.appwidget.provider"
-                       android:resource="@xml/widget_2x4"/>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_2x4" />
         </receiver>
     </application>
 </manifest>
