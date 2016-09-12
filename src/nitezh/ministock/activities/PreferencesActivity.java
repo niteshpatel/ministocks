@@ -45,9 +45,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import nitezh.ministock.DialogTools;
-import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
-import nitezh.ministock.Storage;
 import nitezh.ministock.UserData;
 import nitezh.ministock.activities.widget.WidgetProviderBase;
 import nitezh.ministock.utils.DateTools;
@@ -139,7 +137,6 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
             return;
         }
         // Cleanup preferences files
-        Storage appStorage = new PreferenceStorage(getAppPreferences());
         UserData.cleanupPreferenceFiles(getApplicationContext());
         @SuppressWarnings("rawtypes") Callable callable = new Callable() {
             @Override
