@@ -67,7 +67,7 @@ public class NumberTools {
         // If we have space to show the whole number, and the max precision
         // is null OR the number is greater than one then we always use 2 dp.
         if (Math.abs(number) >= 100 && (numberAsString.length() - 1 < digits)) {
-            return String.format(Locale.getDefault(),"%.2f", number);
+            return String.format(Locale.getDefault(), "%.2f", number);
         }
         // If the number is greater than zero than the max precision is 2
         int precision = digits - decimalPos;
@@ -95,12 +95,12 @@ public class NumberTools {
         // If there are more digits before the decimal place than the space
         // available then do the best we can and return with 0 dp.
         if (digits < decimalPos) {
-            return String.format(Locale.getDefault(),"%.0f", number);
+            return String.format(Locale.getDefault(), "%.0f", number);
         }
         // If we have space to show the whole number, and the max precision
         // is null OR the number is greater than one then we always use 2 dp.
         if ((Math.abs(number) >= 10 || maxPrecision == null) && (numberAsString.length() - 1 < digits)) {
-            return String.format(Locale.getDefault(),"%.2f", number);
+            return String.format(Locale.getDefault(), "%.2f", number);
         }
 
         // If the number is greater than zero than the max precision is 2
@@ -136,15 +136,15 @@ public class NumberTools {
             volume = parseDouble(value);
 
             if (volume > 999999999999D)
-                value = String.format(Locale.getDefault(),"%.0fT", volume / 1000000000000D);
+                value = String.format(Locale.getDefault(), "%.0fT", volume / 1000000000000D);
             else if (volume > 999999999D)
-                value = String.format(Locale.getDefault(),"%.0fB", volume / 1000000000D);
+                value = String.format(Locale.getDefault(), "%.0fB", volume / 1000000000D);
             else if (volume > 999999D)
-                value = String.format(Locale.getDefault(),"%.0fM", volume / 1000000D);
+                value = String.format(Locale.getDefault(), "%.0fM", volume / 1000000D);
             else if (volume > 999D)
-                value = String.format(Locale.getDefault(),"%.0fK", volume / 1000D);
+                value = String.format(Locale.getDefault(), "%.0fK", volume / 1000D);
             else
-                value = String.format(Locale.getDefault(),"%.0f", volume);
+                value = String.format(Locale.getDefault(), "%.0f", volume);
         } catch (Exception ignored) {
         }
         return value;
@@ -173,8 +173,8 @@ public class NumberTools {
         int digitsAfterDecimal = value.length() - value.indexOf(".") - 1;
 
         Double p = NumberTools.tryParseDouble(value, locale);
-        String trimmed = NumberTools.getTrimmedDouble(p, 6, Math.min(4, digitsAfterDecimal));
+        int maxPrecision = Math.min(4, digitsAfterDecimal);
 
-        return trimmed;
+        return NumberTools.getTrimmedDouble(p, 6, maxPrecision);
     }
 }
