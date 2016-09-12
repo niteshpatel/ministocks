@@ -106,8 +106,8 @@ public class PortfolioStock {
         return json;
     }
 
-    public boolean isEmpty() {
-        return !(this.getPrice() != null && !this.getPrice().equals("") ||
+    public boolean hasData() {
+        return (this.getPrice() != null && !this.getPrice().equals("") ||
                 (this.getCustomName() != null && !this.getCustomName().equals("")));
     }
 }

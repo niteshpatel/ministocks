@@ -296,7 +296,7 @@ public class PortfolioStockRepository {
         JSONObject json = new JSONObject();
         for (String symbol : this.portfolioStocksInfo.keySet()) {
             PortfolioStock item = this.portfolioStocksInfo.get(symbol);
-            if (!item.isEmpty()) {
+            if (item.hasData()) {
                 try {
                     json.put(symbol, item.toJson());
                 } catch (JSONException ignored) {
@@ -314,7 +314,7 @@ public class PortfolioStockRepository {
 
         for (String symbol : symbols) {
             PortfolioStock stock = stocks.get(symbol);
-            if (stock != null && !stock.isEmpty()) {
+            if (stock != null && stock.hasData()) {
                 stocksForSymbols.put(symbol, stock);
             }
         }
