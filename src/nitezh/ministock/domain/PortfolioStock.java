@@ -52,10 +52,6 @@ public class PortfolioStock {
         this.symbol2 = symbol2;
     }
 
-    public String getSymbol() {
-        return symbol;
-    }
-
     public String getPrice() {
         return price;
     }
