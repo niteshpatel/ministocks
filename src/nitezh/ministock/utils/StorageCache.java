@@ -32,7 +32,7 @@ import nitezh.ministock.Storage;
 
 public class StorageCache extends Cache {
 
-    public static final String JSON_CACHE = "JsonCache";
+    private static final String JSON_CACHE = "JsonCache";
     private static String mCache = "";
     private Storage storage = null;
 

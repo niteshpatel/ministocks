@@ -48,7 +48,7 @@ public class PortfolioStockRepository {
 
     public HashMap<String, StockQuote> stocksQuotes = new HashMap<>();
     public HashMap<String, PortfolioStock> portfolioStocksInfo = new HashMap<>();
-    public Set<String> widgetsStockSymbols = new HashSet<>();
+    private Set<String> widgetsStockSymbols = new HashSet<>();
 
     private static final HashMap<String, PortfolioStock> mPortfolioStocks = new HashMap<>();
     private static boolean mDirtyPortfolioStockMap = true;
@@ -238,7 +238,7 @@ public class PortfolioStockRepository {
                 "Your portfolio settings have been restored from internal mAppStorage.");
     }
 
-    public JSONObject getStocksJson() {
+    private JSONObject getStocksJson() {
         JSONObject stocksJson = new JSONObject();
         try {
             stocksJson = new JSONObject(this.mAppStorage.getString(PORTFOLIO_JSON, ""));
@@ -292,7 +292,7 @@ public class PortfolioStockRepository {
         return mPortfolioStocks;
     }
 
-    public void persist() {
+    private void persist() {
         JSONObject json = new JSONObject();
         for (String symbol : this.portfolioStocksInfo.keySet()) {
             PortfolioStock item = this.portfolioStocksInfo.get(symbol);
@@ -322,7 +322,7 @@ public class PortfolioStockRepository {
         return stocksForSymbols;
     }
 
-    public List<String> getSortedSymbols() {
+    private List<String> getSortedSymbols() {
         ArrayList<String> symbols = new ArrayList<>();
         for (String key : this.portfolioStocksInfo.keySet()) {
             symbols.add(key);

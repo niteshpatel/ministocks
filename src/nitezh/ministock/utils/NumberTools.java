@@ -156,7 +156,7 @@ public class NumberTools {
         return format.format(tryParseDouble(value));
     }
 
-    public static Double tryParseDouble(String value) throws ParseException {
+    private static Double tryParseDouble(String value) throws ParseException {
         return tryParseDouble(value, Locale.getDefault());
     }
 

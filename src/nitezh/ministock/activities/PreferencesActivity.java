@@ -81,7 +81,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     private int mHour = 0;
     private int mMinute = 0;
 
-    String getChangeLog() {
+    private String getChangeLog() {
         return CHANGE_LOG;
     }
 
@@ -104,7 +104,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         return super.getSharedPreferences(name + mAppWidgetId, mode);
     }
 
-    SharedPreferences getAppPreferences() {
+    private SharedPreferences getAppPreferences() {
         // Convenience method to get global preferences
         return super.getSharedPreferences(getString(R.string.prefs_name), 0);
     }
@@ -233,7 +233,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         updateSummaries(sharedPreferences, key);
     }
 
-    void updateStockValue(SharedPreferences sharedPreferences, String key) {
+    private void updateStockValue(SharedPreferences sharedPreferences, String key) {
         // Unregister the listener whenever a key changes
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 
@@ -253,7 +253,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
-    void updateFromGlobal(SharedPreferences sharedPreferences, String key, int valType) {
+    private void updateFromGlobal(SharedPreferences sharedPreferences, String key, int valType) {
         // Unregister the listener whenever a key changes
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 
@@ -281,7 +281,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
-    void updateGlobalPref(SharedPreferences sharedPreferences, String key, int valType) {
+    private void updateGlobalPref(SharedPreferences sharedPreferences, String key, int valType) {
         // Unregister the listener whenever a key changes
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 
@@ -297,25 +297,25 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
-    void showDisclaimer() {
+    private void showDisclaimer() {
         String title = "License";
         String body = "The MIT License (MIT)<br/><br/>Copyright © 2013 Nitesh Patel<br/><br />Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:<br /><br />The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.<br/><br/>THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.";
         DialogTools.showSimpleDialog(this, title, body);
     }
 
-    void showHelp() {
+    private void showHelp() {
         String title = "Entering stocks";
         String body = "<b>Entering stock symbols</b><br/><br />Stock symbols must be in the Yahoo format, which you can look up on the Yahoo Finance website.";
         DialogTools.showSimpleDialog(this, title, body);
     }
 
-    void showHelpPrices() {
+    private void showHelpPrices() {
         String title = "Updating prices";
         String body = "You can set how often, and when the widget updates in the Advanced settings menu.  The setting applies globally to all the widgets.<br /><br />Stock price information is provided by Yahoo Finance, and there may be a delay (from real-time prices, to up to 30 minutes) for some exchanges.<br /><br />Note that the time in the lower-left of the widget is the time that the data was retrieved from Yahoo, not the time of the live price.<br /><br />If an internet connection is not present when an update occurs, the widget will just use the last shown data, and the time for that data.<br /><br /><b>Update prices now feature</b><br /><br />This will update the prices in all your widgets, if there is an internet connection available.";
         DialogTools.showSimpleDialog(this, title, body);
     }
 
-    void showTimePickerDialog(Preference preference, String defaultValue) {
+    private void showTimePickerDialog(Preference preference, String defaultValue) {
         // Get the raw value from the preferences
         String value = preference.getSharedPreferences().getString(preference.getKey(), defaultValue);
         mHour = 0;
@@ -336,7 +336,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         }
     }
 
-    void setTimePickerPreference(int hourOfDay, int minute) {
+    private void setTimePickerPreference(int hourOfDay, int minute) {
         // Set the preference value
         SharedPreferences preferences = getPreferenceScreen().getSharedPreferences();
         Editor editor = preferences.edit();
@@ -347,7 +347,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         updateSummaries(getPreferenceScreen().getSharedPreferences(), mTimePickerKey);
     }
 
-    void setPreference(String key, String value, String summary) {
+    private void setPreference(String key, String value, String summary) {
         // Return if no key
         if (key.equals("")) {
             return;
@@ -650,7 +650,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         });
     }
 
-    void updateSummaries(SharedPreferences sharedPreferences, String key) {
+    private void updateSummaries(SharedPreferences sharedPreferences, String key) {
         Preference preference = findPreference(key);
         if (preference != null) {
 

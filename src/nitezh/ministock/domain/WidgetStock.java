@@ -32,23 +32,23 @@ import java.util.Locale;
 
 
 public class WidgetStock {
-    String symbol;
-    String price;
-    String name;
-    String customName;
-    String dailyChange;
-    String dailyPercent;
-    String volume;
-    String totalChange;
-    String totalPercent;
-    String totalChangeAer;
-    String totalPercentAer;
-    String plHolding;
-    String plDailyChange;
-    String plTotalChange;
-    String plTotalChangeAer;
-    Boolean limitHighTriggered;
-    Boolean limitLowTriggered;
+    private String symbol;
+    private String price;
+    private String name;
+    private String customName;
+    private String dailyChange;
+    private String dailyPercent;
+    private String volume;
+    private String totalChange;
+    private String totalPercent;
+    private String totalChangeAer;
+    private String totalPercentAer;
+    private String plHolding;
+    private String plDailyChange;
+    private String plTotalChange;
+    private String plTotalChangeAer;
+    private Boolean limitHighTriggered;
+    private Boolean limitLowTriggered;
 
     public WidgetStock(StockQuote quote, PortfolioStock portfolioStock) {
 

@@ -83,7 +83,7 @@ public class PortfolioActivity extends Activity {
         this.refreshView();
     }
 
-    void refreshView() {
+    private void refreshView() {
         setContentView(R.layout.portfolio);
 
         List<Map<String, String>> listViewData = this.portfolioRepository.getDisplayInfo();
@@ -158,7 +158,7 @@ public class PortfolioActivity extends Activity {
         return super.onContextItemSelected(item);
     }
 
-    void showPortfolioItemEdit(AdapterView<?> a, int position) {
+    private void showPortfolioItemEdit(AdapterView<?> a, int position) {
         // Create the portfolio item edit dialog
         final Dialog portfolioItemEdit = new Dialog(this);
         portfolioItemEdit.setContentView(R.layout.portfolio_item);

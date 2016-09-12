@@ -38,7 +38,7 @@ import org.json.JSONObject;
 
 public class StockQuoteRepository {
 
-    public static final List<String> GOOGLE_SYMBOLS = Arrays.asList(".DJI", ".IXIC");
+    private static final List<String> GOOGLE_SYMBOLS = Arrays.asList(".DJI", ".IXIC");
 
     private static String mTimeStamp;
     private static HashMap<String, StockQuote> mCachedQuotes;

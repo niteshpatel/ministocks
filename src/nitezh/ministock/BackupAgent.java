@@ -38,7 +38,7 @@ import nitezh.ministock.domain.PortfolioStockRepository;
 public class BackupAgent extends BackupAgentHelper {
 
     // A key to uniquely identify the set of backup data
-    static final String FILES_BACKUP_KEY = "Everything";
+    private static final String FILES_BACKUP_KEY = "Everything";
 
     // Allocate a helper and add it to the backup agent
     public void onCreate() {

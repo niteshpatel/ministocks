@@ -28,19 +28,19 @@ import android.graphics.Color;
 
 import nitezh.ministock.domain.Widget;
 
-public class WidgetRow {
-    Widget widget;
+class WidgetRow {
+    private Widget widget;
 
-    String symbol;
-    int symbolDisplayColor;
-    String price;
-    int priceColor;
-    String volume;
-    int volumeColor;
-    String stockInfo;
-    int stockInfoColor;
-    String stockInfoExtra;
-    int stockInfoExtraColor;
+    private String symbol;
+    private int symbolDisplayColor;
+    private String price;
+    private int priceColor;
+    private String volume;
+    private int volumeColor;
+    private String stockInfo;
+    private int stockInfoColor;
+    private String stockInfoExtra;
+    private int stockInfoExtraColor;
 
     public WidgetRow(Widget widget) {
         this.widget = widget;

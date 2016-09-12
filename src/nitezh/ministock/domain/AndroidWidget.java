@@ -159,7 +159,7 @@ public class AndroidWidget implements Widget {
         return (size == 0 || size == 2);
     }
 
-    public int _getSize() {
+    private int _getSize() {
         return this.storage.getInt("widgetSize", 0);
     }
 

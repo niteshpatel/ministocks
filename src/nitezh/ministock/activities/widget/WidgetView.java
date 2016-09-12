@@ -52,7 +52,7 @@ import java.util.Locale;
 import static nitezh.ministock.activities.widget.WidgetProviderBase.UpdateType;
 import static nitezh.ministock.activities.widget.WidgetProviderBase.ViewType;
 
-public class WidgetView {
+class WidgetView {
 
     private final RemoteViews remoteViews;
     private final Widget widget;
@@ -169,11 +169,11 @@ public class WidgetView {
                 PendingIntent.getBroadcast(this.context, this.widget.getId(), rightTouchIntent, 0));
     }
 
-    public HashMap<WidgetProviderBase.ViewType, Boolean> getEnabledViews() {
+    private HashMap<WidgetProviderBase.ViewType, Boolean> getEnabledViews() {
         return this.enabledViews;
     }
 
-    public HashMap<ViewType, Boolean> calculateEnabledViews(Widget widget) {
+    private HashMap<ViewType, Boolean> calculateEnabledViews(Widget widget) {
         HashMap<WidgetProviderBase.ViewType, Boolean> enabledViews = new HashMap<>();
         enabledViews.put(ViewType.VIEW_DAILY_PERCENT, widget.hasDailyPercentView());
         enabledViews.put(ViewType.VIEW_DAILY_CHANGE, widget.hasDailyChangeView());
@@ -383,7 +383,7 @@ public class WidgetView {
         return colour;
     }
 
-    public void clear() {
+    private void clear() {
         int columnCount = (!widget.isNarrow()) ? 6 : 4;
         for (int i = 1; i < this.widget.getSymbolCount() + 1; i++) {
             for (int j = 1; j < columnCount; j++) {
@@ -408,7 +408,7 @@ public class WidgetView {
         return remoteViews;
     }
 
-    public int getNextView(UpdateType updateMode) {
+    private int getNextView(UpdateType updateMode) {
         int currentView = this.widget.getPreviousView();
         if (updateMode == UpdateType.VIEW_CHANGE) {
             currentView += 1;
@@ -431,13 +431,13 @@ public class WidgetView {
         return currentView;
     }
 
-    public void setStockRowItemText(int row, int col, Object text) {
+    private void setStockRowItemText(int row, int col, Object text) {
         this.remoteViews.setTextViewText(
                 ReflectionTools.getField("text" + row + col),
                 !text.equals("") ? applyFormatting((String) text) : "");
     }
 
-    public void setStockRowItemColor(int row, int col, int color) {
+    private void setStockRowItemColor(int row, int col, int color) {
         this.remoteViews.setTextColor(ReflectionTools.getField("text" + row + col), color);
     }
 
@@ -517,7 +517,7 @@ public class WidgetView {
         }
     }
 
-    public int getFooterColor() {
+    private int getFooterColor() {
         String colorType = this.widget.getFooterColor();
         int color = Color.parseColor("#555555");
         if (colorType.equals("light")) {
@@ -529,7 +529,7 @@ public class WidgetView {
         return color;
     }
 
-    public String getLabel(int widgetDisplay) {
+    private String getLabel(int widgetDisplay) {
         // Set the widget view text in the footer
         String label = "";
         if (widget.isNarrow()) {
@@ -621,7 +621,7 @@ public class WidgetView {
         return label;
     }
 
-    public String getTimeStamp() {
+    private String getTimeStamp() {
         String timeStamp = this.quotesTimeStamp;
         if (!this.widget.showShortTime()) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM", Locale.getDefault());
@@ -640,7 +640,7 @@ public class WidgetView {
         return timeStamp;
     }
 
-    public boolean canChangeView() {
+    private boolean canChangeView() {
         HashMap<ViewType, Boolean> enabledViews = this.getEnabledViews();
         boolean hasMultipleDefaultViews = enabledViews.get(ViewType.VIEW_DAILY_PERCENT)
                 && enabledViews.get(ViewType.VIEW_DAILY_CHANGE);

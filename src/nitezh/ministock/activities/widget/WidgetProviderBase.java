@@ -113,7 +113,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
         updateWidgets(context, doUpdates ? UpdateType.VIEW_UPDATE : UpdateType.VIEW_NO_UPDATE);
     }
 
-    public void handleTouch(Context context, int appWidgetId, String action) {
+    private void handleTouch(Context context, int appWidgetId, String action) {
         if (action.equals("LEFT")) {
             startPreferencesActivity(context, appWidgetId);
         } else if (action.equals("RIGHT")) {
@@ -121,7 +121,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
         }
     }
 
-    public void startPreferencesActivity(Context context, int appWidgetId) {
+    private void startPreferencesActivity(Context context, int appWidgetId) {
         PreferencesActivity.mAppWidgetId = appWidgetId;
         Intent activity = new Intent(context, PreferencesActivity.class);
         activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -154,7 +154,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
         }
     }
 
-    public void updateWidgetsFromCache(Context context) {
+    private void updateWidgetsFromCache(Context context) {
         for (int id : new AndroidWidgetRepository(context).getIds()) {
             updateWidgetAsync(context, id, UpdateType.VIEW_NO_UPDATE);
         }

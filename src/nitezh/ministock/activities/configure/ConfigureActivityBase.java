@@ -51,7 +51,7 @@ abstract class ConfigureActivityBase extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
-    void setupWidget(int size) {
+    private void setupWidget(int size) {
         // Update the widget when we end configuration
         Bundle extras = getIntent().getExtras();
         if (extras != null) {

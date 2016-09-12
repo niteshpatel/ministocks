@@ -80,11 +80,11 @@ public class PortfolioStock {
         return customName;
     }
 
-    public String getSymbol2() {
+    private String getSymbol2() {
         return symbol2;
     }
 
-    public void setJsonValue(JSONObject json, PortfolioField key, String value) {
+    private void setJsonValue(JSONObject json, PortfolioField key, String value) {
         if (value == null || value.equals("")) {
             value = "empty";
         }
