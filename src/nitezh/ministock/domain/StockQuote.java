@@ -144,7 +144,7 @@ public class StockQuote {
             }
         }
         if (pc != null) {
-            this.percent = String.format("%.1f", pc) + "%";
+            this.percent = String.format(Locale.getDefault(), "%.1f", pc) + "%";
         }
     }
 
