@@ -13,7 +13,7 @@ addons:
   sonarqube: true
 
 script:
-- gradlew build connectedCheck
+- ./gradlew build connectedCheck
 - sonar-scanner -Dsonar.login=$SONAR_TOKEN
 
 notifications:
