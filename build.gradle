@@ -19,14 +19,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 
-    defaultConfig {
-        applicationId "nitezh.ministock"
-        minSdkVersion 10
-        targetSdkVersion 24
-        versionCode 67
-        versionName "67"
-    }
-
     buildTypes {
         release {
             minifyEnabled false
