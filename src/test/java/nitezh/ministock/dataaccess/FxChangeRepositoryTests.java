@@ -51,6 +51,6 @@ public class FxChangeRepositoryTests extends TestCase {
         }
 
         // Assert
-        assertNotNull(json);
+        assertNull(json);
     }
 }
