@@ -22,7 +22,7 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock.tests;
+package nitezh.ministock.domain;
 
 import junit.framework.TestCase;
 

@@ -22,36 +22,34 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock.tests;
+package nitezh.ministock.domain;
 
 import junit.framework.TestCase;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import nitezh.ministock.dataaccess.FxChangeRepository;
-import nitezh.ministock.tests.mocks.MockCache;
+import nitezh.ministock.domain.PortfolioStock;
+import nitezh.ministock.domain.PortfolioStockRepository;
+import nitezh.ministock.tests.mocks.MockStorage;
+import nitezh.ministock.tests.mocks.MockWidgetRepository;
 
 
-public class FxChangeRepositoryTests extends TestCase {
+public class PortfolioStockRepositoryTests extends TestCase {
 
-    private FxChangeRepository fxRepository;
+    private PortfolioStockRepository stockRepository;
 
     public void setUp() {
-        this.fxRepository = new FxChangeRepository();
+        this.stockRepository = new PortfolioStockRepository(
+                new MockStorage(),
+                new MockWidgetRepository());
     }
 
-    public void testRetrieveChangesAsJson() {
+    public void testCanRemoveTwoUnusedSymbols() {
         // Arrange
-        JSONObject json = null;
+        this.stockRepository.portfolioStocksInfo.put(
+                "test1", new PortfolioStock("test1", "", "", "", "", "", "", ""));
+
+        this.stockRepository.portfolioStocksInfo.put(
+                "test2", new PortfolioStock("test2", "", "", "", "", "", "", ""));
 
         // Act
-        try {
-            json = this.fxRepository.retrieveChangesAsJson(new MockCache());
-        } catch (JSONException ignored) {
-        }
-
-        // Assert
-        assertNotNull(json);
+        this.stockRepository.removeUnused();
     }
 }
