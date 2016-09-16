@@ -25,10 +25,9 @@
 package nitezh.ministock.domain;
 
 import junit.framework.TestCase;
-import nitezh.ministock.domain.PortfolioStock;
-import nitezh.ministock.domain.PortfolioStockRepository;
-import nitezh.ministock.tests.mocks.MockStorage;
-import nitezh.ministock.tests.mocks.MockWidgetRepository;
+
+import nitezh.ministock.mocks.MockStorage;
+import nitezh.ministock.mocks.MockWidgetRepository;
 
 
 public class PortfolioStockRepositoryTests extends TestCase {

@@ -22,14 +22,12 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock.tests;
+package nitezh.ministock.utils;
 
 import junit.framework.TestCase;
 
 import java.text.ParseException;
 import java.util.Locale;
-
-import nitezh.ministock.utils.NumberTools;
 
 
 public class NumberToolsTests extends TestCase {

@@ -31,11 +31,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import nitezh.ministock.domain.StockQuote;
-import nitezh.ministock.domain.StockQuoteRepository;
-import nitezh.ministock.tests.mocks.MockCache;
-import nitezh.ministock.tests.mocks.MockStorage;
-import nitezh.ministock.tests.mocks.MockWidgetRepository;
+import nitezh.ministock.mocks.MockCache;
+import nitezh.ministock.mocks.MockStorage;
+import nitezh.ministock.mocks.MockWidgetRepository;
 
 
 public class StockQuoteRepositoryTests extends TestCase {
@@ -54,7 +52,7 @@ public class StockQuoteRepositoryTests extends TestCase {
     }
 
     public void tearDown() {
-        PortfolioStockRepository.setmDirtyPortfolioStockMap(true);
+        PortfolioStockRepository.setDirtyPortfolioStockMap(true);
     }
 
     public void testGetLiveQuotes() {

@@ -22,55 +22,21 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock.tests.mocks;
+package nitezh.ministock.mocks;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.json.JSONObject;
 
-import nitezh.ministock.domain.Widget;
-import nitezh.ministock.domain.WidgetRepository;
+import nitezh.ministock.utils.Cache;
 
 
-public class MockWidgetRepository implements WidgetRepository {
-
-    private HashSet<String> widgetsStockSymbols;
+public class MockCache extends Cache {
 
     @Override
-    public List<Integer> getIds() {
-        return new ArrayList<>();
+    protected JSONObject loadCache() {
+        return new JSONObject();
     }
 
     @Override
-    public boolean isEmpty() {
-        return false;
+    protected void persistCache(JSONObject cache) {
     }
-
-    @Override
-    public Set<String> getWidgetsStockSymbols() {
-        if (this.widgetsStockSymbols != null) {
-            return this.widgetsStockSymbols;
-        }
-        return new HashSet<>();
-    }
-
-    public void setWidgetsStockSymbols(HashSet<String> widgetsStockSymbols) {
-        this.widgetsStockSymbols = widgetsStockSymbols;
-    }
-
-    @Override
-    public void delWidget(int id) {
-    }
-
-    @Override
-    public Widget getWidget(int id) {
-        return new MockWidget();
-    }
-
-    @Override
-    public Widget addWidget(int id, int size) {
-        return this.getWidget(id);
-    }
-
 }

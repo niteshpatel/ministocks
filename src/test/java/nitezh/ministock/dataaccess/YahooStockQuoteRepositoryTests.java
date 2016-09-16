@@ -34,10 +34,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import nitezh.ministock.dataaccess.FxChangeRepository;
-import nitezh.ministock.dataaccess.YahooStockQuoteRepository;
 import nitezh.ministock.domain.StockQuote;
-import nitezh.ministock.tests.mocks.MockCache;
+import nitezh.ministock.mocks.MockCache;
 
 
 public class YahooStockQuoteRepositoryTests extends TestCase {

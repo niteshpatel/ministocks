@@ -29,8 +29,7 @@ import junit.framework.TestCase;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import nitezh.ministock.dataaccess.FxChangeRepository;
-import nitezh.ministock.tests.mocks.MockCache;
+import nitezh.ministock.mocks.MockCache;
 
 
 public class FxChangeRepositoryTests extends TestCase {

@@ -22,7 +22,7 @@
  THE SOFTWARE.
  */
 
-package nitezh.ministock.tests.mocks;
+package nitezh.ministock.mocks;
 
 import java.util.HashMap;
 
