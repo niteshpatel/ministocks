@@ -53,6 +53,10 @@ public class StockQuoteRepositoryTests extends TestCase {
                 new MockStorage(), new MockCache(), mockWidgetRepository);
     }
 
+    public void tearDown() {
+        PortfolioStockRepository.setmDirtyPortfolioStockMap(true);
+    }
+
     public void testGetLiveQuotes() {
         // Arrange
         List<String> symbols = Arrays.asList("AAPL", "GOOG", "^DJI", "^IXIC");

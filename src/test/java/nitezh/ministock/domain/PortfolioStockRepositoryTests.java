@@ -36,9 +36,11 @@ public class PortfolioStockRepositoryTests extends TestCase {
     private PortfolioStockRepository stockRepository;
 
     public void setUp() {
+        MockWidgetRepository widgetRepository = new MockWidgetRepository();
         this.stockRepository = new PortfolioStockRepository(
                 new MockStorage(),
-                new MockWidgetRepository());
+                widgetRepository);
+        System.out.println();
     }
 
     public void testCanRemoveTwoUnusedSymbols() {

@@ -64,6 +64,14 @@ public class PortfolioStockRepository {
         this.portfolioStocksInfo = getPortfolioStocksInfo(widgetsStockSymbols);
     }
 
+    public static boolean ismDirtyPortfolioStockMap() {
+        return mDirtyPortfolioStockMap;
+    }
+
+    public static void setmDirtyPortfolioStockMap(boolean mDirtyPortfolioStockMap) {
+        PortfolioStockRepository.mDirtyPortfolioStockMap = mDirtyPortfolioStockMap;
+    }
+
     public void updateStocksQuotes() {
         if (this.stocksQuotes.isEmpty())
             this.stocksQuotes = getStocksQuotes();
@@ -231,7 +239,7 @@ public class PortfolioStockRepository {
     }
 
     public void restorePortfolio(Context context) {
-        mDirtyPortfolioStockMap = true;
+        setmDirtyPortfolioStockMap(true);
         String rawJson = UserData.readInternalStorage(context, PORTFOLIO_JSON);
         this.mAppStorage.putString(PORTFOLIO_JSON, rawJson).apply();
         DialogTools.showSimpleDialog(context, "PortfolioActivity restored",
@@ -248,7 +256,7 @@ public class PortfolioStockRepository {
     }
 
     public HashMap<String, PortfolioStock> getStocks() {
-        if (!mDirtyPortfolioStockMap) {
+        if (!ismDirtyPortfolioStockMap()) {
             return mPortfolioStocks;
         }
         mPortfolioStocks.clear();
@@ -287,7 +295,7 @@ public class PortfolioStockRepository {
                     stockInfoMap.get(PortfolioField.SYMBOL_2));
             mPortfolioStocks.put(key, stock);
         }
-        mDirtyPortfolioStockMap = false;
+        setmDirtyPortfolioStockMap(false);
 
         return mPortfolioStocks;
     }
@@ -305,7 +313,7 @@ public class PortfolioStockRepository {
         }
         this.mAppStorage.putString(PORTFOLIO_JSON, json.toString());
         this.mAppStorage.apply();
-        mDirtyPortfolioStockMap = true;
+        setmDirtyPortfolioStockMap(true);
     }
 
     public HashMap<String, PortfolioStock> getStocksForSymbols(List<String> symbols) {
