@@ -17,7 +17,7 @@ before_install:
 - chmod +x gradlew
 
 script:
-- ./gradlew build connectedCheck
+- gradle build connectedCheck
 - sonar-scanner -Dsonar.login=$SONAR_TOKEN
 
 notifications:
