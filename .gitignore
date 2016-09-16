@@ -27,7 +27,3 @@ proguard/
 *.ipr
 *.iws
 .idea/
-
-# Gradle startup scripts
-/gradlew.bat
-/gradlew
