@@ -24,22 +24,24 @@
 
 package nitezh.ministock.dataaccess;
 
-import junit.framework.TestCase;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import org.junit.Before;
+import org.junit.Test;
 import nitezh.ministock.mocks.MockCache;
+import static org.junit.Assert.assertNotNull;
 
 
-public class FxChangeRepositoryTests extends TestCase {
+public class FxChangeRepositoryTests {
 
     private FxChangeRepository fxRepository;
 
+    @Before
     public void setUp() {
         this.fxRepository = new FxChangeRepository();
     }
 
+    @Test
     public void testRetrieveChangesAsJson() {
         // Arrange
         JSONObject json = null;

@@ -24,11 +24,11 @@
 
 package nitezh.ministock.dataaccess;
 
-import junit.framework.TestCase;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,23 +37,28 @@ import java.util.List;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.mocks.MockCache;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-public class GoogleStockQuoteRepositoryTests extends TestCase {
+
+public class GoogleStockQuoteRepositoryTests {
 
     private GoogleStockQuoteRepository googleRepository;
 
+    @Before
     public void setUp() {
         this.googleRepository = new GoogleStockQuoteRepository();
     }
 
-    public void testRetrieveQuotesAsJson() {
+    @Test
+    public void retrieveQuotesAsJson() {
         // Arrange
         List<String> symbols = Arrays.asList(".DJI", ".IXIC");
         JSONArray json = null;
 
         // Act
         try {
-            json = this.googleRepository.retrieveQuotesAsJson(new MockCache(), symbols);
+            json = googleRepository.retrieveQuotesAsJson(new MockCache(), symbols);
         } catch (JSONException ignored) {
         }
 
@@ -70,12 +75,13 @@ public class GoogleStockQuoteRepositoryTests extends TestCase {
         assertEquals("INDEXNASDAQ", ixicJson.optString("e"));
     }
 
-    public void testGetQuotes() {
+    @Test
+    public void getQuotes() {
         // Arrange
         List<String> symbols = Arrays.asList(".DJI", ".IXIC");
 
         // Act
-        HashMap<String, StockQuote> stockQuotes = this.googleRepository.getQuotes(new MockCache(), symbols);
+        HashMap<String, StockQuote> stockQuotes = googleRepository.getQuotes(new MockCache(), symbols);
 
         // Assert
         assertEquals(2, stockQuotes.size());

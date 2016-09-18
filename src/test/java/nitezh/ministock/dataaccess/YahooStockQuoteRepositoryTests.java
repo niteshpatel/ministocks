@@ -24,11 +24,11 @@
 
 package nitezh.ministock.dataaccess;
 
-import junit.framework.TestCase;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,17 +37,23 @@ import java.util.List;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.mocks.MockCache;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-public class YahooStockQuoteRepositoryTests extends TestCase {
+
+public class YahooStockQuoteRepositoryTests {
 
     private YahooStockQuoteRepository yahooRepository;
 
+    @Before
     public void setUp() {
         FxChangeRepository fxRepository = new FxChangeRepository();
-        this.yahooRepository = new YahooStockQuoteRepository(fxRepository);
+        yahooRepository = new YahooStockQuoteRepository(fxRepository);
     }
 
-    public void testRetrieveQuotesAsJson() {
+    @Test
+    public void retrieveQuotesAsJson() {
         // Arrange
         List<String> symbols = Arrays.asList("AAPL", "GOOG");
         JSONArray json = null;
@@ -73,12 +79,13 @@ public class YahooStockQuoteRepositoryTests extends TestCase {
         assertEquals("Alphabet Inc.", googJson.optString("name"));
     }
 
-    public void testGetQuotes() {
+    @Test
+    public void getQuotes() {
         // Arrange
         List<String> symbols = Arrays.asList("AAPL", "GOOG");
 
         // Act
-        HashMap<String, StockQuote> stockQuotes = this.yahooRepository.getQuotes(new MockCache(), symbols);
+        HashMap<String, StockQuote> stockQuotes = yahooRepository.getQuotes(new MockCache(), symbols);
 
         // Assert
         assertEquals(2, stockQuotes.size());

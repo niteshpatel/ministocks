@@ -26,12 +26,19 @@ package nitezh.ministock.utils;
 
 import junit.framework.TestCase;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.text.ParseException;
 import java.util.Locale;
 
+import static org.junit.Assert.assertEquals;
 
-public class NumberToolsTests extends TestCase {
-    public void testTrimWithNumberLessThan10AndScale1() throws ParseException {
+
+public class NumberToolsTests {
+
+    @Test
+    public void trimWithNumberLessThan10AndScale1() throws ParseException {
         // Arrange
         String expected = "9.1";
 
@@ -42,7 +49,8 @@ public class NumberToolsTests extends TestCase {
         assertEquals(expected, result);
     }
 
-    public void testTrimWithNumberLessThan10AndScale2() throws ParseException {
+    @Test
+    public void trimWithNumberLessThan10AndScale2() throws ParseException {
         // Arrange
         String expected = "8.99";
 
@@ -53,7 +61,8 @@ public class NumberToolsTests extends TestCase {
         assertEquals(expected, result);
     }
 
-    public void testTrimWithNumberLessThan10AndScale4() throws ParseException {
+    @Test
+    public void trimWithNumberLessThan10AndScale4() throws ParseException {
         // Arrange
         String expected = "2.5900";
 
@@ -64,7 +73,8 @@ public class NumberToolsTests extends TestCase {
         assertEquals(expected, result);
     }
 
-    public void testTrimWithNumberLessThan10AndScale5() throws ParseException {
+    @Test
+    public void trimWithNumberLessThan10AndScale5() throws ParseException {
         // Arrange
         String expected = "9.3451";
 
@@ -75,7 +85,8 @@ public class NumberToolsTests extends TestCase {
         assertEquals(expected, result);
     }
 
-    public void testTrimWithNumberLessThan100AndScale1() throws ParseException {
+    @Test
+    public void trimWithNumberLessThan100AndScale1() throws ParseException {
         // Arrange
         String expected = "12.30";
 
@@ -86,7 +97,8 @@ public class NumberToolsTests extends TestCase {
         assertEquals(expected, result);
     }
 
-    public void testTrimWithNumberLessThan100AndScale2() throws ParseException {
+    @Test
+    public void trimWithNumberLessThan100AndScale2() throws ParseException {
         // Arrange
         String expected = "21.23";
 
@@ -97,7 +109,8 @@ public class NumberToolsTests extends TestCase {
         assertEquals(expected, result);
     }
 
-    public void testTrimWithNumberLessThan100AndScale4() throws ParseException {
+    @Test
+    public void trimWithNumberLessThan100AndScale4() throws ParseException {
         // Arrange
         String expected = "43.26";
 
@@ -108,7 +121,8 @@ public class NumberToolsTests extends TestCase {
         assertEquals(expected, result);
     }
 
-    public void testTrimWithNumberLessThan100AndScale5() throws ParseException {
+    @Test
+    public void trimWithNumberLessThan100AndScale5() throws ParseException {
         // Arrange
         String expected = "98.33";
 
