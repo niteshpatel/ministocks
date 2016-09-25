@@ -24,6 +24,8 @@
 
 package nitezh.ministock.utils;
 
+
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
@@ -167,7 +169,8 @@ public class NumberTools {
     }
 
     public static String trim(String value, Locale locale) throws ParseException {
-        int digitsAfterDecimal = value.length() - value.indexOf(".") - 1;
+        char decimalFormatSymbol = new DecimalFormatSymbols(locale).getDecimalSeparator();
+        int digitsAfterDecimal = value.length() - value.indexOf(decimalFormatSymbol) - 1;
 
         Double p = NumberTools.parseDouble(value, locale);
         int maxPrecision = Math.min(4, digitsAfterDecimal);
