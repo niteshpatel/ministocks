@@ -24,7 +24,6 @@
 
 package nitezh.ministock.utils;
 
-import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
@@ -116,15 +115,13 @@ public class NumberTools {
         return String.format("%." + Math.min(precision, maxPrecision) + "f", number);
     }
 
-    public static Double parseDouble(String value) {
-        return parseDouble(value, null);
+    public static Double tryParseDouble(String value) {
+        return tryParseDouble(value, null);
     }
 
-    public static Double parseDouble(String value, Double defaultValue) {
+    public static Double tryParseDouble(String value, Double defaultValue) {
         try {
-            char separator = new DecimalFormatSymbols().getDecimalSeparator();
-            value = value.replace('.', separator);
-            return NumberFormat.getInstance().parse(value).doubleValue();
+            return parseDouble(value);
         } catch (Exception e) {
             return defaultValue;
         }
@@ -133,7 +130,7 @@ public class NumberTools {
     public static String getNormalisedVolume(String value) {
         Double volume;
         try {
-            volume = parseDouble(value);
+            volume = tryParseDouble(value);
 
             if (volume > 999999999999D)
                 value = String.format(Locale.getDefault(), "%.0fT", volume / 1000000000000D);
@@ -153,14 +150,14 @@ public class NumberTools {
     public static String validatedDoubleString(String value) throws ParseException {
         NumberFormat format = NumberFormat.getNumberInstance();
 
-        return format.format(tryParseDouble(value));
+        return format.format(parseDouble(value));
     }
 
-    private static Double tryParseDouble(String value) throws ParseException {
-        return tryParseDouble(value, Locale.getDefault());
+    public static Double parseDouble(String value) throws ParseException {
+        return parseDouble(value, Locale.getDefault());
     }
 
-    public static Double tryParseDouble(String value, Locale locale) throws ParseException {
+    public static Double parseDouble(String value, Locale locale) throws ParseException {
         NumberFormat format = NumberFormat.getNumberInstance(locale);
 
         // Double.parse handles '+' but NumberFormat.parse does not, so do it here
@@ -172,7 +169,7 @@ public class NumberTools {
     public static String trim(String value, Locale locale) throws ParseException {
         int digitsAfterDecimal = value.length() - value.indexOf(".") - 1;
 
-        Double p = NumberTools.tryParseDouble(value, locale);
+        Double p = NumberTools.parseDouble(value, locale);
         int maxPrecision = Math.min(4, digitsAfterDecimal);
 
         return NumberTools.getTrimmedDouble(p, 6, maxPrecision);

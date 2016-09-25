@@ -132,7 +132,7 @@ public class CurrencyTools {
         // £ needs division by 100
         if (currencySymbol.equals("£"))
             try {
-                value = String.format(Locale.getDefault(), "%.0f", NumberTools.parseDouble(value) / 100);
+                value = String.format(Locale.getDefault(), "%.0f", NumberTools.tryParseDouble(value) / 100);
             } catch (Exception ignored) {
             }
 

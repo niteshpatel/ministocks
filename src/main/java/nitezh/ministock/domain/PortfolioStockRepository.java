@@ -181,7 +181,7 @@ public class PortfolioStockRepository {
         String totalChange = "";
         try {
             Double price = numberFormat.parse(currentPrice).doubleValue();
-            Double buy = Double.parseDouble(buyPrice);
+            Double buy = NumberTools.parseDouble(buyPrice);
             Double totalPercentChange = price - buy;
             totalChange = String.format(Locale.getDefault(), "%.0f", 100 * totalPercentChange / buy) + "%";
 

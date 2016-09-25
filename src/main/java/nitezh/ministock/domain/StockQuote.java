@@ -84,7 +84,7 @@ public class StockQuote {
         boolean isFx = symbol.contains("=");
         if (isFx) {
             try {
-                p0 = NumberTools.tryParseDouble(previousPrice, locale);
+                p0 = NumberTools.parseDouble(previousPrice, locale);
             } catch (Exception ignored) {
             }
         }
@@ -93,7 +93,7 @@ public class StockQuote {
         Double p = null;
         if (!price.equals("0.00")) {
             try {
-                p = NumberTools.tryParseDouble(price, locale);
+                p = NumberTools.parseDouble(price, locale);
                 if (isFx) {
                     this.price = NumberTools.getTrimmedDouble2(p, 6);
                 } else {
@@ -116,7 +116,7 @@ public class StockQuote {
         Double c = null;
         if (this.isNonEmptyNumber(change)) {
             try {
-                c = NumberTools.tryParseDouble(change, locale);
+                c = NumberTools.parseDouble(change, locale);
             } catch (ParseException ignored) {
             }
         } else if (p0 != null && p != null) {
@@ -134,7 +134,7 @@ public class StockQuote {
         Double pc = null;
         if (this.isNonEmptyNumber(percent)) {
             try {
-                pc = NumberTools.tryParseDouble(percent.replace("%", ""), locale);
+                pc = NumberTools.parseDouble(percent.replace("%", ""), locale);
             } catch (ParseException ignored) {
 
             }

@@ -66,8 +66,8 @@ public class WidgetStock {
         volume = NumberTools.getNormalisedVolume(quote.getVolume());
 
         Double elapsedYears = null;
-        Double priceValue = NumberTools.parseDouble(quote.getPrice());
-        Double dailyChangeValue = NumberTools.parseDouble(quote.getChange());
+        Double priceValue = NumberTools.tryParseDouble(quote.getPrice());
+        Double dailyChangeValue = NumberTools.tryParseDouble(quote.getChange());
 
         Double buyPriceValue = null;
         Double quantityValue = null;
@@ -75,10 +75,10 @@ public class WidgetStock {
         Double limitLowValue = null;
 
         if (portfolioStock != null) {
-            buyPriceValue = NumberTools.parseDouble(portfolioStock.getPrice());
-            quantityValue = NumberTools.parseDouble(portfolioStock.getQuantity());
-            limitHighValue = NumberTools.parseDouble(portfolioStock.getHighLimit());
-            limitLowValue = NumberTools.parseDouble(portfolioStock.getLowLimit());
+            buyPriceValue = NumberTools.tryParseDouble(portfolioStock.getPrice());
+            quantityValue = NumberTools.tryParseDouble(portfolioStock.getQuantity());
+            limitHighValue = NumberTools.tryParseDouble(portfolioStock.getHighLimit());
+            limitLowValue = NumberTools.tryParseDouble(portfolioStock.getLowLimit());
         }
 
         Double priceChangeValue = null;

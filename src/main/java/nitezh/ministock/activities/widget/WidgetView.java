@@ -370,7 +370,7 @@ class WidgetView {
     }
 
     private int getColourForChange(String value) {
-        double parsedValue = NumberTools.parseDouble(value, 0d);
+        double parsedValue = NumberTools.tryParseDouble(value, 0d);
         int colour;
         if (parsedValue < 0) {
             colour = WidgetColors.LOSS;
