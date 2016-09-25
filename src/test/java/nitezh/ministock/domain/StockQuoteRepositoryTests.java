@@ -24,7 +24,10 @@
 
 package nitezh.ministock.domain;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,11 +38,14 @@ import nitezh.ministock.mocks.MockCache;
 import nitezh.ministock.mocks.MockStorage;
 import nitezh.ministock.mocks.MockWidgetRepository;
 
+import static org.junit.Assert.assertEquals;
 
-public class StockQuoteRepositoryTests extends TestCase {
+
+public class StockQuoteRepositoryTests {
 
     private StockQuoteRepository stockRepository;
 
+    @Before
     public void setUp() {
         MockWidgetRepository mockWidgetRepository = new MockWidgetRepository();
         mockWidgetRepository.setWidgetsStockSymbols(new HashSet<>(Arrays.asList(
@@ -47,32 +53,34 @@ public class StockQuoteRepositoryTests extends TestCase {
                 "GOOG",
                 "^DJI",
                 "^IXIC")));
-        this.stockRepository = new StockQuoteRepository(
+        stockRepository = new StockQuoteRepository(
                 new MockStorage(), new MockCache(), mockWidgetRepository);
     }
 
+    @After
     public void tearDown() {
         PortfolioStockRepository.setDirtyPortfolioStockMap(true);
     }
 
-    public void testGetLiveQuotes() {
+    @Test
+    public void getLiveQuotes() {
         // Arrange
         List<String> symbols = Arrays.asList("AAPL", "GOOG", "^DJI", "^IXIC");
 
         // Act
-        HashMap<String, StockQuote> quotes = this.stockRepository.getLiveQuotes(symbols);
+        HashMap<String, StockQuote> quotes = stockRepository.getLiveQuotes(symbols);
 
         // Assert
         assertEquals(4, quotes.size());
 
         StockQuote aaplQuote = quotes.get("AAPL");
         assertEquals("AAPL", aaplQuote.getSymbol());
-        assertTrue(Arrays.asList("NasdaqNM", "NMS").contains(aaplQuote.getExchange()));
+        Assert.assertTrue(Arrays.asList("NasdaqNM", "NMS").contains(aaplQuote.getExchange()));
         assertEquals("Apple Inc.", aaplQuote.getName());
 
         StockQuote googQuote = quotes.get("GOOG");
         assertEquals("GOOG", googQuote.getSymbol());
-        assertTrue(Arrays.asList("NasdaqNM", "NMS").contains(googQuote.getExchange()));
+        Assert.assertTrue(Arrays.asList("NasdaqNM", "NMS").contains(googQuote.getExchange()));
         assertEquals("Alphabet Inc.", googQuote.getName());
 
         StockQuote djiQuote = quotes.get("^DJI");
@@ -84,24 +92,25 @@ public class StockQuoteRepositoryTests extends TestCase {
         assertEquals("NASDAQ", ixicQuote.getExchange());
     }
 
-    public void testGetQuotes() {
+    @Test
+    public void getQuotes() {
         // Arrange
         List<String> symbols = Arrays.asList("AAPL", "GOOG", "^DJI", "^IXIC");
 
         // Act
-        HashMap<String, StockQuote> quotes = this.stockRepository.getQuotes(symbols, true);
+        HashMap<String, StockQuote> quotes = stockRepository.getQuotes(symbols, true);
 
         // Assert
         assertEquals(4, quotes.size());
 
         StockQuote aaplQuote = quotes.get("AAPL");
         assertEquals("AAPL", aaplQuote.getSymbol());
-        assertTrue(Arrays.asList("NasdaqNM", "NMS").contains(aaplQuote.getExchange()));
+        Assert.assertTrue(Arrays.asList("NasdaqNM", "NMS").contains(aaplQuote.getExchange()));
         assertEquals("Apple Inc.", aaplQuote.getName());
 
         StockQuote googQuote = quotes.get("GOOG");
         assertEquals("GOOG", googQuote.getSymbol());
-        assertTrue(Arrays.asList("NasdaqNM", "NMS").contains(googQuote.getExchange()));
+        Assert.assertTrue(Arrays.asList("NasdaqNM", "NMS").contains(googQuote.getExchange()));
         assertEquals("Alphabet Inc.", googQuote.getName());
 
         StockQuote djiQuote = quotes.get("^DJI");

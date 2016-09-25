@@ -24,33 +24,37 @@
 
 package nitezh.ministock.domain;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 import nitezh.ministock.mocks.MockStorage;
 import nitezh.ministock.mocks.MockWidgetRepository;
 
 
-public class PortfolioStockRepositoryTests extends TestCase {
+public class PortfolioStockRepositoryTests {
 
     private PortfolioStockRepository stockRepository;
 
+    @Before
     public void setUp() {
         MockWidgetRepository widgetRepository = new MockWidgetRepository();
-        this.stockRepository = new PortfolioStockRepository(
+        stockRepository = new PortfolioStockRepository(
                 new MockStorage(),
                 widgetRepository);
-        System.out.println();
     }
 
-    public void testCanRemoveTwoUnusedSymbols() {
+    @Test
+    public void canRemoveTwoUnusedSymbols() {
         // Arrange
-        this.stockRepository.portfolioStocksInfo.put(
+        stockRepository.portfolioStocksInfo.put(
                 "test1", new PortfolioStock("test1", "", "", "", "", "", "", ""));
 
-        this.stockRepository.portfolioStocksInfo.put(
+        stockRepository.portfolioStocksInfo.put(
                 "test2", new PortfolioStock("test2", "", "", "", "", "", "", ""));
 
         // Act
-        this.stockRepository.removeUnused();
+        stockRepository.removeUnused();
+
+        // TODO : No assertions here?
     }
 }
