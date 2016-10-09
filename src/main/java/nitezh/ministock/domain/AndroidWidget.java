@@ -42,7 +42,7 @@ import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.Storage;
 
-public class AndroidWidget implements Widget {
+class AndroidWidget implements Widget {
 
     private final Storage storage;
     private final Context context;
@@ -52,7 +52,7 @@ public class AndroidWidget implements Widget {
 
     private int size;
 
-    public AndroidWidget(Context context, int id) {
+    AndroidWidget(Context context, int id) {
         this.context = context;
         this.id = id;
         this.storage = this.getStorage();
