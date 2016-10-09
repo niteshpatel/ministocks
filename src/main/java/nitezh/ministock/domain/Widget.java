@@ -79,4 +79,6 @@ public interface Widget {
     boolean hasTotalPlPercentAerView();
 
     boolean alwaysUseShortName();
+
+    boolean shouldUpdateOnRightTouch();
 }

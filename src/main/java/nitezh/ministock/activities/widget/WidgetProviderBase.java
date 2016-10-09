@@ -38,6 +38,7 @@ import java.util.concurrent.RejectedExecutionException;
 import nitezh.ministock.CustomAlarmManager;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.Storage;
+import nitezh.ministock.domain.Widget;
 import nitezh.ministock.utils.StorageCache;
 import nitezh.ministock.UserData;
 import nitezh.ministock.activities.PreferencesActivity;
@@ -117,8 +118,20 @@ public class WidgetProviderBase extends AppWidgetProvider {
         if (action.equals("LEFT")) {
             startPreferencesActivity(context, appWidgetId);
         } else if (action.equals("RIGHT")) {
-            updateWidgetAsync(context, appWidgetId, UpdateType.VIEW_CHANGE);
+            UpdateType updateType = getUpdateTypeForTouchRight(context, appWidgetId);
+            updateWidgetAsync(context, appWidgetId, updateType);
         }
+    }
+
+    private UpdateType getUpdateTypeForTouchRight(Context context, int widgetId) {
+        WidgetRepository repository = new AndroidWidgetRepository(context);
+        Widget widget = repository.getWidget(widgetId);
+
+        if (widget.shouldUpdateOnRightTouch()) {
+            return UpdateType.VIEW_UPDATE;
+        }
+
+        return UpdateType.VIEW_CHANGE;
     }
 
     private void startPreferencesActivity(Context context, int appWidgetId) {

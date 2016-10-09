@@ -310,4 +310,8 @@ class AndroidWidget implements Widget {
     public boolean alwaysUseShortName() {
         return this.storage.getBoolean("always_use_short_name", false);
     }
+
+    public boolean shouldUpdateOnRightTouch() {
+        return this.storage.getBoolean("update_from_widget", false);
+    }
 }

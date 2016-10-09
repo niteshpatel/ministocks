@@ -231,6 +231,13 @@
                     android:summaryOff="Update prices on the weekend"
                     android:summaryOn="Update prices on the weekend"
                     android:title="Weekend updates" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="update_from_widget"
+                    android:summaryOff="Touch right on the widget to update.  Note: You cannot change view when using this option."
+                    android:summaryOn="Touch right on the widget to update.  Note: You cannot change view when using this option."
+                    android:title="Tap widget to update" />
             </PreferenceScreen>
             <PreferenceCategory
                 android:key="cat_experimental"

@@ -173,6 +173,11 @@ public class MockWidget implements Widget {
     }
 
     @Override
+    public boolean shouldUpdateOnRightTouch() {
+        return false;
+    }
+
+    @Override
     public void enablePercentChangeView() {
     }
 
