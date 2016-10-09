@@ -33,6 +33,8 @@ import java.util.Locale;
 
 public class NumberTools {
 
+    private static int MAX_FRACTIONAL_DIGITS = 5;
+
     private NumberTools() {
     }
 
@@ -151,6 +153,7 @@ public class NumberTools {
 
     public static String validatedDoubleString(String value) throws ParseException {
         NumberFormat format = NumberFormat.getNumberInstance();
+        format.setMaximumFractionDigits(MAX_FRACTIONAL_DIGITS);
 
         return format.format(parseDouble(value));
     }
@@ -161,6 +164,7 @@ public class NumberTools {
 
     public static Double parseDouble(String value, Locale locale) throws ParseException {
         NumberFormat format = NumberFormat.getNumberInstance(locale);
+        format.setMaximumFractionDigits(MAX_FRACTIONAL_DIGITS);
 
         // Double.parse handles '+' but NumberFormat.parse does not, so do it here
         Number number = format.parse(value.replace("+", ""));
