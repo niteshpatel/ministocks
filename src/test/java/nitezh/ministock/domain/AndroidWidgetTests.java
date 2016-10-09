@@ -53,7 +53,7 @@ public class AndroidWidgetTests {
     @Test
     public void testShouldUpdateOnRightTouchReturnsFalseByDefault() {
         // Act and Assert
-        assertEquals(false, widget.shouldUpdateOnRightTouch());
+        assertEquals(true, widget.shouldUpdateOnRightTouch());
     }
 
     @Test
