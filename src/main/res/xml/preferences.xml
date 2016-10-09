@@ -205,9 +205,9 @@
                     android:title="Display stock symbol" />
             </PreferenceScreen>
             <PreferenceScreen
-                android:key="update_schedule"
-                android:summary="Set widget update schedule"
-                android:title="Update schedule">
+                android:key="update_options"
+                android:summary="Set widget update options"
+                android:title="Update options">
                 <ListPreference
                     android:defaultValue="1800000"
                     android:entries="@array/update_interval_entries"
