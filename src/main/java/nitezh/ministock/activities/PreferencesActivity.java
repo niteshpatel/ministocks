@@ -67,12 +67,13 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     private static boolean mPendingUpdate = false;
     private static String mSymbolSearchKey = "";
     private final String CHANGE_LOG = ""
+            + "New features:<br/><br/>"
+            + "• Option to refresh directly from widget when enabled in settings.<br/><br/><br />"
             + "Multiple bug fixes:<br/><br/>"
-            + "• Portfolio now shows stock description.<br/><br/>"
-            + "• Partial support for restoring widget backups to different widget sizes.<br/><br/>"
-            + "• Custom names are now shown in the narrow widgets as well as the wide widgets.<br/><br/>"
-            + "• Removed additional decimal places where the incoming data did not have them.<br/><br/>"
-            + "• Allow stock symbols to be displayed for wide widgets instead of the name.";
+            + "• Storing the buy price in the portfolio with 4dp only retains up to the 3rd dp.<br/><br/>"
+            + "• Stocks with a value under 10 can show too many decimal places after reboot.<br/><br/>"
+            + "• Calculation of holding in portfolio is incorrect in some locales.<br/><br/>"
+            + "• Run tests as part of CI build.";
     //+ "<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>"
 
     // Fields for time pickers
