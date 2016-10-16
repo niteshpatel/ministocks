@@ -68,12 +68,11 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     private static String mSymbolSearchKey = "";
     private final String CHANGE_LOG = ""
             + "New features:<br/><br/>"
-            + "• Option to refresh directly from widget when enabled in settings.<br/><br/><br />"
+            + "• Option to refresh directly from widget when enabled in Settings > Update Options.<br/><br/>"
             + "Multiple bug fixes:<br/><br/>"
             + "• Storing the buy price in the portfolio with 4dp only retains up to the 3rd dp.<br/><br/>"
             + "• Stocks with a value under 10 can show too many decimal places after reboot.<br/><br/>"
-            + "• Calculation of holding in portfolio is incorrect in some locales.<br/><br/>"
-            + "• Run tests as part of CI build.";
+            + "• Calculation of holding in portfolio is incorrect in some locales.";
     //+ "<br /><br /><i>If you appreciate this app please rate it 5 stars in the Android market!</i>"
 
     // Fields for time pickers
