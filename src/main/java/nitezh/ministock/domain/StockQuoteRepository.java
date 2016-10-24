@@ -24,21 +24,34 @@
 
 package nitezh.ministock.domain;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.google.common.collect.ImmutableBiMap;
 
-import nitezh.ministock.utils.Cache;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import nitezh.ministock.Storage;
 import nitezh.ministock.dataaccess.FxChangeRepository;
 import nitezh.ministock.dataaccess.GoogleStockQuoteRepository;
 import nitezh.ministock.dataaccess.YahooStockQuoteRepository;
-import org.json.JSONException;
-import org.json.JSONObject;
+import nitezh.ministock.utils.Cache;
 
 
 public class StockQuoteRepository {
 
-    private static final List<String> GOOGLE_SYMBOLS = Arrays.asList(".DJI", ".IXIC");
+    private static final ImmutableBiMap<String, String> GOOGLE_SYMBOLS = new ImmutableBiMap.Builder<String, String>()
+            .put(".DJI", "^DJI")
+            .put(".IXIC", "^IXIC")
+            .put("DWCPF", "^DWCPF")
+            .build();
 
     private static String mTimeStamp;
     private static HashMap<String, StockQuote> mCachedQuotes;
@@ -57,14 +70,14 @@ public class StockQuoteRepository {
         this.widgetRepository = widgetRepository;
     }
 
-    public HashMap<String, StockQuote> getLiveQuotes(List<String> symbols) {
+    HashMap<String, StockQuote> getLiveQuotes(List<String> symbols) {
         HashMap<String, StockQuote> allQuotes = new HashMap<>();
 
         symbols = this.convertRequestSymbols(symbols);
         List<String> yahooSymbols = new ArrayList<>(symbols);
         List<String> googleSymbols = new ArrayList<>(symbols);
-        yahooSymbols.removeAll(GOOGLE_SYMBOLS);
-        googleSymbols.retainAll(GOOGLE_SYMBOLS);
+        yahooSymbols.removeAll(GOOGLE_SYMBOLS.keySet());
+        googleSymbols.retainAll(GOOGLE_SYMBOLS.keySet());
 
         HashMap<String, StockQuote> yahooQuotes = this.yahooRepository.getQuotes(this.appCache, yahooSymbols);
         HashMap<String, StockQuote> googleQuotes = this.googleRepository.getQuotes(this.appCache, googleSymbols);
@@ -79,9 +92,12 @@ public class StockQuoteRepository {
         HashMap<String, StockQuote> newQuotes = new HashMap<>();
         for (String symbol : quotes.keySet()) {
             StockQuote quote = quotes.get(symbol);
-            String newSymbol = quote.getSymbol()
-                    .replace(".DJI", "^DJI")
-                    .replace(".IXIC", "^IXIC");
+
+            String newSymbol = quote.getSymbol();
+            for (String symbolToReplace : GOOGLE_SYMBOLS.keySet()) {
+                newSymbol = newSymbol.replace(symbolToReplace, GOOGLE_SYMBOLS.get(symbolToReplace));
+            }
+
             quote.setSymbol(newSymbol);
             newQuotes.put(newSymbol, quote);
         }
@@ -91,9 +107,11 @@ public class StockQuoteRepository {
     private List<String> convertRequestSymbols(List<String> symbols) {
         List<String> newSymbols = new ArrayList<>();
         for (String symbol : symbols) {
-            newSymbols.add(symbol
-                    .replace("^DJI", ".DJI")
-                    .replace("^IXIC", ".IXIC"));
+            String newSymbol = symbol;
+            for (String symbolToReplace : GOOGLE_SYMBOLS.inverse().keySet()) {
+                newSymbol = newSymbol.replace(symbolToReplace, GOOGLE_SYMBOLS.inverse().get(symbolToReplace));
+            }
+            newSymbols.add(newSymbol);
         }
         return newSymbols;
     }
