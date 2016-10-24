@@ -80,7 +80,7 @@ public class GoogleStockQuoteRepository {
         return String.format("%s%s", BASE_URL, sQuery);
     }
 
-    public JSONArray retrieveQuotesAsJson(Cache cache, List<String> symbols) throws JSONException {
+    JSONArray retrieveQuotesAsJson(Cache cache, List<String> symbols) throws JSONException {
         String url = this.buildRequestUrl(symbols);
         return new JSONArray(UrlDataTools.getCachedUrlData(url, cache, 300).replace("//", ""));
     }
