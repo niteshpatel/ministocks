@@ -49,6 +49,7 @@
 
             <EditText
                     android:id="@+id/portfolio_item_price"
+                    android:inputType="numberDecimal"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -72,6 +73,7 @@
 
             <EditText
                     android:id="@+id/portfolio_item_date"
+                    android:inputType="date"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -96,6 +98,7 @@
 
             <EditText
                     android:id="@+id/portfolio_item_quantity"
+                    android:inputType="numberDecimal|numberSigned"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -137,6 +140,7 @@
 
             <EditText
                     android:id="@+id/portfolio_item_limit_high"
+                    android:inputType="numberDecimal"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -161,6 +165,7 @@
 
             <EditText
                     android:id="@+id/portfolio_item_limit_low"
+                    android:inputType="numberDecimal"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

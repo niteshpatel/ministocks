@@ -188,31 +188,26 @@ public class PortfolioActivity extends Activity {
         }
         // Initialise the price
         EditText priceEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_price);
-        priceEditText.setKeyListener(InputTools.getDecimalKeyListener());
         priceEditText.setText(price);
 
         // Initialise the date if the price has been set
         // to avoid getting the <none held> text
         EditText dateEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_date);
-        dateEditText.setInputType(InputType.TYPE_CLASS_DATETIME + InputType.TYPE_DATETIME_VARIATION_DATE);
         if (!date.equals("") && !price.equals(""))
             dateEditText.setText(date);
 
         // Initialise the quantity if the price has been set
         EditText quantityEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_quantity);
-        quantityEditText.setKeyListener(InputTools.getSignedDecimalKeyListener());
         if (!quantity.equals("") && !price.equals(""))
             quantityEditText.setText(quantity);
 
         // Initialise the limit high if the price has been set
         EditText limitHighEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_limit_high);
-        limitHighEditText.setKeyListener(InputTools.getDecimalKeyListener());
         if (!limitHigh.equals("") && !price.equals(""))
             limitHighEditText.setText(limitHigh);
 
         // Initialise the limit low if the price has been set
         EditText limitLowEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_limit_low);
-        limitLowEditText.setKeyListener(InputTools.getDecimalKeyListener());
         if (!limitLow.equals("") && !price.equals(""))
             limitLowEditText.setText(limitLow);
 
