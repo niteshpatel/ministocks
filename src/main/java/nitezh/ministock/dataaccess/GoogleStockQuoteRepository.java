@@ -39,7 +39,7 @@ import nitezh.ministock.domain.StockQuote;
 
 public class GoogleStockQuoteRepository {
 
-    private static final String BASE_URL = "http://finance.google.com/finance/info?client=ig&q=";
+    private static final String BASE_URL = "https://finance.google.com/finance/info?client=ig&q=";
 
     public HashMap<String, StockQuote> getQuotes(Cache cache, List<String> symbols) {
         HashMap<String, StockQuote> quotes = new HashMap<>();
