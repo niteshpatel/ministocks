@@ -39,7 +39,7 @@ import nitezh.ministock.utils.UrlDataTools;
 
 public class YahooStockQuoteRepository {
 
-    private static final String BASE_URL = "http://download.finance.yahoo.com/d/quotes.csv";
+    private static final String BASE_URL = "https://download.finance.yahoo.com/d/quotes.csv";
     private static final String FORMAT = "sd1t1l1c1p2xvn";
     private static final int COUNT_FIELDS = 9;
     private final FxChangeRepository fxChangeRepository;

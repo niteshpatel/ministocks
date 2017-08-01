@@ -762,12 +762,12 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     }
 
     private void showOnlineHelp() {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://niteshpatel.github.io/ministocks/help.html"));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://niteshpatel.github.io/ministocks/help.html"));
         startActivity(browserIntent);
     }
 
     private void showOnlineFaqs() {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://niteshpatel.github.io/ministocks/faq.html"));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://niteshpatel.github.io/ministocks/faq.html"));
         startActivity(browserIntent);
     }
 
