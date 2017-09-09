@@ -67,10 +67,11 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     private static boolean mPendingUpdate = false;
     private static String mSymbolSearchKey = "";
     private final String CHANGE_LOG = ""
-            + "New features:<br/><br/>"
-            + "• TODO.<br/><br/>"
+//            + "New features:<br/><br/>"
+//            + "• TODO.<br/><br/>"
             + "Multiple bug fixes:<br/><br/>"
-            + "• Input keyboard no longer restricts the number separator for some languages.";
+            + "• Input keyboard no longer restricts the number separator for some languages.<br/><br/>"
+            + "• Data retrieval for IXIC and DJI fixed after provider API removal.";
 
     // Fields for time pickers
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;

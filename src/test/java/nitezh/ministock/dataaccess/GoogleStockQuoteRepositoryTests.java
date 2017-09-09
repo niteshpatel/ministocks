@@ -31,6 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -51,9 +52,9 @@ public class GoogleStockQuoteRepositoryTests {
     }
 
     @Test
-    public void retrieveQuotesAsJson() {
+    public void retrieveDJIQuoteAsJson() {
         // Arrange
-        List<String> symbols = Arrays.asList(".DJI", ".IXIC");
+        List<String> symbols = Collections.singletonList(".DJI");
         JSONArray json = null;
 
         // Act
@@ -64,13 +65,30 @@ public class GoogleStockQuoteRepositoryTests {
 
         // Assert
         assertNotNull(json);
-        assertEquals(2, json.length());
+        assertEquals(1, json.length());
 
         JSONObject djiJson = json.optJSONObject(0);
         assertEquals(".DJI", djiJson.optString("t"));
         assertEquals("INDEXDJX", djiJson.optString("e"));
+    }
 
-        JSONObject ixicJson = json.optJSONObject(1);
+    @Test
+    public void retrieveIXICQuoteAsJson() {
+        // Arrange
+        List<String> symbols = Collections.singletonList(".IXIC");
+        JSONArray json = null;
+
+        // Act
+        try {
+            json = googleRepository.retrieveQuotesAsJson(new MockCache(), symbols);
+        } catch (JSONException ignored) {
+        }
+
+        // Assert
+        assertNotNull(json);
+        assertEquals(1, json.length());
+
+        JSONObject ixicJson = json.optJSONObject(0);
         assertEquals(".IXIC", ixicJson.optString("t"));
         assertEquals("INDEXNASDAQ", ixicJson.optString("e"));
     }

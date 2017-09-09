@@ -28,6 +28,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -39,29 +42,32 @@ import nitezh.ministock.domain.StockQuote;
 
 public class GoogleStockQuoteRepository {
 
-    private static final String BASE_URL = "http://finance.google.com/finance/info?client=ig&q=";
+    private static final String BASE_URL = "https://finance.google.com/finance?output=json&q=";
 
     public HashMap<String, StockQuote> getQuotes(Cache cache, List<String> symbols) {
         HashMap<String, StockQuote> quotes = new HashMap<>();
         JSONArray jsonArray;
         JSONObject quoteJson;
-        try {
-            jsonArray = this.retrieveQuotesAsJson(cache, symbols);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                quoteJson = jsonArray.getJSONObject(i);
-                StockQuote quote = new StockQuote(
-                        quoteJson.optString("t"),
-                        quoteJson.optString("l_cur").replace(",", ""),
-                        quoteJson.optString("c"),
-                        quoteJson.optString("cp"),
-                        quoteJson.optString("e").replace("INDEX", ""),
-                        "0",
-                        quoteJson.optString("e"),
-                        Locale.US);
-                quotes.put(quote.getSymbol(), quote);
+
+        for (String symbol : symbols) {
+            try {
+                jsonArray = this.retrieveQuotesAsJson(cache, Collections.singletonList(symbol));
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    quoteJson = jsonArray.getJSONObject(i);
+                    StockQuote quote = new StockQuote(
+                            quoteJson.optString("t"),
+                            quoteJson.optString("l_cur").replace(",", ""),
+                            quoteJson.optString("c"),
+                            quoteJson.optString("cp"),
+                            quoteJson.optString("e").replace("INDEX", ""),
+                            "0",
+                            quoteJson.optString("e"),
+                            Locale.US);
+                    quotes.put(quote.getSymbol(), quote);
+                }
+            } catch (JSONException e) {
             }
-        } catch (JSONException e) {
-            return null;
         }
 
         return quotes;
@@ -82,6 +88,9 @@ public class GoogleStockQuoteRepository {
 
     JSONArray retrieveQuotesAsJson(Cache cache, List<String> symbols) throws JSONException {
         String url = this.buildRequestUrl(symbols);
-        return new JSONArray(UrlDataTools.getCachedUrlData(url, cache, 300).replace("//", ""));
+        String data = UrlDataTools.getCachedUrlData(url, cache, 300);
+        String json = data.replace("//", "").replaceAll("\\\\", "");
+
+        return new JSONArray(json);
     }
 }
