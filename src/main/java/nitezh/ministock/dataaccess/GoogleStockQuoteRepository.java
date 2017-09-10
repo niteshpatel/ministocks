@@ -57,7 +57,7 @@ public class GoogleStockQuoteRepository {
                     quoteJson = jsonArray.getJSONObject(i);
                     StockQuote quote = new StockQuote(
                             quoteJson.optString("t"),
-                            quoteJson.optString("l_cur").replace(",", ""),
+                            quoteJson.optString("l_cur", quoteJson.optString("l")).replace(",", ""),
                             quoteJson.optString("c"),
                             quoteJson.optString("cp"),
                             quoteJson.optString("e").replace("INDEX", ""),
