@@ -55,7 +55,7 @@ public class IexStockQuoteRepository {
                 sQuery.append(s);
             }
         }
-        return String.format("%s?types=quote&symbols=%s", BASE_URL, sQuery);
+        return String.format("%s?types=quote&displayPercent=true&symbols=%s", BASE_URL, sQuery);
     }
 
     public HashMap<String, StockQuote> getQuotes(Cache cache, List<String> symbols) {
