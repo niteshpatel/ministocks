@@ -24,11 +24,13 @@
 
 package nitezh.ministock.dataaccess;
 
+import org.apache.tools.ant.types.Environment;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Assume;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -54,6 +56,9 @@ public class IexStockQuoteRepositoryTests {
 
     @Test
     public void retrieveQuotesAsJson() {
+        // Skipif
+        Assume.assumeTrue(System.getenv("TRAVIS_CI") == null);
+
         // Arrange
         List<String> symbols = Arrays.asList("AAPL", "GOOG");
         JSONArray json = null;
@@ -81,6 +86,9 @@ public class IexStockQuoteRepositoryTests {
 
     @Test
     public void getQuotes() {
+        // Skipif
+        Assume.assumeTrue(System.getenv("TRAVIS_CI") == null);
+
         // Arrange
         List<String> symbols = Arrays.asList("AAPL", "GOOG");
 

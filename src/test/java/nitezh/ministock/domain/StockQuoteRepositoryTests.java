@@ -26,6 +26,7 @@ package nitezh.ministock.domain;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,6 +65,9 @@ public class StockQuoteRepositoryTests {
 
     @Test
     public void getLiveQuotes() {
+        // Skipif
+        Assume.assumeTrue(System.getenv("TRAVIS_CI") == null);
+
         // Arrange
         List<String> symbols = Arrays.asList("AAPL", "GOOG", "^DJI", "^IXIC");
 
@@ -94,6 +98,9 @@ public class StockQuoteRepositoryTests {
 
     @Test
     public void getQuotes() {
+        // Skipif
+        Assume.assumeTrue(System.getenv("TRAVIS_CI") == null);
+
         // Arrange
         List<String> symbols = Arrays.asList("AAPL", "GOOG", "^DJI", "^IXIC");
 
