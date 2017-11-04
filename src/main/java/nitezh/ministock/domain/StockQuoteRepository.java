@@ -24,6 +24,8 @@
 
 package nitezh.ministock.domain;
 
+import android.annotation.SuppressLint;
+
 import com.google.common.collect.ImmutableBiMap;
 
 import org.json.JSONException;
@@ -41,7 +43,7 @@ import java.util.Set;
 import nitezh.ministock.Storage;
 import nitezh.ministock.dataaccess.FxChangeRepository;
 import nitezh.ministock.dataaccess.GoogleStockQuoteRepository;
-import nitezh.ministock.dataaccess.YahooStockQuoteRepository;
+import nitezh.ministock.dataaccess.IexStockQuoteRepository;
 import nitezh.ministock.utils.Cache;
 
 
@@ -55,7 +57,7 @@ public class StockQuoteRepository {
 
     private static String mTimeStamp;
     private static HashMap<String, StockQuote> mCachedQuotes;
-    private final YahooStockQuoteRepository yahooRepository;
+    private final IexStockQuoteRepository iexRepository;
     private final GoogleStockQuoteRepository googleRepository;
 
     private final Storage appStorage;
@@ -63,7 +65,7 @@ public class StockQuoteRepository {
     private final WidgetRepository widgetRepository;
 
     public StockQuoteRepository(Storage appStorage, Cache appCache, WidgetRepository widgetRepository) {
-        this.yahooRepository = new YahooStockQuoteRepository(new FxChangeRepository());
+        this.iexRepository = new IexStockQuoteRepository(new FxChangeRepository());
         this.googleRepository = new GoogleStockQuoteRepository();
         this.appStorage = appStorage;
         this.appCache = appCache;
@@ -79,7 +81,7 @@ public class StockQuoteRepository {
         yahooSymbols.removeAll(GOOGLE_SYMBOLS.keySet());
         googleSymbols.retainAll(GOOGLE_SYMBOLS.keySet());
 
-        HashMap<String, StockQuote> yahooQuotes = this.yahooRepository.getQuotes(this.appCache, yahooSymbols);
+        HashMap<String, StockQuote> yahooQuotes = this.iexRepository.getQuotes(this.appCache, yahooSymbols);
         HashMap<String, StockQuote> googleQuotes = this.googleRepository.getQuotes(this.appCache, googleSymbols);
         if (yahooQuotes != null) allQuotes.putAll(yahooQuotes);
         if (googleQuotes != null) allQuotes.putAll(googleQuotes);
@@ -130,7 +132,7 @@ public class StockQuoteRepository {
         if (quotes.isEmpty()) {
             quotes = loadQuotes();
         } else {
-            SimpleDateFormat format = new SimpleDateFormat("dd MMM HH:mm");
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("dd MMM HH:mm");
             String timeStamp = format.format(new Date()).toUpperCase();
             saveQuotes(quotes, timeStamp);
         }

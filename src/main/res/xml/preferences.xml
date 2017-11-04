@@ -340,7 +340,14 @@
                 android:key="about"
                 android:summary="View the license"
                 android:title="License" />
+            <Preference
+                android:key="termsOfService"
+                android:summary="View the terms of service (data)"
+                android:title="Terms of Service (data)" />
+            <Preference
+                android:key="attributions"
+                android:summary="View the attributions"
+                android:title="Attributions" />
         </PreferenceScreen>
     </PreferenceCategory>
-
 </PreferenceScreen>
