@@ -47,7 +47,7 @@ public class UrlDataTools {
         return builder.toString();
     }
 
-    private static String getUrlData(String url) {
+    static String getUrlData(String url) {
         // Ensure we always request some data
         if (!url.contains("INDU")) {
             url = url.replace("&s=", "&s=INDU+");
