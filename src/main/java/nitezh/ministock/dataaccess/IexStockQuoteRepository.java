@@ -91,19 +91,14 @@ public class IexStockQuoteRepository {
 
     JSONArray retrieveQuotesAsJson(Cache cache, List<String> symbols) throws JSONException {
         String url = buildRequestUrl(symbols);
-        JSONObject quotesJson;
-
-        try {
-            String quotes = UrlDataTools.getCachedUrlData(url, cache, 300);
-            quotesJson = new JSONObject(quotes);
-        } catch (JSONException e) {
-            throw new JSONException("");
-        }
+        String quotesString = UrlDataTools.getCachedUrlData(url, cache, 300);
+        JSONObject quotesJson = new JSONObject(quotesString);
 
         JSONArray quotes = new JSONArray();
-
         for (String symbol : symbols) {
-            JSONObject quoteJson = quotesJson.getJSONObject(symbol).getJSONObject("quote");
+            JSONObject quoteJson = quotesJson
+                    .getJSONObject(symbol)
+                    .getJSONObject("quote");
 
             JSONObject data = new JSONObject();
             data.put("symbol", quoteJson.optString("symbol"));
