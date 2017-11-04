@@ -2,3 +2,10 @@ Ministocks [![Build Status](https://img.shields.io/travis/niteshpatel/ministocks
 ==========
 
 Any new features will be targeted at api-level 10 (Android 2.3.3)
+
+Download
+--------
+<a href="https://f-droid.org/packages/nitezh.ministock" target="_blank">
+<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="50"/></a>
+<a href="https://play.google.com/store/apps/details?id=nitezh.ministock" target="_blank">
+<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" alt="Get it on Google Play" height="50"/></a>
