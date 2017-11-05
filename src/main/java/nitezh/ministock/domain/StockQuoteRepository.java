@@ -43,7 +43,7 @@ import java.util.Set;
 import nitezh.ministock.Storage;
 import nitezh.ministock.dataaccess.FxChangeRepository;
 import nitezh.ministock.dataaccess.GoogleStockQuoteRepository;
-import nitezh.ministock.dataaccess.IexStockQuoteRepository;
+import nitezh.ministock.dataaccess.YahooStockQuoteRepository2;
 import nitezh.ministock.utils.Cache;
 
 
@@ -57,7 +57,7 @@ public class StockQuoteRepository {
 
     private static String mTimeStamp;
     private static HashMap<String, StockQuote> mCachedQuotes;
-    private final IexStockQuoteRepository iexRepository;
+    private final YahooStockQuoteRepository2 iexRepository;
     private final GoogleStockQuoteRepository googleRepository;
 
     private final Storage appStorage;
@@ -65,7 +65,7 @@ public class StockQuoteRepository {
     private final WidgetRepository widgetRepository;
 
     public StockQuoteRepository(Storage appStorage, Cache appCache, WidgetRepository widgetRepository) {
-        this.iexRepository = new IexStockQuoteRepository(new FxChangeRepository());
+        this.iexRepository = new YahooStockQuoteRepository2(new FxChangeRepository());
         this.googleRepository = new GoogleStockQuoteRepository();
         this.appStorage = appStorage;
         this.appCache = appCache;

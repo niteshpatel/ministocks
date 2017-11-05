@@ -27,9 +27,9 @@ package nitezh.ministock.dataaccess;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Assume;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,14 +43,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 
-public class IexStockQuoteRepositoryTests {
+public class YahooStockQuoteRepository2Tests {
 
-    private IexStockQuoteRepository quoteRepository;
+    private YahooStockQuoteRepository2 quoteRepository;
 
     @Before
     public void setUp() {
         FxChangeRepository fxRepository = new FxChangeRepository();
-        quoteRepository = new IexStockQuoteRepository(fxRepository);
+        quoteRepository = new YahooStockQuoteRepository2(fxRepository);
     }
 
     @Test
@@ -74,12 +74,23 @@ public class IexStockQuoteRepositoryTests {
 
         JSONObject aaplJson = json.optJSONObject(0);
         assertEquals("AAPL", aaplJson.optString("symbol"));
-        assertTrue(Arrays.asList("NasdaqNM", "NMS", "Nasdaq Global Select").contains(aaplJson.optString("exchange")));
+        assertTrue(Arrays.asList(
+                "NasdaqNM",
+                "NMS",
+                "Nasdaq Global Select",
+                "NasdaqGS"
+        ).contains(aaplJson.optString("exchange")));
+
         assertEquals("Apple Inc.", aaplJson.optString("name"));
 
         JSONObject googJson = json.optJSONObject(1);
         assertEquals("GOOG", googJson.optString("symbol"));
-        assertTrue(Arrays.asList("NasdaqNM", "NMS", "Nasdaq Global Select").contains(googJson.optString("exchange")));
+        assertTrue(Arrays.asList(
+                "NasdaqNM",
+                "NMS",
+                "Nasdaq Global Select",
+                "NasdaqGS"
+        ).contains(googJson.optString("exchange")));
         assertEquals("Alphabet Inc.", googJson.optString("name"));
     }
 
@@ -99,12 +110,22 @@ public class IexStockQuoteRepositoryTests {
 
         StockQuote aaplQuote = stockQuotes.get("AAPL");
         assertEquals("AAPL", aaplQuote.getSymbol());
-        assertTrue(Arrays.asList("NasdaqNM", "NMS", "Nasdaq Global Select").contains(aaplQuote.getExchange()));
+        assertTrue(Arrays.asList(
+                "NasdaqNM",
+                "NMS",
+                "Nasdaq Global Select",
+                "NasdaqGS"
+        ).contains(aaplQuote.getExchange()));
         assertEquals("Apple Inc.", aaplQuote.getName());
 
         StockQuote googQuote = stockQuotes.get("GOOG");
         assertEquals("GOOG", googQuote.getSymbol());
-        assertTrue(Arrays.asList("NasdaqNM", "NMS", "Nasdaq Global Select").contains(googQuote.getExchange()));
+        assertTrue(Arrays.asList(
+                "NasdaqNM",
+                "NMS",
+                "Nasdaq Global Select",
+                "NasdaqGS"
+        ).contains(googQuote.getExchange()));
         assertEquals("Alphabet Inc.", googQuote.getName());
     }
 }
