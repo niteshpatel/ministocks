@@ -70,7 +70,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 //            + "New features:<br/><br/>"
 //            + "• TODO.<br/><br/>"
             + "Multiple bug fixes:<br/><br/>"
-            + "• Switched data source to https://iextrading.com/developer/docs/";
+            + "• Switch to new API to support non-US stocks";
 
     // Fields for time pickers
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
