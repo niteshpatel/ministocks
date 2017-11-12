@@ -145,25 +145,28 @@ public class WidgetProviderBase extends AppWidgetProvider {
     public void onReceive(@SuppressWarnings("NullableProblems") Context context,
                           @SuppressWarnings("NullableProblems") Intent intent) {
         String action = intent.getAction();
-        switch (action) {
-            case CustomAlarmManager.ALARM_UPDATE:
-                doScheduledUpdates(context);
 
-                break;
-            case "LEFT":
-            case "RIGHT":
-                Bundle extras = intent.getExtras();
-                if (extras != null) {
-                    int appWidgetId = extras.getInt(
-                            AppWidgetManager.EXTRA_APPWIDGET_ID,
-                            AppWidgetManager.INVALID_APPWIDGET_ID);
-                    handleTouch(context, appWidgetId, action);
-                }
+        if (action != null) {
+            switch (action) {
+                case CustomAlarmManager.ALARM_UPDATE:
+                    doScheduledUpdates(context);
+                    break;
 
-                break;
-            default:
-                super.onReceive(context, intent);
-                break;
+                case "LEFT":
+                case "RIGHT":
+                    Bundle extras = intent.getExtras();
+                    if (extras != null) {
+                        int appWidgetId = extras.getInt(
+                                AppWidgetManager.EXTRA_APPWIDGET_ID,
+                                AppWidgetManager.INVALID_APPWIDGET_ID);
+                        handleTouch(context, appWidgetId, action);
+                    }
+                    break;
+
+                default:
+                    super.onReceive(context, intent);
+                    break;
+            }
         }
     }
 

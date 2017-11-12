@@ -56,7 +56,6 @@ import nitezh.ministock.activities.widget.WidgetProviderBase;
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.PortfolioStockRepository;
 import nitezh.ministock.domain.StockQuote;
-import nitezh.ministock.utils.InputTools;
 import nitezh.ministock.utils.NumberTools;
 
 

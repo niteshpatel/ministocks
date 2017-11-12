@@ -36,7 +36,7 @@
             android:orientation="horizontal"
             android:adjustViewBounds="false"
             android:scaleType="fitXY"
-            android:src="@+drawable/ministock_bg_transparent68"
+            android:src="@drawable/ministock_bg_transparent68"
             android:contentDescription="@+string/widget_bg_desc"/>
 
     <LinearLayout

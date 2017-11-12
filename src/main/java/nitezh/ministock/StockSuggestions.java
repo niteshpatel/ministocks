@@ -47,7 +47,7 @@ class StockSuggestions {
     private static final String BASE_URL = "https://s.yimg.com/aq/autoc?callback=YAHOO.Finance.SymbolSuggest.ssCallback&region=US&lang=en-US&query=";
     private static final Pattern PATTERN_RESPONSE = Pattern.compile("YAHOO\\.Finance\\.SymbolSuggest\\.ssCallback\\((\\{.*?\\})\\)");
 
-    public static List<Map<String, String>> getSuggestions(String query) {
+    static List<Map<String, String>> getSuggestions(String query) {
         List<Map<String, String>> suggestions = new ArrayList<>();
         String response;
         try {

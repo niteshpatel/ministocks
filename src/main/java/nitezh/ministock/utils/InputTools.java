@@ -29,7 +29,8 @@ import android.text.method.DigitsKeyListener;
 import java.text.DecimalFormatSymbols;
 
 
-public class InputTools {
+@SuppressWarnings("unused")
+class InputTools {
 
     private InputTools() {
     }

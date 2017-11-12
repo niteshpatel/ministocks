@@ -47,7 +47,7 @@ public class PortfolioStockRepository {
     public static final String WIDGET_JSON = "widgetJson";
 
     public HashMap<String, StockQuote> stocksQuotes = new HashMap<>();
-    public HashMap<String, PortfolioStock> portfolioStocksInfo = new HashMap<>();
+    HashMap<String, PortfolioStock> portfolioStocksInfo = new HashMap<>();
     private Set<String> widgetsStockSymbols = new HashSet<>();
 
     private static final HashMap<String, PortfolioStock> mPortfolioStocks = new HashMap<>();
@@ -64,11 +64,11 @@ public class PortfolioStockRepository {
         this.portfolioStocksInfo = getPortfolioStocksInfo(widgetsStockSymbols);
     }
 
-    public static boolean isDirtyPortfolioStockMap() {
+    private static boolean isDirtyPortfolioStockMap() {
         return mDirtyPortfolioStockMap;
     }
 
-    public static void setDirtyPortfolioStockMap(boolean mDirtyPortfolioStockMap) {
+    static void setDirtyPortfolioStockMap(boolean mDirtyPortfolioStockMap) {
         PortfolioStockRepository.mDirtyPortfolioStockMap = mDirtyPortfolioStockMap;
     }
 
@@ -224,13 +224,14 @@ public class PortfolioStockRepository {
     private PortfolioStock getStock(String symbol) {
         PortfolioStock stock = this.portfolioStocksInfo.get(symbol);
         if (stock == null) {
-            stock = new PortfolioStock(symbol, "", "", "", "", "", "", null);
+            stock = new PortfolioStock("", "", "", "", "", "", null);
         }
         this.portfolioStocksInfo.put(symbol, stock);
 
         return stock;
     }
 
+    @SuppressWarnings("unused")
     public void backupPortfolio(Context context) {
         String rawJson = this.mAppStorage.getString(PORTFOLIO_JSON, "");
         UserData.writeInternalStorage(context, rawJson, PORTFOLIO_JSON);
@@ -238,6 +239,7 @@ public class PortfolioStockRepository {
                 "Your portfolio settings have been backed up to internal mAppStorage.");
     }
 
+    @SuppressWarnings("unused")
     public void restorePortfolio(Context context) {
         setDirtyPortfolioStockMap(true);
         String rawJson = UserData.readInternalStorage(context, PORTFOLIO_JSON);
@@ -255,7 +257,7 @@ public class PortfolioStockRepository {
         return stocksJson;
     }
 
-    public HashMap<String, PortfolioStock> getStocks() {
+    HashMap<String, PortfolioStock> getStocks() {
         if (!isDirtyPortfolioStockMap()) {
             return mPortfolioStocks;
         }
@@ -285,7 +287,7 @@ public class PortfolioStockRepository {
                 stockInfoMap.put(f, data);
             }
 
-            PortfolioStock stock = new PortfolioStock(key,
+            PortfolioStock stock = new PortfolioStock(
                     stockInfoMap.get(PortfolioField.PRICE),
                     stockInfoMap.get(PortfolioField.DATE),
                     stockInfoMap.get(PortfolioField.QUANTITY),
@@ -332,9 +334,7 @@ public class PortfolioStockRepository {
 
     private List<String> getSortedSymbols() {
         ArrayList<String> symbols = new ArrayList<>();
-        for (String key : this.portfolioStocksInfo.keySet()) {
-            symbols.add(key);
-        }
+        symbols.addAll(this.portfolioStocksInfo.keySet());
 
         try {
             // Ensure symbols beginning with ^ appear first
@@ -346,7 +346,7 @@ public class PortfolioStockRepository {
 
     public void updateStock(String symbol, String price, String date, String quantity,
                             String limitHigh, String limitLow, String customDisplay) {
-        PortfolioStock portfolioStock = new PortfolioStock(symbol, price, date, quantity,
+        PortfolioStock portfolioStock = new PortfolioStock(price, date, quantity,
                 limitHigh, limitLow, customDisplay, null);
         this.portfolioStocksInfo.put(symbol, portfolioStock);
     }
@@ -355,7 +355,7 @@ public class PortfolioStockRepository {
         this.updateStock(symbol, "", "", "", "", "", "");
     }
 
-    public void removeUnused() {
+    void removeUnused() {
         List<String> symbols = new ArrayList<>(this.portfolioStocksInfo.keySet());
         for (String symbol : symbols) {
             String price = this.portfolioStocksInfo.get(symbol).getPrice();

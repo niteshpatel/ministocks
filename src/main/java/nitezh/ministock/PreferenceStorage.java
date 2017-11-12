@@ -61,10 +61,9 @@ public class PreferenceStorage implements Storage {
     }
 
     @Override
-    public Storage putInt(String key, int value) {
+    public void putInt(String key, int value) {
         if (this.editor == null) this.editor = this.preferences.edit();
         this.editor.putInt(key, value);
-        return this;
     }
 
     @Override
@@ -91,23 +90,20 @@ public class PreferenceStorage implements Storage {
     }
 
     @Override
-    public Storage putBoolean(String key, Boolean value) {
+    public void putBoolean(String key, Boolean value) {
         if (this.editor == null) this.editor = this.preferences.edit();
         this.editor.putBoolean(key, value);
-        return this;
     }
 
     @Override
-    public Storage putFloat(String key, Float value) {
+    public void putFloat(String key, Float value) {
         if (this.editor == null) this.editor = this.preferences.edit();
         this.editor.putFloat(key, value);
-        return this;
     }
 
     @Override
-    public Storage putLong(String key, Long value) {
+    public void putLong(String key, Long value) {
         if (this.editor == null) this.editor = this.preferences.edit();
         this.editor.putFloat(key, value);
-        return this;
     }
 }

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   The MIT License
 
   Copyright (c) 2013 Nitesh Patel http://niteshpatel.github.io/ministocks
@@ -26,8 +25,6 @@
 <resources>
     <string name="app_name">Ministocks</string>
     <string name="prefs_name">nitezh.ministock_preferences</string>
-
-    <string name="hello">Hello World!</string>
 
     <string-array name="background_entries">
         <item>Solid</item>
@@ -62,15 +59,6 @@
         <item>remove</item>
     </string-array>
 
-    <string-array name="price_colour_entries">
-        <item>White</item>
-        <item>Gray</item>
-    </string-array>
-    <string-array name="price_colour_entryvalues">
-        <item>white</item>
-        <item>gray</item>
-    </string-array>
-
     <string-array name="text_style_entries">
         <item>Normal</item>
         <item>Bold</item>
@@ -98,6 +86,40 @@
         <item>86400000</item>
     </string-array>
 
-    <string name="symbolNotFound">Symbol \'%s\' is not found. Press to add it anyway.
-    </string>
+    <string name="_1x4_widget_background">1x4 widget background</string>
+    <string name="_1x4_landscape_widget_background">1x4 landscape widget background</string>
+    <string name="_1x4_large_widget_background">1x4 large widget background</string>
+    <string name="_1x4_large_landscape_widget_background">1x4 large landscape widget background</string>
+    <string name="_2x2_widget_background">2x2 widget background</string>
+    <string name="_1x2_large_landscape_widget_background">1x2 large landscape widget background</string>
+    <string name="_2x4_large_widget_background">2x4 large widget background</string>
+    <string name="_2x4_widget_background">2x4 widget background</string>
+    <string name="_2x2_large_widget_background">2x2 large widget background</string>
+    <string name="_1x2_landscape_widget_background">1x2 landscape widget background</string>
+    <string name="portfolio_item_date_label">Date (yyyy-mm-dd)</string>
+    <string name="portfolio_item_date_hint">optional</string>
+    <string name="portfolio_item_quantity_label">Quantity</string>
+    <string name="portfolio_item_quantity_hint">optional</string>
+    <string name="portfolio_item_limit_info">When the limits are triggered the stock price will change colour in the widget.</string>
+    <string name="portfolio_item_limit_high_label">High price limit</string>
+    <string name="portfolio_item_limit_high_hint">optional</string>
+    <string name="portfolio_item_limit_low_label">Low price limit</string>
+    <string name="portfolio_item_limit_low_hint">optional</string>
+    <string name="portfolio_item_custom_text_info">You may specify custom text to appear instead of the standard description.</string>
+    <string name="portfolio_item_custom_text_label">Custom display text</string>
+    <string name="portfolio_item_custom_text_hint">optional</string>
+    <string name="portfolio_item_save_ok">OK</string>
+    <string name="portfolio_item_save_cancel">Cancel</string>
+    <string name="portfolio_item_price_label">Price (required)</string>
+    <string name="portfolio_list_item_name_label">No description</string>
+    <string name="portfolio_list_item_date_label">Buy date:</string>
+    <string name="portfolio_list_item_quantity_label">Quantity:</string>
+    <string name="portfolio_list_item_current_price_label">Price:</string>
+    <string name="portfolio_list_item_limit_high_label">High alert:</string>
+    <string name="portfolio_list_item_limit_low_label">Low alert:</string>
+    <string name="portfolio_list_item_last_change_label">Last ch:</string>
+    <string name="portfolio_list_item_total_change_label">Total:</string>
+    <string name="portfolio_list_item_holding_value_label">Holding:</string>
+    <string name="portfolio_list_item_buy_price_label">Buy price:</string>
+    <string name="widget_loading_text">loading data…</string>
 </resources>

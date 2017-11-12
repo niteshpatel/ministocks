@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
   The MIT License
 
   Copyright (c) 2013 Nitesh Patel http://niteshpatel.github.io/ministocks
@@ -63,19 +62,7 @@
         <item name="android:gravity">right</item>
         <item name="android:textSize">11sp</item>
     </style>
-
-    <!-- styles for landscape view (footer) -->
-    <style name="StockTime_land" parent="StockTime">
-        <item name="android:layout_weight">0</item>
-        <item name="android:gravity">left</item>
-        <item name="android:textSize">8sp</item>
-    </style>
-
-    <style name="StockView_land" parent="StockView">
-        <item name="android:layout_weight">0</item>
-        <item name="android:gravity">left</item>
-        <item name="android:textSize">8sp</item>
-    </style>
+    
     <!-- styles for portrait view (stocks) -->
     <style name="StockDatum">
         <item name="android:layout_weight">1</item>

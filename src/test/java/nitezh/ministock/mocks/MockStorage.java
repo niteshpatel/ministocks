@@ -52,8 +52,7 @@ public class MockStorage implements Storage {
     }
 
     @Override
-    public Storage putInt(String key, int value) {
-        return this;
+    public void putInt(String key, int value) {
     }
 
     @Override
@@ -62,18 +61,15 @@ public class MockStorage implements Storage {
     }
 
     @Override
-    public Storage putBoolean(String key, Boolean value) {
-        return this;
+    public void putBoolean(String key, Boolean value) {
     }
 
     @Override
-    public Storage putFloat(String key, Float value) {
-        return this;
+    public void putFloat(String key, Float value) {
     }
 
     @Override
-    public Storage putLong(String key, Long value) {
-        return this;
+    public void putLong(String key, Long value) {
     }
 
     @Override

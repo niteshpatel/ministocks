@@ -31,7 +31,6 @@ import static nitezh.ministock.domain.PortfolioStockRepository.PortfolioField;
 
 public class PortfolioStock {
 
-    private final String symbol;
     private final String price;
     private final String date;
     private final String quantity;
@@ -40,9 +39,15 @@ public class PortfolioStock {
     private final String customName;
     private final String symbol2;
 
-    public PortfolioStock(String symbol, String price, String date, String quantity,
-                          String highLimit, String lowLimit, String customName, String symbol2) {
-        this.symbol = symbol;
+    PortfolioStock(
+            String price,
+            String date,
+            String quantity,
+            String highLimit,
+            String lowLimit,
+            String customName,
+            String symbol2
+    ) {
         this.price = price;
         this.date = date;
         this.quantity = quantity;
@@ -60,19 +65,19 @@ public class PortfolioStock {
         return date;
     }
 
-    public String getQuantity() {
+    String getQuantity() {
         return quantity;
     }
 
-    public String getHighLimit() {
+    String getHighLimit() {
         return highLimit;
     }
 
-    public String getLowLimit() {
+    String getLowLimit() {
         return lowLimit;
     }
 
-    public String getCustomName() {
+    String getCustomName() {
         return customName;
     }
 
@@ -90,7 +95,7 @@ public class PortfolioStock {
         }
     }
 
-    public JSONObject toJson() {
+    JSONObject toJson() {
         JSONObject json = new JSONObject();
         this.setJsonValue(json, PortfolioField.PRICE, this.getPrice());
         this.setJsonValue(json, PortfolioField.DATE, this.getDate());
@@ -102,7 +107,7 @@ public class PortfolioStock {
         return json;
     }
 
-    public boolean hasData() {
+    boolean hasData() {
         return (this.getPrice() != null && !this.getPrice().equals("") ||
                 (this.getCustomName() != null && !this.getCustomName().equals("")));
     }

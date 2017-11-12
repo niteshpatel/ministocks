@@ -95,8 +95,8 @@ public class AndroidWidgetRepository implements WidgetRepository {
             widget.enablePercentChangeView();
         }
 
-        widget.setStock1("^DJI");
-        widget.setStock1Summary("Dow Jones Industrial Average");
+        widget.setStock1();
+        widget.setStock1Summary();
         widget.save();
 
         return widget;

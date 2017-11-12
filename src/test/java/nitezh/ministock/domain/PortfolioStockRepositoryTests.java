@@ -47,10 +47,10 @@ public class PortfolioStockRepositoryTests {
     public void canRemoveTwoUnusedSymbols() {
         // Arrange
         stockRepository.portfolioStocksInfo.put(
-                "test1", new PortfolioStock("test1", "", "", "", "", "", "", ""));
+                "test1", new PortfolioStock("", "", "", "", "", "", ""));
 
         stockRepository.portfolioStocksInfo.put(
-                "test2", new PortfolioStock("test2", "", "", "", "", "", "", ""));
+                "test2", new PortfolioStock("", "", "", "", "", "", ""));
 
         // Act
         stockRepository.removeUnused();

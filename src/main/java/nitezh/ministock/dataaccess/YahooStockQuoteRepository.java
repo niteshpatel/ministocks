@@ -37,14 +37,14 @@ import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.utils.UrlDataTools;
 
 
-public class YahooStockQuoteRepository {
+class YahooStockQuoteRepository {
 
     private static final String BASE_URL = "http://download.finance.yahoo.com/d/quotes.csv";
     private static final String FORMAT = "sd1t1l1c1p2xvn";
     private static final int COUNT_FIELDS = 9;
     private final FxChangeRepository fxChangeRepository;
 
-    public YahooStockQuoteRepository(FxChangeRepository fxChangeRepository) {
+    YahooStockQuoteRepository(FxChangeRepository fxChangeRepository) {
         this.fxChangeRepository = fxChangeRepository;
     }
 
@@ -109,7 +109,7 @@ public class YahooStockQuoteRepository {
         return (values.length < COUNT_FIELDS) || (!symbols.contains(values[0]));
     }
 
-    public JSONArray retrieveQuotesAsJson(Cache cache, List<String> symbols) throws JSONException {
+    JSONArray retrieveQuotesAsJson(Cache cache, List<String> symbols) throws JSONException {
         String csvText = getQuotesCsv(cache, symbols);
         if (isDataInvalid(csvText)) {
             return null;

@@ -18,9 +18,9 @@ public interface Widget {
 
     void enableDailyChangeView();
 
-    void setStock1(String s);
+    void setStock1();
 
-    void setStock1Summary(String s);
+    void setStock1Summary();
 
     void save();
 

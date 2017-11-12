@@ -37,11 +37,11 @@ import nitezh.ministock.utils.Cache;
 import nitezh.ministock.utils.UrlDataTools;
 
 
-public class IexStockQuoteRepository {
+class IexStockQuoteRepository {
     private static final String BASE_URL = "https://api.iextrading.com/1.0/stock/market/batch";
     private final FxChangeRepository fxChangeRepository;
 
-    public IexStockQuoteRepository(FxChangeRepository fxChangeRepository) {
+    IexStockQuoteRepository(FxChangeRepository fxChangeRepository) {
         this.fxChangeRepository = fxChangeRepository;
     }
 

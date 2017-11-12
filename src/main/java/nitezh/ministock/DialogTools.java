@@ -45,11 +45,15 @@ public class DialogTools {
     }
 
 
-    public static void alertWithCallback(Context context, String title, String body,
-                                         String positiveButtonText,
-                                         String negativeButtonText,
-                                         final Callable<?> positiveCallback,
-                                         final Callable<?> dismissCallaback) {
+    public static void alertWithCallback(
+            Context context,
+            String title,
+            String body,
+            String positiveButtonText,
+            String negativeButtonText,
+            final Callable<?> positiveCallback,
+            final Callable<?> dismissCallback
+    ) {
         // Create dialog
         AlertDialog alertDialog = new AlertDialog.Builder(context).create();
         alertDialog.setTitle(title);
@@ -93,9 +97,9 @@ public class DialogTools {
         alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                if (dismissCallaback != null) {
+                if (dismissCallback != null) {
                     try {
-                        dismissCallaback.call();
+                        dismissCallback.call();
                     } catch (Exception ignored) {
                     }
                 }
@@ -104,10 +108,13 @@ public class DialogTools {
         alertDialog.show();
     }
 
-    public static void choiceWithCallback(Context context, String title,
-                                          String negativeButtonText,
-                                          final CharSequence[] choices,
-                                          final InputAlertCallable callable) {
+    public static void choiceWithCallback(
+            Context context,
+            String title,
+            String negativeButtonText,
+            final CharSequence[] choices,
+            final InputAlertCallable callable
+    ) {
         // Create dialog
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         alertDialogBuilder.setTitle(title);
@@ -203,11 +210,11 @@ public class DialogTools {
     public abstract static class InputAlertCallable implements Callable {
         private String inputValue;
 
-        public String getInputValue() {
+        protected String getInputValue() {
             return this.inputValue;
         }
 
-        public void setInputValue(String inputValue) {
+        void setInputValue(String inputValue) {
             this.inputValue = inputValue;
         }
     }

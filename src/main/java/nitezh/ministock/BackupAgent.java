@@ -35,6 +35,7 @@ import java.io.IOException;
 import nitezh.ministock.domain.PortfolioStockRepository;
 
 
+@SuppressWarnings("unused")
 public class BackupAgent extends BackupAgentHelper {
 
     // A key to uniquely identify the set of backup data

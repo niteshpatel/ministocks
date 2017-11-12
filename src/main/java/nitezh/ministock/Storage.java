@@ -37,15 +37,15 @@ public interface Storage {
 
     boolean getBoolean(String large_font, boolean defaultVal);
 
-    Storage putInt(String key, int value);
+    void putInt(String key, int value);
 
     Storage putString(String key, String value);
 
-    Storage putBoolean(String key, Boolean value);
+    void putBoolean(String key, Boolean value);
 
-    Storage putFloat(String key, Float value);
+    void putFloat(String key, Float value);
 
-    Storage putLong(String key, Long value);
+    void putLong(String key, Long value);
 
     void apply();
 }

@@ -187,11 +187,11 @@ public class MockWidget implements Widget {
     }
 
     @Override
-    public void setStock1(String s) {
+    public void setStock1() {
     }
 
     @Override
-    public void setStock1Summary(String s) {
+    public void setStock1Summary() {
     }
 
     @Override

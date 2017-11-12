@@ -23,221 +23,223 @@
   -->
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/layout_root"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+    android:id="@+id/layout_root"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 
     <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
 
-        <LinearLayout
+            <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp">
-
-            <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Price (required)"
-                    android:textColor="#FFFFFF"/>
+                android:text="@string/portfolio_item_price_label"
+                android:textColor="#FFFFFF" />
 
             <EditText
-                    android:id="@+id/portfolio_item_price"
-                    android:inputType="numberDecimal"
-                    android:digits="0123456789,."
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:imeOptions="actionDone"/>
-        </LinearLayout>
-
-        <LinearLayout
+                android:id="@+id/portfolio_item_price"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp">
+                android:digits="0123456789,."
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
 
             <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Date (yyyy-mm-dd)"
-                    android:textColor="#FFFFFF"/>
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/portfolio_item_date_label"
+                android:textColor="#FFFFFF" />
 
             <EditText
-                    android:id="@+id/portfolio_item_date"
-                    android:inputType="date"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="optional"
-                    android:imeOptions="actionDone"/>
-        </LinearLayout>
-
-        <LinearLayout
+                android:id="@+id/portfolio_item_date"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp">
+                android:hint="@string/portfolio_item_date_hint"
+                android:imeOptions="actionDone"
+                android:inputType="date" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
 
             <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Quantity"
-                    android:textColor="#FFFFFF"/>
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/portfolio_item_quantity_label"
+                android:textColor="#FFFFFF" />
 
             <EditText
-                    android:id="@+id/portfolio_item_quantity"
-                    android:inputType="numberDecimal|numberSigned"
-                    android:digits="0123456789,."
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="optional"
-                    android:imeOptions="actionDone"/>
-        </LinearLayout>
-
-        <LinearLayout
+                android:id="@+id/portfolio_item_quantity"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:paddingBottom="20dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="13dp">
-
-            <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="When the limits are triggered the stock price will change colour in the widget."/>
+                android:digits="0123456789,."
+                android:hint="@string/portfolio_item_quantity_hint"
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal|numberSigned" />
         </LinearLayout>
 
         <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingBottom="20dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="13dp">
+
+            <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp">
+                android:text="@string/portfolio_item_limit_info" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
 
             <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="High price limit"
-                    android:textColor="#FFFFFF"/>
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/portfolio_item_limit_high_label"
+                android:textColor="#FFFFFF" />
 
             <EditText
-                    android:id="@+id/portfolio_item_limit_high"
-                    android:inputType="numberDecimal"
-                    android:digits="0123456789,."
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="optional"
-                    android:imeOptions="actionDone"/>
-        </LinearLayout>
-
-        <LinearLayout
+                android:id="@+id/portfolio_item_limit_high"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp">
+                android:digits="0123456789,."
+                android:hint="@string/portfolio_item_limit_high_hint"
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
 
             <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Low price limit"
-                    android:textColor="#FFFFFF"/>
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/portfolio_item_limit_low_label"
+                android:textColor="#FFFFFF" />
 
             <EditText
-                    android:id="@+id/portfolio_item_limit_low"
-                    android:inputType="numberDecimal"
-                    android:digits="0123456789,."
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="optional"
-                    android:imeOptions="actionDone"/>
-        </LinearLayout>
-
-        <LinearLayout
+                android:id="@+id/portfolio_item_limit_low"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:paddingBottom="20dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:paddingTop="13dp">
-
-            <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="You may specify custom text to appear instead of the standard description."/>
+                android:digits="0123456789,."
+                android:hint="@string/portfolio_item_limit_low_hint"
+                android:imeOptions="actionDone"
+                android:inputType="numberDecimal" />
         </LinearLayout>
 
         <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingBottom="20dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="13dp">
+
+            <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp">
+                android:text="@string/portfolio_item_custom_text_info" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
 
             <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Custom display text"
-                    android:textColor="#FFFFFF"/>
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/portfolio_item_custom_text_label"
+                android:textColor="#FFFFFF" />
 
             <EditText
-                    android:id="@+id/portfolio_item_symbol"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="optional"
-                    android:imeOptions="actionDone"/>
+                android:id="@+id/portfolio_item_symbol"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/portfolio_item_custom_text_hint"
+                android:imeOptions="actionDone" />
         </LinearLayout>
 
         <LinearLayout
-                style="@android:style/ButtonBar"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
 
             <Button
-                    android:id="@+id/portfolio_item_save"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="OK"/>
+                android:id="@+id/portfolio_item_cancel"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/portfolio_item_save_cancel" />
 
             <Button
-                    android:id="@+id/portfolio_item_cancel"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Cancel"/>
+                android:id="@+id/portfolio_item_save"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/portfolio_item_save_ok" />
         </LinearLayout>
     </LinearLayout>
 

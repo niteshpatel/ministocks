@@ -124,12 +124,12 @@ class AndroidWidget implements Widget {
     }
 
     @Override
-    public void setStock1(String s) {
+    public void setStock1() {
         this.storage.putString("Stock1", "^DJI");
     }
 
     @Override
-    public void setStock1Summary(String s) {
+    public void setStock1Summary() {
         this.storage.putString("Stock1_summary", "Dow Jones Industrial Average");
     }
 

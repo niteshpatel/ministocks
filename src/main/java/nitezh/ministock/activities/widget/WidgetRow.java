@@ -32,7 +32,7 @@ class WidgetRow {
     private final Widget widget;
 
     private String symbol;
-    private int symbolDisplayColor;
+    private final int symbolDisplayColor;
     private String price;
     private int priceColor;
     private String volume;
@@ -42,7 +42,7 @@ class WidgetRow {
     private String stockInfoExtra;
     private int stockInfoExtraColor;
 
-    public WidgetRow(Widget widget) {
+    WidgetRow(Widget widget) {
         this.widget = widget;
 
         this.symbol = "";
@@ -58,39 +58,39 @@ class WidgetRow {
 
     }
 
-    public int getSymbolDisplayColor() {
+    int getSymbolDisplayColor() {
         return symbolDisplayColor;
     }
 
-    public int getPriceColor() {
+    int getPriceColor() {
         return priceColor;
     }
 
-    public void setPriceColor(int priceColor) {
+    void setPriceColor(int priceColor) {
         this.priceColor = priceColor;
     }
 
-    public int getVolumeColor() {
+    int getVolumeColor() {
         return volumeColor;
     }
 
-    public void setVolumeColor(int volumeColor) {
+    void setVolumeColor(int volumeColor) {
         this.volumeColor = volumeColor;
     }
 
-    public int getStockInfoColor() {
+    int getStockInfoColor() {
         return stockInfoColor;
     }
 
-    public void setStockInfoColor(int stockInfoColor) {
+    void setStockInfoColor(int stockInfoColor) {
         this.stockInfoColor = stockInfoColor;
     }
 
-    public int getStockInfoExtraColor() {
+    int getStockInfoExtraColor() {
         return stockInfoExtraColor;
     }
 
-    public void setStockInfoExtraColor(int stockInfoExtraColor) {
+    void setStockInfoExtraColor(int stockInfoExtraColor) {
         this.stockInfoExtraColor = stockInfoExtraColor;
     }
 
@@ -124,19 +124,19 @@ class WidgetRow {
         this.volume = volume;
     }
 
-    public String getStockInfo() {
+    String getStockInfo() {
         return stockInfo;
     }
 
-    public void setStockInfo(String stockInfo) {
+    void setStockInfo(String stockInfo) {
         this.stockInfo = stockInfo;
     }
 
-    public String getStockInfoExtra() {
+    String getStockInfoExtra() {
         return stockInfoExtra;
     }
 
-    public void setStockInfoExtra(String stockInfoExtra) {
+    void setStockInfoExtra(String stockInfoExtra) {
         this.stockInfoExtra = stockInfoExtra;
     }
 }

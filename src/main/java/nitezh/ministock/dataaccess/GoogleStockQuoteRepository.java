@@ -28,16 +28,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.utils.Cache;
 import nitezh.ministock.utils.UrlDataTools;
-import nitezh.ministock.domain.StockQuote;
 
 
 public class GoogleStockQuoteRepository {
@@ -66,7 +64,7 @@ public class GoogleStockQuoteRepository {
                             Locale.US);
                     quotes.put(quote.getSymbol(), quote);
                 }
-            } catch (JSONException e) {
+            } catch (JSONException ignored) {
             }
         }
 

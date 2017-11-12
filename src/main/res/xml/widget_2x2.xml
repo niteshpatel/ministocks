@@ -23,9 +23,8 @@
   -->
 
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:minWidth="146dp"
-                    android:minHeight="146dp"
-                    android:updatePeriodMillis="7200000"
-                    android:initialLayout="@layout/widget_2x2"
-                    android:configure="nitezh.ministock.activities.configure.ConfigureActivity2x2">
-</appwidget-provider>
+    android:configure="nitezh.ministock.activities.configure.ConfigureActivity2x2"
+    android:initialLayout="@layout/widget_2x2"
+    android:minHeight="146dp"
+    android:minWidth="146dp"
+    android:updatePeriodMillis="7200000" />
