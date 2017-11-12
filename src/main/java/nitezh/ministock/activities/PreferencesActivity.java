@@ -70,7 +70,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 //            + "New features:<br/><br/>"
 //            + "• TODO.<br/><br/>"
             + "Multiple bug fixes:<br/><br/>"
-            + "• Switch to new API to support non-US stocks";
+            + "• Allow comma when entering numbers";
 
     // Fields for time pickers
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
