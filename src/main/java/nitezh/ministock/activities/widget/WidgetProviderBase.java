@@ -28,8 +28,10 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.widget.RemoteViews;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -37,6 +39,7 @@ import java.util.concurrent.RejectedExecutionException;
 
 import nitezh.ministock.CustomAlarmManager;
 import nitezh.ministock.PreferenceStorage;
+import nitezh.ministock.R;
 import nitezh.ministock.Storage;
 import nitezh.ministock.domain.Widget;
 import nitezh.ministock.utils.StorageCache;
@@ -57,7 +60,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
                 quotes, quotesTimeStamp);
         widgetView.setOnClickPendingIntents();
         if (widgetView.hasPendingChanges()) {
-            widgetView.applyPendingChanges();
+            widgetView.applyPendingChanges(appWidgetId);
             AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, widgetView.getRemoteViews());
         }
     }
@@ -180,6 +183,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         new CustomAlarmManager(context).reinitialize();
         updateWidgetsFromCache(context);
+
     }
 
     @Override
@@ -188,6 +192,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
 
         new CustomAlarmManager(context).reinitialize();
     }
+
 
     @Override
     public void onDeleted(Context context, int[] appWidgetIds) {

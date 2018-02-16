@@ -27,5 +27,6 @@
     android:initialLayout="@layout/widget_2x4"
     android:minHeight="146dp"
     android:minWidth="294dp"
-    android:updatePeriodMillis="7200000"
-    android:resizeMode="horizontal|vertical"/>
+    android:resizeMode="vertical|horizontal"
+    android:updatePeriodMillis="1800000"
+    android:widgetCategory="keyguard|home_screen"/>

@@ -30,6 +30,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.view.View;
@@ -38,6 +39,7 @@ import android.widget.RemoteViews;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.WidgetProvider;
+import nitezh.ministock.activities.MyData;
 import nitezh.ministock.domain.*;
 import nitezh.ministock.utils.CurrencyTools;
 import nitezh.ministock.utils.NumberTools;
@@ -49,6 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import static nitezh.ministock.activities.MyData.myDataList;
 import static nitezh.ministock.activities.widget.WidgetProviderBase.UpdateType;
 import static nitezh.ministock.activities.widget.WidgetProviderBase.ViewType;
 
@@ -64,6 +67,7 @@ class WidgetView {
     private final String quotesTimeStamp;
     private final Context context;
     private final HashMap<ViewType, Boolean> enabledViews;
+    public MyData theFkingList = new MyData();
 
     public WidgetView(Context context, int appWidgetId, UpdateType updateMode,
                       HashMap<String, StockQuote> quotes, String quotesTimeStamp) {
@@ -80,7 +84,8 @@ class WidgetView {
                 PreferenceStorage.getInstance(context), widgetRepository).getStocksForSymbols(symbols);
         this.hasPortfolioData = !portfolioStocks.isEmpty();
 
-        this.remoteViews = this.getBlankRemoteViews(this.widget, context.getPackageName());
+        //this.remoteViews = this.getBlankRemoteViews(this.widget, context.getPackageName());
+        this.remoteViews = new RemoteViews(context.getPackageName(),R.layout.bonobo_widget_layout);
         this.enabledViews = this.calculateEnabledViews(this.widget);
     }
 
@@ -440,7 +445,7 @@ class WidgetView {
         this.remoteViews.setTextColor(ReflectionTools.getField("text" + row + col), color);
     }
 
-    public void applyPendingChanges() {
+    public void applyPendingChanges(int widgetId) {
         int widgetDisplay = this.getNextView(this.updateMode);
         this.clear();
 
@@ -453,67 +458,14 @@ class WidgetView {
             // Get the info for this quote
             lineNo++;
             WidgetRow rowInfo = getRowInfo(symbol, ViewType.values()[widgetDisplay]);
-
-            // Values
-            setStockRowItemText(lineNo, 1, rowInfo.getSymbol());
-            setStockRowItemText(lineNo, 2, rowInfo.getPrice());
-
-            if (widget.isNarrow()) {
-                setStockRowItemText(lineNo, 3, rowInfo.getStockInfo());
-            } else {
-                setStockRowItemText(lineNo, 3, rowInfo.getVolume());
-                setStockRowItemText(lineNo, 4, rowInfo.getStockInfoExtra());
-                setStockRowItemText(lineNo, 5, rowInfo.getStockInfo());
-            }
-
-            // Colours
-            setStockRowItemColor(lineNo, 1, rowInfo.getSymbolDisplayColor());
-            if (!this.widget.getColorsOnPrices()) {
-                setStockRowItemColor(lineNo, 2, rowInfo.getPriceColor());
-
-                if (widget.isNarrow()) {
-                    setStockRowItemColor(lineNo, 3, rowInfo.getStockInfoColor());
-                } else {
-                    setStockRowItemColor(lineNo, 3, rowInfo.getVolumeColor());
-                    setStockRowItemColor(lineNo, 4, rowInfo.getStockInfoExtraColor());
-                    setStockRowItemColor(lineNo, 5, rowInfo.getStockInfoColor());
-                }
-            } else {
-                setStockRowItemColor(lineNo, 2, rowInfo.getStockInfoColor());
-
-                if (widget.isNarrow()) {
-                    setStockRowItemColor(lineNo, 3, rowInfo.getPriceColor());
-                } else {
-                    setStockRowItemColor(lineNo, 3, rowInfo.getVolumeColor());
-                    setStockRowItemColor(lineNo, 4, rowInfo.getPriceColor());
-                    setStockRowItemColor(lineNo, 5, rowInfo.getPriceColor());
-                }
-            }
+            myDataList.add(rowInfo);
         }
+        theFkingList.setGlobalList(myDataList);
+        Intent intent = new Intent(context, Bonobo_widget_service.class);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
 
-        // Set footer display
-        switch (this.widget.getFooterVisibility()) {
-            case "remove":
-                remoteViews.setViewVisibility(R.id.text_footer, View.GONE);
-                break;
-
-            case "invisible":
-                remoteViews.setViewVisibility(R.id.text_footer, View.INVISIBLE);
-                break;
-
-            default:
-                remoteViews.setViewVisibility(R.id.text_footer, View.VISIBLE);
-
-                // Set time stamp
-                int footerColor = this.getFooterColor();
-                remoteViews.setTextViewText(R.id.text5, applyFormatting(this.getTimeStamp()));
-                remoteViews.setTextColor(R.id.text5, footerColor);
-
-                // Set the view label
-                remoteViews.setTextViewText(R.id.text6, applyFormatting(this.getLabel(widgetDisplay)));
-                remoteViews.setTextColor(R.id.text6, footerColor);
-                break;
-        }
+        intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+        this.remoteViews.setRemoteAdapter( R.id.widgetCollectionList, intent);
     }
 
     private int getFooterColor() {
