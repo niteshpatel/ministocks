@@ -33,7 +33,6 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -68,7 +67,7 @@ class WidgetView {
     private final String quotesTimeStamp;
     private final Context context;
     private final HashMap<ViewType, Boolean> enabledViews;
-    public MyData theFkingList = new MyData();
+    public MyData myData = new MyData();
 
     public WidgetView(Context context, int appWidgetId, UpdateType updateMode,
                       HashMap<String, StockQuote> quotes, String quotesTimeStamp) {
@@ -85,7 +84,6 @@ class WidgetView {
                 PreferenceStorage.getInstance(context), widgetRepository).getStocksForSymbols(symbols);
         this.hasPortfolioData = !portfolioStocks.isEmpty();
 
-        //this.remoteViews = this.getBlankRemoteViews(this.widget, context.getPackageName());
         this.remoteViews = new RemoteViews(context.getPackageName(),R.layout.bonobo_widget_layout);
         this.enabledViews = this.calculateEnabledViews(this.widget);
     }
@@ -465,7 +463,7 @@ class WidgetView {
             WidgetRow rowInfo = getRowInfo(symbol, ViewType.values()[widgetDisplay]);
             myDataList.add(rowInfo);
         }
-        theFkingList.setGlobalList(myDataList);
+        myData.setGlobalList(myDataList);
 
         Intent intent = new Intent(context, Bonobo_widget_service.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
