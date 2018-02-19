@@ -41,7 +41,6 @@ import static nitezh.ministock.activities.widget.WidgetProviderBase.ViewType;
 public class MyData extends Application{
     public static  List<WidgetRow> myDataList = new ArrayList<WidgetRow>();
 
-
     public static List<WidgetRow> getList()
     {
         return myDataList;

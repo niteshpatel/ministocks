@@ -37,6 +37,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.util.Log;
 import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
@@ -158,6 +159,8 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     @Override
     protected void onResume() {
         super.onResume();
+
+
         showRecentChanges();
         PreferenceScreen screen = getPreferenceScreen();
         SharedPreferences sharedPreferences = screen.getSharedPreferences();
@@ -207,6 +210,8 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         // Perform some custom handling of some values
+
+        Log.v("DEB_PA_ONSPC", key);
         if (key.startsWith("Stock") && !key.endsWith("_summary")) {
             updateStockValue(sharedPreferences, key);
 
@@ -232,6 +237,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 
     private void updateStockValue(SharedPreferences sharedPreferences, String key) {
         // Unregister the listener whenever a key changes
+        Log.v("DEB_PA_UPDATE_SV", key);
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 
         // Massages the value: remove whitespace and upper-case
@@ -679,6 +685,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 
     private void updateSummaries(SharedPreferences sharedPreferences, String key) {
         Preference preference = findPreference(key);
+
         if (preference != null) {
 
             // Initialise the Stock summaries
@@ -759,7 +766,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     @Override
     protected void onStop() {
         super.onStop();
-
+        Log.v("DEB_PA_ON_STOP", String.valueOf(mPendingUpdate));
         // Update the widget when we quit the preferences, and if the dirty,
         // flag is true then do a web update, otherwise do a regular update
         if (mPendingUpdate) {

@@ -33,6 +33,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -122,6 +123,7 @@ class WidgetView {
         views.setImageViewResource(R.id.widget_bg,
                 getImageViewSrcId(backgroundStyle, useLargeFont));
         this.hideUnusedRows(views, widget.getSymbolCount());
+
         return views;
     }
 
@@ -449,6 +451,9 @@ class WidgetView {
         int widgetDisplay = this.getNextView(this.updateMode);
         this.clear();
 
+        // Reset list. Otherwise duplicates the entries
+        myDataList.clear();
+
         int lineNo = 0;
         for (String symbol : this.symbols) {
             if (symbol.equals("")) {
@@ -461,11 +466,16 @@ class WidgetView {
             myDataList.add(rowInfo);
         }
         theFkingList.setGlobalList(myDataList);
+
         Intent intent = new Intent(context, Bonobo_widget_service.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
 
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
         this.remoteViews.setRemoteAdapter( R.id.widgetCollectionList, intent);
+
+        // Updates the widget ListView immediately
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, R.id.widgetCollectionList);
     }
 
     private int getFooterColor() {
