@@ -122,7 +122,7 @@ public class UserData {
             Boolean areAllStocksRestored = widget.getSymbolCount() == 10
                     && !widget.getStock(4).equals("");
 
-            Log.v("DEB_UDATA_RESTORED", String.valueOf(areAllStocksRestored));
+
             InformUserWidgetBackupRestoredAndReloadPreferences(context, areAllStocksRestored);
         } catch (JSONException ignored) {
         }

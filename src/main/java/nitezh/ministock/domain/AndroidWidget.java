@@ -198,8 +198,6 @@ class AndroidWidget implements Widget {
         if (!found) {
             symbols.add("^DJI");
 
-         Log.v("DEB_AW_FOUND_ADD", String.valueOf(found));
-
         }
         return symbols;
     }

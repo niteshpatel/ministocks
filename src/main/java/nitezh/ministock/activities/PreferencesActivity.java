@@ -211,7 +211,6 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         // Perform some custom handling of some values
 
-        Log.v("DEB_PA_ONSPC", key);
         if (key.startsWith("Stock") && !key.endsWith("_summary")) {
             updateStockValue(sharedPreferences, key);
 
@@ -237,7 +236,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 
     private void updateStockValue(SharedPreferences sharedPreferences, String key) {
         // Unregister the listener whenever a key changes
-        Log.v("DEB_PA_UPDATE_SV", key);
+
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 
         // Massages the value: remove whitespace and upper-case
@@ -766,7 +765,6 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     @Override
     protected void onStop() {
         super.onStop();
-        Log.v("DEB_PA_ON_STOP", String.valueOf(mPendingUpdate));
         // Update the widget when we quit the preferences, and if the dirty,
         // flag is true then do a web update, otherwise do a regular update
         if (mPendingUpdate) {
