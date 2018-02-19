@@ -208,5 +208,9 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_2x4" />
         </receiver>
+        <!-- Widget service -->
+        <service
+            android:name=".activities.widget.Bonobo_widget_service"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 </manifest>

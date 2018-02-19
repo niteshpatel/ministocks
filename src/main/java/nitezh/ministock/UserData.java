@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.PortfolioStockRepository;
@@ -120,6 +121,7 @@ public class UserData {
 
             Boolean areAllStocksRestored = widget.getSymbolCount() == 10
                     && !widget.getStock(4).equals("");
+
 
             InformUserWidgetBackupRestoredAndReloadPreferences(context, areAllStocksRestored);
         } catch (JSONException ignored) {

@@ -28,7 +28,7 @@ import android.graphics.Color;
 
 import nitezh.ministock.domain.Widget;
 
-class WidgetRow {
+public class WidgetRow {
     private final Widget widget;
 
     private String symbol;

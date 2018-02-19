@@ -314,7 +314,7 @@ public class PortfolioActivity extends Activity {
         super.onStop();
 
         this.portfolioRepository.saveChanges();
-        WidgetProviderBase.updateWidgets(this, WidgetProviderBase.UpdateType.VIEW_NO_UPDATE);
+        //WidgetProviderBase.updateWidgets(this, WidgetProviderBase.UpdateType.VIEW_NO_UPDATE);
         finish();
     }
 }
