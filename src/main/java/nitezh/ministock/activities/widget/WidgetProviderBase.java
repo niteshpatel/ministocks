@@ -119,9 +119,9 @@ public class WidgetProviderBase extends AppWidgetProvider {
     }
 
     private void handleTouch(Context context, int appWidgetId, String action) {
-        if (action.equals("LEFT")) {
+        if (action.equals("PREFERENCES")) {
             startPreferencesActivity(context, appWidgetId);
-        } else if (action.equals("RIGHT")) {
+        } else if (action.equals("REFRESH")) {
             UpdateType updateType = getUpdateTypeForTouchRight(context, appWidgetId);
             updateWidgetAsync(context, appWidgetId, updateType);
         }
@@ -155,9 +155,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
                 case CustomAlarmManager.ALARM_UPDATE:
                     doScheduledUpdates(context);
                     break;
-
-                case "LEFT":
-                case "RIGHT":
+                case "PREFERENCES":
                     Bundle extras = intent.getExtras();
                     if (extras != null) {
                         int appWidgetId = extras.getInt(
@@ -166,7 +164,14 @@ public class WidgetProviderBase extends AppWidgetProvider {
                         handleTouch(context, appWidgetId, action);
                     }
                     break;
-
+                case "REFRESH":
+                    Bundle refExtras = intent.getExtras();
+                    if (refExtras != null) {
+                        int refAppWidgetId = refExtras.getInt(
+                                AppWidgetManager.EXTRA_APPWIDGET_ID,
+                                AppWidgetManager.INVALID_APPWIDGET_ID);
+                        handleTouch(context, refAppWidgetId, action);
+                    }
                 default:
                     super.onReceive(context, intent);
                     break;

@@ -161,17 +161,23 @@ class WidgetView {
     }
 
     public void setOnClickPendingIntents() {
-        Intent leftTouchIntent = new Intent(this.context, WidgetProvider.class);
-        leftTouchIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widget.getId());
-        leftTouchIntent.setAction("LEFT");
-        this.remoteViews.setOnClickPendingIntent(R.id.widget_left,
-                PendingIntent.getBroadcast(this.context, this.widget.getId(), leftTouchIntent, 0));
+        Intent openPrefsIntent = new Intent(this.context, WidgetProvider.class);
+        openPrefsIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widget.getId());
+        openPrefsIntent.setAction("PREFERENCES");
+        this.remoteViews.setOnClickPendingIntent(R.id.prefs_but,
+                PendingIntent.getBroadcast(this.context, this.widget.getId(), openPrefsIntent, 0));
 
         Intent rightTouchIntent = new Intent(this.context, WidgetProvider.class);
         rightTouchIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widget.getId());
         rightTouchIntent.setAction("RIGHT");
         this.remoteViews.setOnClickPendingIntent(R.id.widget_right,
                 PendingIntent.getBroadcast(this.context, this.widget.getId(), rightTouchIntent, 0));
+
+        Intent buttonClickIntent = new Intent(this.context, WidgetProvider.class);
+        buttonClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widget.getId());
+        buttonClickIntent.setAction("REFRESH");
+        this.remoteViews.setOnClickPendingIntent(R.id.test_but,
+                PendingIntent.getBroadcast(this.context, this.widget.getId(), buttonClickIntent, 0));
     }
 
     private HashMap<WidgetProviderBase.ViewType, Boolean> getEnabledViews() {
