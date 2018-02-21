@@ -42,7 +42,7 @@ public class WidgetRow {
     private String stockInfoExtra;
     private int stockInfoExtraColor;
 
-    WidgetRow(Widget widget) {
+    public WidgetRow(Widget widget) {
         this.widget = widget;
 
         this.symbol = "";
