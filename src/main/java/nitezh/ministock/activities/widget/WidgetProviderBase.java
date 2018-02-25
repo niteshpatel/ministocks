@@ -126,7 +126,6 @@ public class WidgetProviderBase extends AppWidgetProvider {
             UpdateType updateType = getUpdateTypeForTouchRight(context, appWidgetId);
             updateWidgetAsync(context, appWidgetId, updateType);
         } else if (action.equals("POP_CHART")) {
-            //System.out.println("Hello from POPCHART");
             startChartActivity(context, appWidgetId);
 
         }

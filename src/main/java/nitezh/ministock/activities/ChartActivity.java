@@ -33,6 +33,13 @@ public class ChartActivity extends Activity {
         Spanned html = Html.fromHtml("Sample Chart View <br /><br />");
         TextView text = (TextView) findViewById(R.id.chart_text);
         text.setText(html);
+
+        // Need Logic to Retrieve URL of appropriate chart here
+        //***************
+        //** CODE HERE **
+        //***************
+
+
         new ImageSnatcher( (ImageView) findViewById(R.id.chart_img) ).execute("https://www.codeproject.com/KB/graphics/zedgraph/example_1.png");
     }
 
