@@ -125,6 +125,23 @@ class WidgetView {
         return views;
     }
 
+    private RemoteViews getStockChartViews(Widget widget, String packageName)
+    {
+        // Get the background drawable
+        String backgroundStyle = widget.getBackgroundStyle();
+        RemoteViews views;
+
+        // Get the chart layout
+        views = new RemoteViews(packageName, R.layout.bonobo_chart_layout);
+        views.setImageViewResource(R.id.widget_bg,
+                getImageViewSrcId(backgroundStyle, false));
+
+        // Somehow set the chart layout img source
+        // ***HERE***
+
+        return views;
+    }
+
     private int getImageViewSrcId(String backgroundStyle, Boolean useLargeFont) {
         Integer imageViewSrcId;
         switch (backgroundStyle) {
@@ -160,6 +177,7 @@ class WidgetView {
         return span;
     }
 
+    // Button Callbacks
     public void setOnClickPendingIntents() {
         Intent openPrefsIntent = new Intent(this.context, WidgetProvider.class);
         openPrefsIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widget.getId());
@@ -178,6 +196,12 @@ class WidgetView {
         buttonClickIntent.setAction("REFRESH");
         this.remoteViews.setOnClickPendingIntent(R.id.test_but,
                 PendingIntent.getBroadcast(this.context, this.widget.getId(), buttonClickIntent, 0));
+
+        Intent windowPopButtonIntent = new Intent(this.context, WidgetProvider.class);
+        windowPopButtonIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widget.getId());
+        windowPopButtonIntent.setAction("POP_CHART");
+        this.remoteViews.setOnClickPendingIntent(R.id.window_but,
+                PendingIntent.getBroadcast(this.context, this.widget.getId(), windowPopButtonIntent, 0));
     }
 
     private HashMap<WidgetProviderBase.ViewType, Boolean> getEnabledViews() {

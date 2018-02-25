@@ -42,6 +42,7 @@ import nitezh.ministock.CustomAlarmManager;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.Storage;
+import nitezh.ministock.activities.ChartActivity;
 import nitezh.ministock.domain.Widget;
 import nitezh.ministock.utils.StorageCache;
 import nitezh.ministock.UserData;
@@ -124,6 +125,10 @@ public class WidgetProviderBase extends AppWidgetProvider {
         } else if (action.equals("REFRESH")) {
             UpdateType updateType = getUpdateTypeForTouchRight(context, appWidgetId);
             updateWidgetAsync(context, appWidgetId, updateType);
+        } else if (action.equals("POP_CHART")) {
+            //System.out.println("Hello from POPCHART");
+            startChartActivity(context, appWidgetId);
+
         }
     }
 
@@ -141,6 +146,13 @@ public class WidgetProviderBase extends AppWidgetProvider {
     private void startPreferencesActivity(Context context, int appWidgetId) {
         PreferencesActivity.mAppWidgetId = appWidgetId;
         Intent activity = new Intent(context, PreferencesActivity.class);
+        activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(activity);
+    }
+
+    private void startChartActivity(Context context, int appWidgetId) {
+        ChartActivity.mAppWidgetId = appWidgetId;
+        Intent activity = new Intent(context, ChartActivity.class);
         activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(activity);
     }
@@ -171,6 +183,14 @@ public class WidgetProviderBase extends AppWidgetProvider {
                                 AppWidgetManager.EXTRA_APPWIDGET_ID,
                                 AppWidgetManager.INVALID_APPWIDGET_ID);
                         handleTouch(context, refAppWidgetId, action);
+                    }
+                case "POP_CHART":
+                    Bundle chartExtras = intent.getExtras();
+                    if (chartExtras != null) {
+                        int chartAppWidgetId = chartExtras.getInt(
+                                AppWidgetManager.EXTRA_APPWIDGET_ID,
+                                AppWidgetManager.INVALID_APPWIDGET_ID);
+                        handleTouch(context, chartAppWidgetId, action);
                     }
                 default:
                     super.onReceive(context, intent);
