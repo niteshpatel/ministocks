@@ -458,6 +458,16 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 return true;
             }
         });
+
+        final Preference sendEmail = findPreference("send_email");
+        sendEmail.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                sendEmailToUser();
+                return true;
+            }
+        });
+
         // Hook the PortfolioActivity preference to the PortfolioActivity activity
         Preference portfolio = findPreference("portfolio");
         portfolio.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -788,6 +798,16 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         String title = "Using the portfolio";
         String body = "On the portfolio screen you will see all the stocks that you have entered in your widgets in one list.<br /><br />You can touch an item to enter your stock purchase details.<br /><br /><b>Entering purchase details</b><br /><br />Enter the price that you bought the stock for, this will then be used for the PortfolioActivity and Profit and loss widget views.<br /><br />The Date is optional, and will be used for the AER rate on the portfolio AER and profit and loss AER views.<br /><br />The Quantity is optional, and will be used to calculate your holdings for the profit and loss views.  You may use negative values to simulate a short position.<br /><br />The High price limit and Low price limit are optional.  When the current price hits these limits, the price color will change in the widget.<br /><br /><b>Removing purchase details</b><br /><br />To remove purchase and alert details, long press the portfolio item and then choose the Clear details option.";
         DialogTools.showSimpleDialog(this, title, body);
+    }
+
+    private void sendEmailToUser(){
+        String[] toAddress = {"raj34@live.ca"};
+        Intent sendEmail = new Intent(Intent.ACTION_SEND);
+        sendEmail.setType("message/rfc822");
+        sendEmail.putExtra(Intent.EXTRA_EMAIL, toAddress);
+        sendEmail.putExtra(Intent.EXTRA_SUBJECT, "Ministocks: Update");
+        sendEmail.putExtra(Intent.EXTRA_TEXT, "Stub Stock has increased by ten folds!");
+        startActivity(sendEmail);
     }
 
     private void showChangeLog() {

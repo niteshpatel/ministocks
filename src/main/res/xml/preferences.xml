@@ -349,5 +349,10 @@
                 android:summary="View the attributions"
                 android:title="Attributions" />
         </PreferenceScreen>
+        <PreferenceScreen
+            android:key="send_email"
+            android:summary="Send Email to User"
+            android:title="Email">
+        </PreferenceScreen>
     </PreferenceCategory>
 </PreferenceScreen>
