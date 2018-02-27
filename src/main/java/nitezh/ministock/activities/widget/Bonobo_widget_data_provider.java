@@ -4,13 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import nitezh.ministock.R;
+import nitezh.ministock.WidgetProvider;
 import nitezh.ministock.activities.MyData;
 import nitezh.ministock.domain.Widget;
 
@@ -19,17 +23,23 @@ import nitezh.ministock.domain.Widget;
  */
 
 public class Bonobo_widget_data_provider implements RemoteViewsService.RemoteViewsFactory {
-    List mCollections = new ArrayList();
+    List mTickers = new ArrayList();
+    List mPrices = new ArrayList();
+    List mPercents = new ArrayList();
+
     List<WidgetRow> mylist = new ArrayList();
     Context mContext = null;
+    private int mAppWidgetId;
 
     public Bonobo_widget_data_provider(Context context, Intent intent) {
+        mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                AppWidgetManager.INVALID_APPWIDGET_ID);
         mContext = context;
     }
 
     @Override
     public int getCount() {
-        return mCollections.size();
+        return mTickers.size();
     }
 
     @Override
@@ -44,10 +54,10 @@ public class Bonobo_widget_data_provider implements RemoteViewsService.RemoteVie
 
     @Override
     public RemoteViews getViewAt(int position) {
-        RemoteViews mView = new RemoteViews(mContext.getPackageName(),
-                android.R.layout.simple_list_item_1);
-        mView.setTextViewText(android.R.id.text1, (CharSequence) mCollections.get(position));
-        mView.setTextColor(android.R.id.text1, Color.WHITE);
+        RemoteViews mView = new RemoteViews(mContext.getPackageName(), R.layout.bonobo_row_item);
+        mView.setTextViewText( R.id.ticker_col, (CharSequence) mTickers.get(position) );
+        mView.setTextViewText( R.id.price_col, (CharSequence) mPrices.get(position) );
+        mView.setTextViewText( R.id.percent_col, (CharSequence) mPercents.get(position) );
         return mView;
     }
 
@@ -73,23 +83,20 @@ public class Bonobo_widget_data_provider implements RemoteViewsService.RemoteVie
 
     private void initData() {
         mylist = MyData.getList();
-        mCollections.clear();
+        mTickers.clear();
+        mPrices.clear();
+        mPercents.clear();
         for (int i=0; i<mylist.size() ; i++)
         {
-            stockRowAdder( mylist.get(i).getSymbol(),
-                           mylist.get(i).getPrice(),
-                           mylist.get(i).getStockInfo() );
+            mTickers.add(mylist.get(i).getSymbol());
+            mPrices.add(mylist.get(i).getPrice());
+            mPercents.add(mylist.get(i).getStockInfo());
         }
     }
 
     @Override
     public void onDestroy() {
 
-    }
-    public void stockRowAdder(String stName, String stPrice, String stPercent)
-    {
-        String stockRow = stName + "           " + stPrice + "           " + stPercent;
-        mCollections.add(stockRow);
     }
 
 }
