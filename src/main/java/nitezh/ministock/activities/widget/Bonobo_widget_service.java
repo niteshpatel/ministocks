@@ -18,4 +18,5 @@ public class Bonobo_widget_service extends RemoteViewsService {
                 getApplicationContext(), intent);
         return dataProvider;
     }
+
 }

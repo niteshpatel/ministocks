@@ -40,6 +40,7 @@ import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.WidgetProvider;
 import nitezh.ministock.activities.MyData;
+import nitezh.ministock.activities.PreferencesActivity;
 import nitezh.ministock.domain.*;
 import nitezh.ministock.utils.CurrencyTools;
 import nitezh.ministock.utils.NumberTools;
@@ -197,11 +198,11 @@ class WidgetView {
         this.remoteViews.setOnClickPendingIntent(R.id.test_but,
                 PendingIntent.getBroadcast(this.context, this.widget.getId(), buttonClickIntent, 0));
 
-        Intent windowPopButtonIntent = new Intent(this.context, WidgetProvider.class);
-        windowPopButtonIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widget.getId());
-        windowPopButtonIntent.setAction("POP_CHART");
-        this.remoteViews.setOnClickPendingIntent(R.id.window_but,
-                PendingIntent.getBroadcast(this.context, this.widget.getId(), windowPopButtonIntent, 0));
+        Intent stockIntent = new Intent(this.context, WidgetProvider.class);
+        stockIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widget.getId());
+        stockIntent.setAction("POP_CHART");
+        this.remoteViews.setPendingIntentTemplate(R.id.widgetCollectionList,
+                PendingIntent.getBroadcast(context, this.widget.getId(), stockIntent, 0));
     }
 
     private HashMap<WidgetProviderBase.ViewType, Boolean> getEnabledViews() {

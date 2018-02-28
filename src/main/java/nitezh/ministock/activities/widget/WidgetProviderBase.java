@@ -24,6 +24,7 @@
 
 package nitezh.ministock.activities.widget;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
@@ -33,6 +34,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -56,6 +58,7 @@ import nitezh.ministock.utils.DateTools;
 
 public class WidgetProviderBase extends AppWidgetProvider {
 
+    public static String ROW_POSITION = "ROW_POSITION";
     private static void applyUpdate(Context context, int appWidgetId, UpdateType updateMode,
                                     HashMap<String, StockQuote> quotes, String quotesTimeStamp) {
         WidgetView widgetView = new WidgetView(context, appWidgetId, updateMode,
@@ -125,9 +128,6 @@ public class WidgetProviderBase extends AppWidgetProvider {
         } else if (action.equals("REFRESH")) {
             UpdateType updateType = getUpdateTypeForTouchRight(context, appWidgetId);
             updateWidgetAsync(context, appWidgetId, updateType);
-        } else if (action.equals("POP_CHART")) {
-            startChartActivity(context, appWidgetId);
-
         }
     }
 
@@ -149,10 +149,11 @@ public class WidgetProviderBase extends AppWidgetProvider {
         context.startActivity(activity);
     }
 
-    private void startChartActivity(Context context, int appWidgetId) {
+    private void startChartActivity(Context context, int appWidgetId, int position) {
         ChartActivity.mAppWidgetId = appWidgetId;
         Intent activity = new Intent(context, ChartActivity.class);
         activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        activity.putExtra(ROW_POSITION, position);
         context.startActivity(activity);
     }
 
@@ -160,7 +161,6 @@ public class WidgetProviderBase extends AppWidgetProvider {
     public void onReceive(@SuppressWarnings("NullableProblems") Context context,
                           @SuppressWarnings("NullableProblems") Intent intent) {
         String action = intent.getAction();
-
         if (action != null) {
             switch (action) {
                 case CustomAlarmManager.ALARM_UPDATE:
@@ -183,14 +183,19 @@ public class WidgetProviderBase extends AppWidgetProvider {
                                 AppWidgetManager.INVALID_APPWIDGET_ID);
                         handleTouch(context, refAppWidgetId, action);
                     }
+                    break;
                 case "POP_CHART":
                     Bundle chartExtras = intent.getExtras();
                     if (chartExtras != null) {
                         int chartAppWidgetId = chartExtras.getInt(
                                 AppWidgetManager.EXTRA_APPWIDGET_ID,
                                 AppWidgetManager.INVALID_APPWIDGET_ID);
-                        handleTouch(context, chartAppWidgetId, action);
+                        int position = intent.getIntExtra(ROW_POSITION,
+                                0);
+                        
+                        startChartActivity(context, chartAppWidgetId, position);
                     }
+                    break;
                 default:
                     super.onReceive(context, intent);
                     break;
@@ -206,9 +211,9 @@ public class WidgetProviderBase extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
         new CustomAlarmManager(context).reinitialize();
         updateWidgetsFromCache(context);
-
     }
 
     @Override
