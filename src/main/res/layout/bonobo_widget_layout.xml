@@ -19,34 +19,36 @@
             android:background="@drawable/ministock_bg_transparent68">
         </ListView>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#00ffffff"
-            android:orientation="horizontal"
             android:layout_gravity="center_horizontal"
-            >
-        <Button
-            android:id="@+id/test_but"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:text="REFRESH"
-            android:alpha="0.5"
-            android:textSize="10sp"
-            android:gravity="center"
-            android:layout_alignParentLeft="true"
-            />
-        <Button
-            android:id="@+id/prefs_but"
-            android:layout_width="95dp"
-            android:layout_height="wrap_content"
-            android:text="PREFERENCES"
-            android:alpha="0.5"
-            android:textSize="10sp"
-            android:gravity="center"
-            android:layout_alignParentRight="true"
-            />
-        </RelativeLayout>
+            android:layout_weight="2"
+            android:background="#00ffffff"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/test_but"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:alpha="0.5"
+                android:gravity="center"
+                android:text="REFRESH"
+                android:textSize="10sp" />
+
+            <Button
+                android:id="@+id/prefs_but"
+                android:layout_width="95dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:alpha="0.5"
+                android:gravity="center"
+                android:text="PREFERENCES"
+                android:textSize="10sp"
+
+                />
+        </LinearLayout>
     </LinearLayout>
 
 </FrameLayout>
