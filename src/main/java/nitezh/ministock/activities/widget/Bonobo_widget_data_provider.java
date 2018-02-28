@@ -14,8 +14,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
-
 import nitezh.ministock.R;
+import nitezh.ministock.WidgetProvider;
 import nitezh.ministock.activities.MyData;
 import nitezh.ministock.activities.PreferencesActivity;
 import nitezh.ministock.domain.Widget;
@@ -31,10 +31,13 @@ public class Bonobo_widget_data_provider implements RemoteViewsService.RemoteVie
 
     List<WidgetRow> mylist = new ArrayList();
     Context mContext = null;
+    private int mAppWidgetId;
 
 
 
     public Bonobo_widget_data_provider(Context context, Intent intent) {
+        mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                AppWidgetManager.INVALID_APPWIDGET_ID);
         mContext = context;
     }
 
@@ -67,8 +70,6 @@ public class Bonobo_widget_data_provider implements RemoteViewsService.RemoteVie
         Intent fillInIntent = new Intent();
         fillInIntent.putExtras(extras);
         mView.setOnClickFillInIntent(R.id.bonobo_item, fillInIntent);
-
-        return mView;
     }
 
     @Override
@@ -96,6 +97,7 @@ public class Bonobo_widget_data_provider implements RemoteViewsService.RemoteVie
         mTickers.clear();
         mPrices.clear();
         mPercents.clear();
+
         for (int i = 0; i < mylist.size() ; i++)
         {
             mTickers.add(mylist.get(i).getSymbol());
