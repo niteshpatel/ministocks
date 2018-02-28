@@ -70,6 +70,8 @@ public class Bonobo_widget_data_provider implements RemoteViewsService.RemoteVie
         Intent fillInIntent = new Intent();
         fillInIntent.putExtras(extras);
         mView.setOnClickFillInIntent(R.id.bonobo_item, fillInIntent);
+        
+        return mView;
     }
 
     @Override
