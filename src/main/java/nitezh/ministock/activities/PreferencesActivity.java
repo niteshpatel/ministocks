@@ -26,6 +26,7 @@ package nitezh.ministock.activities;
 
 import android.app.SearchManager;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -39,7 +40,10 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.TimePicker;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,10 +51,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -58,6 +64,8 @@ import nitezh.ministock.DialogTools;
 import nitezh.ministock.R;
 import nitezh.ministock.UserData;
 import nitezh.ministock.activities.widget.WidgetProviderBase;
+import nitezh.ministock.activities.widget.WidgetRow;
+import nitezh.ministock.domain.Widget;
 import nitezh.ministock.utils.DateTools;
 import nitezh.ministock.utils.VersionTools;
 
@@ -810,32 +818,29 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     }
 
     private void sendEmailToUser(){
+
+        //Data Storage Directory
         String path =
                 Environment.getExternalStorageDirectory() + File.separator  + "DataFolder";
         File folder = new File(path);
         folder.mkdirs();
 
+        //file name
         File file = new File(folder, "config.txt");
 
-       /* FileInputStream fis;
-        try {
-            fis = openFileInput("config.txt");
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            ArrayList<MyData> returnMyDataalist = (ArrayList<MyData>) ois.readObject();
-            ois.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        */
         try {
             file.createNewFile();
             FileOutputStream fOut = new FileOutputStream(file);
             OutputStreamWriter outWriter = new OutputStreamWriter(fOut);
-            outWriter.append("data");
+
+            List<WidgetRow> myList = MyData.getList();
+            for (int i = 0; i< MyData.getList().size() ; i++)
+            {
+                outWriter.append(myList.get(i).getSymbol());
+                outWriter.append(myList.get(i).getPrice());
+                outWriter.append(myList.get(i).getVolume());
+                outWriter.append("\n");
+            }
             outWriter.close();
 
             fOut.flush();
@@ -852,8 +857,8 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         Intent sendEmail = new Intent(Intent.ACTION_SEND);
         sendEmail.setType("message/rfc822");
         sendEmail.putExtra(Intent.EXTRA_EMAIL, toAddress);
-        sendEmail.putExtra(Intent.EXTRA_SUBJECT, "Ministocks: Update");
-        sendEmail.putExtra(Intent.EXTRA_TEXT, "Stub Stock has increased by ten folds!");
+        sendEmail.putExtra(Intent.EXTRA_SUBJECT, "Ministocks: Data file Import/Export[Work In Progress]");
+        sendEmail.putExtra(Intent.EXTRA_TEXT, "You will find your requested data file attached to this email!");
         sendEmail.putExtra(Intent.EXTRA_STREAM, fileuri);
         startActivity(sendEmail);
     }
