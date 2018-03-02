@@ -351,7 +351,7 @@
         </PreferenceScreen>
         <PreferenceScreen
             android:key="send_email"
-            android:summary="Send Email to User"
+            android:summary="Export data through email"
             android:title="Email">
         </PreferenceScreen>
     </PreferenceCategory>
