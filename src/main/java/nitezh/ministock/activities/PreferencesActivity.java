@@ -841,7 +841,6 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 outWriter.append(myList.get(i).getSymbol());
                 outWriter.append(",");
                 outWriter.append(myList.get(i).getVolume());
-                outWriter.append("\n");
             }
             outWriter.close();
 
