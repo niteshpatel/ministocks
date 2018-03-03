@@ -28,6 +28,7 @@ package nitezh.ministock.domain;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -196,6 +197,7 @@ class AndroidWidget implements Widget {
 
         if (!found) {
             symbols.add("^DJI");
+
         }
         return symbols;
     }

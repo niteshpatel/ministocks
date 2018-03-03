@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:initialLayout="@layout/bonobo_widget_layout"
+    android:minHeight="100dip"
+    android:minResizeHeight="100dip"
+    android:minResizeWidth="100dip"
+    android:minWidth="100dip"
+    android:resizeMode="vertical|horizontal"
+    android:updatePeriodMillis="1800000"
+    android:widgetCategory="keyguard|home_screen">
+</appwidget-provider>

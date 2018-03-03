@@ -30,6 +30,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.view.View;
@@ -38,6 +39,8 @@ import android.widget.RemoteViews;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.WidgetProvider;
+import nitezh.ministock.activities.GlobalWidgetData;
+import nitezh.ministock.activities.PreferencesActivity;
 import nitezh.ministock.domain.*;
 import nitezh.ministock.utils.CurrencyTools;
 import nitezh.ministock.utils.NumberTools;
@@ -49,6 +52,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import static nitezh.ministock.activities.GlobalWidgetData.myStockList;
 import static nitezh.ministock.activities.widget.WidgetProviderBase.UpdateType;
 import static nitezh.ministock.activities.widget.WidgetProviderBase.ViewType;
 
@@ -64,6 +68,7 @@ class WidgetView {
     private final String quotesTimeStamp;
     private final Context context;
     private final HashMap<ViewType, Boolean> enabledViews;
+    public GlobalWidgetData myData = new GlobalWidgetData();
 
     public WidgetView(Context context, int appWidgetId, UpdateType updateMode,
                       HashMap<String, StockQuote> quotes, String quotesTimeStamp) {
@@ -80,7 +85,7 @@ class WidgetView {
                 PreferenceStorage.getInstance(context), widgetRepository).getStocksForSymbols(symbols);
         this.hasPortfolioData = !portfolioStocks.isEmpty();
 
-        this.remoteViews = this.getBlankRemoteViews(this.widget, context.getPackageName());
+        this.remoteViews = new RemoteViews(context.getPackageName(),R.layout.bonobo_widget_layout);
         this.enabledViews = this.calculateEnabledViews(this.widget);
     }
 
@@ -117,6 +122,24 @@ class WidgetView {
         views.setImageViewResource(R.id.widget_bg,
                 getImageViewSrcId(backgroundStyle, useLargeFont));
         this.hideUnusedRows(views, widget.getSymbolCount());
+
+        return views;
+    }
+
+    private RemoteViews getStockChartViews(Widget widget, String packageName)
+    {
+        // Get the background drawable
+        String backgroundStyle = widget.getBackgroundStyle();
+        RemoteViews views;
+
+        // Get the chart layout
+        views = new RemoteViews(packageName, R.layout.bonobo_chart_layout);
+        views.setImageViewResource(R.id.widget_bg,
+                getImageViewSrcId(backgroundStyle, false));
+
+        // Somehow set the chart layout img source
+        // ***HERE***
+
         return views;
     }
 
@@ -155,18 +178,31 @@ class WidgetView {
         return span;
     }
 
+    // Button Callbacks
     public void setOnClickPendingIntents() {
-        Intent leftTouchIntent = new Intent(this.context, WidgetProvider.class);
-        leftTouchIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widget.getId());
-        leftTouchIntent.setAction("LEFT");
-        this.remoteViews.setOnClickPendingIntent(R.id.widget_left,
-                PendingIntent.getBroadcast(this.context, this.widget.getId(), leftTouchIntent, 0));
+        Intent openPrefsIntent = new Intent(this.context, WidgetProvider.class);
+        openPrefsIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widget.getId());
+        openPrefsIntent.setAction("PREFERENCES");
+        this.remoteViews.setOnClickPendingIntent(R.id.prefs_but,
+                PendingIntent.getBroadcast(this.context, this.widget.getId(), openPrefsIntent, 0));
 
         Intent rightTouchIntent = new Intent(this.context, WidgetProvider.class);
         rightTouchIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widget.getId());
         rightTouchIntent.setAction("RIGHT");
         this.remoteViews.setOnClickPendingIntent(R.id.widget_right,
                 PendingIntent.getBroadcast(this.context, this.widget.getId(), rightTouchIntent, 0));
+
+        Intent buttonClickIntent = new Intent(this.context, WidgetProvider.class);
+        buttonClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widget.getId());
+        buttonClickIntent.setAction("REFRESH");
+        this.remoteViews.setOnClickPendingIntent(R.id.test_but,
+                PendingIntent.getBroadcast(this.context, this.widget.getId(), buttonClickIntent, 0));
+
+        Intent stockIntent = new Intent(this.context, WidgetProvider.class);
+        stockIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widget.getId());
+        stockIntent.setAction("POP_CHART");
+        this.remoteViews.setPendingIntentTemplate(R.id.widgetCollectionList,
+                PendingIntent.getBroadcast(context, this.widget.getId(), stockIntent, 0));
     }
 
     private HashMap<WidgetProviderBase.ViewType, Boolean> getEnabledViews() {
@@ -440,9 +476,12 @@ class WidgetView {
         this.remoteViews.setTextColor(ReflectionTools.getField("text" + row + col), color);
     }
 
-    public void applyPendingChanges() {
+    public void applyPendingChanges(int widgetId) {
         int widgetDisplay = this.getNextView(this.updateMode);
         this.clear();
+
+        // Reset list. Otherwise duplicates the entries
+        myStockList.clear();
 
         int lineNo = 0;
         for (String symbol : this.symbols) {
@@ -453,67 +492,19 @@ class WidgetView {
             // Get the info for this quote
             lineNo++;
             WidgetRow rowInfo = getRowInfo(symbol, ViewType.values()[widgetDisplay]);
-
-            // Values
-            setStockRowItemText(lineNo, 1, rowInfo.getSymbol());
-            setStockRowItemText(lineNo, 2, rowInfo.getPrice());
-
-            if (widget.isNarrow()) {
-                setStockRowItemText(lineNo, 3, rowInfo.getStockInfo());
-            } else {
-                setStockRowItemText(lineNo, 3, rowInfo.getVolume());
-                setStockRowItemText(lineNo, 4, rowInfo.getStockInfoExtra());
-                setStockRowItemText(lineNo, 5, rowInfo.getStockInfo());
-            }
-
-            // Colours
-            setStockRowItemColor(lineNo, 1, rowInfo.getSymbolDisplayColor());
-            if (!this.widget.getColorsOnPrices()) {
-                setStockRowItemColor(lineNo, 2, rowInfo.getPriceColor());
-
-                if (widget.isNarrow()) {
-                    setStockRowItemColor(lineNo, 3, rowInfo.getStockInfoColor());
-                } else {
-                    setStockRowItemColor(lineNo, 3, rowInfo.getVolumeColor());
-                    setStockRowItemColor(lineNo, 4, rowInfo.getStockInfoExtraColor());
-                    setStockRowItemColor(lineNo, 5, rowInfo.getStockInfoColor());
-                }
-            } else {
-                setStockRowItemColor(lineNo, 2, rowInfo.getStockInfoColor());
-
-                if (widget.isNarrow()) {
-                    setStockRowItemColor(lineNo, 3, rowInfo.getPriceColor());
-                } else {
-                    setStockRowItemColor(lineNo, 3, rowInfo.getVolumeColor());
-                    setStockRowItemColor(lineNo, 4, rowInfo.getPriceColor());
-                    setStockRowItemColor(lineNo, 5, rowInfo.getPriceColor());
-                }
-            }
+            myStockList.add(rowInfo);
         }
+        myData.setGlobalList(myStockList);
 
-        // Set footer display
-        switch (this.widget.getFooterVisibility()) {
-            case "remove":
-                remoteViews.setViewVisibility(R.id.text_footer, View.GONE);
-                break;
+        Intent intent = new Intent(context, Bonobo_widget_service.class);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
 
-            case "invisible":
-                remoteViews.setViewVisibility(R.id.text_footer, View.INVISIBLE);
-                break;
+        intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+        this.remoteViews.setRemoteAdapter( R.id.widgetCollectionList, intent);
 
-            default:
-                remoteViews.setViewVisibility(R.id.text_footer, View.VISIBLE);
-
-                // Set time stamp
-                int footerColor = this.getFooterColor();
-                remoteViews.setTextViewText(R.id.text5, applyFormatting(this.getTimeStamp()));
-                remoteViews.setTextColor(R.id.text5, footerColor);
-
-                // Set the view label
-                remoteViews.setTextViewText(R.id.text6, applyFormatting(this.getLabel(widgetDisplay)));
-                remoteViews.setTextColor(R.id.text6, footerColor);
-                break;
-        }
+        // Updates the widget ListView immediately
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, R.id.widgetCollectionList);
     }
 
     private int getFooterColor() {
