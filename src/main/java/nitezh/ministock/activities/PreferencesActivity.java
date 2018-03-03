@@ -826,7 +826,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         folder.mkdirs();
 
         //file name
-        File file = new File(folder, "config.txt");
+        File file = new File(folder, "config.csv");
 
         try {
             file.createNewFile();
@@ -841,6 +841,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 outWriter.append(myList.get(i).getSymbol());
                 outWriter.append(",");
                 outWriter.append(myList.get(i).getVolume());
+                outWriter.append("\n");
             }
             outWriter.close();
 
@@ -854,12 +855,12 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 
         Uri fileuri = Uri.fromFile(file);
 
-        String[] toAddress = {"raj34@live.ca"};
+        //String[] toAddress = {"Default"};
         Intent sendEmail = new Intent(Intent.ACTION_SEND);
         sendEmail.setType("message/rfc822");
-        sendEmail.putExtra(Intent.EXTRA_EMAIL, toAddress);
-        sendEmail.putExtra(Intent.EXTRA_SUBJECT, "Ministocks: Data file Import/Export[Work In Progress]");
-        sendEmail.putExtra(Intent.EXTRA_TEXT, "You will find your requested data file attached to this email!");
+        //sendEmail.putExtra(Intent.EXTRA_EMAIL, toAddress);
+        sendEmail.putExtra(Intent.EXTRA_SUBJECT, "Ministocks: Data CSV file Import/Export[Work In Progress]");
+        sendEmail.putExtra(Intent.EXTRA_TEXT, "You will find your requested data csv file attached to this email!");
         sendEmail.putExtra(Intent.EXTRA_STREAM, fileuri);
         startActivity(sendEmail);
     }
