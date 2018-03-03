@@ -47,6 +47,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Implementation Activity for Graphs Feature -->
         <activity
             android:name=".activities.ChartActivity"
             android:configChanges="orientation"
@@ -58,6 +60,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".activities.PortfolioActivity"
             android:configChanges="orientation"
@@ -219,7 +222,9 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_2x4" />
         </receiver>
-        <!-- Widget service -->
+
+
+        <!-- Widget service for Listview feature -->
         <service
             android:name=".activities.widget.Bonobo_widget_service"
             android:permission="android.permission.BIND_REMOTEVIEWS" />

@@ -17,13 +17,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import nitezh.ministock.activities.MyData;
+import nitezh.ministock.activities.GlobalWidgetData;
 import nitezh.ministock.activities.widget.WidgetRow;
 import nitezh.ministock.mocks.MockCache;
 import nitezh.ministock.mocks.MockStorage;
 import nitezh.ministock.mocks.MockWidgetRepository;
 
-import static nitezh.ministock.activities.MyData.myDataList;
+import static nitezh.ministock.activities.GlobalWidgetData.myStockList;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertEquals;
 public class myDataTest extends AndroidTestCase{
 
     private StockQuoteRepository stockRepository;
-    private MyData testData;
+    private GlobalWidgetData testData;
     private Widget testWidget;
     private List<WidgetRow> myList;
 
@@ -43,20 +43,20 @@ public class myDataTest extends AndroidTestCase{
         int WIDGET_SIZE = 0;
 
         testWidget = new AndroidWidgetRepository(RuntimeEnvironment.application).addWidget(WIDGET_ID, WIDGET_SIZE);
-        testData = new MyData();
+        testData = new GlobalWidgetData();
         myList = new ArrayList();
         WidgetRow rowInfo = new WidgetRow(testWidget);
         rowInfo.setPrice("500");
         rowInfo.setSymbol("$");
         rowInfo.setVolume("90000");
-        myDataList.add(rowInfo);
-        testData.setGlobalList(myDataList); //set in global class
+        myStockList.add(rowInfo);
+        testData.setGlobalList(myStockList); //set in global class
     }
 
     @Test
     public void testDataRetrieval(){
 
-        myList = MyData.getList();          //retrieve from global class
+        myList = GlobalWidgetData.getList();          //retrieve from global class
         assertEquals("500", myList.get(0).getPrice());
         assertEquals("$", myList.get(0).getSymbol());
         assertEquals("90000", myList.get(0).getVolume());
