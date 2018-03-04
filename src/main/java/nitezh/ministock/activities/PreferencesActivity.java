@@ -26,10 +26,12 @@ package nitezh.ministock.activities;
 
 import android.app.SearchManager;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -38,10 +40,23 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
+import org.w3c.dom.Text;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -49,6 +64,8 @@ import nitezh.ministock.DialogTools;
 import nitezh.ministock.R;
 import nitezh.ministock.UserData;
 import nitezh.ministock.activities.widget.WidgetProviderBase;
+import nitezh.ministock.activities.widget.WidgetRow;
+import nitezh.ministock.domain.Widget;
 import nitezh.ministock.utils.DateTools;
 import nitezh.ministock.utils.VersionTools;
 
@@ -458,6 +475,16 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 return true;
             }
         });
+
+        final Preference sendEmail = findPreference("send_email");
+        sendEmail.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                sendEmailToUser();
+                return true;
+            }
+        });
+
         // Hook the PortfolioActivity preference to the PortfolioActivity activity
         Preference portfolio = findPreference("portfolio");
         portfolio.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -788,6 +815,54 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         String title = "Using the portfolio";
         String body = "On the portfolio screen you will see all the stocks that you have entered in your widgets in one list.<br /><br />You can touch an item to enter your stock purchase details.<br /><br /><b>Entering purchase details</b><br /><br />Enter the price that you bought the stock for, this will then be used for the PortfolioActivity and Profit and loss widget views.<br /><br />The Date is optional, and will be used for the AER rate on the portfolio AER and profit and loss AER views.<br /><br />The Quantity is optional, and will be used to calculate your holdings for the profit and loss views.  You may use negative values to simulate a short position.<br /><br />The High price limit and Low price limit are optional.  When the current price hits these limits, the price color will change in the widget.<br /><br /><b>Removing purchase details</b><br /><br />To remove purchase and alert details, long press the portfolio item and then choose the Clear details option.";
         DialogTools.showSimpleDialog(this, title, body);
+    }
+
+    private void sendEmailToUser(){
+
+        //Data Storage Directory
+        String path =
+                Environment.getExternalStorageDirectory() + File.separator  + "DataFolder";
+        File folder = new File(path);
+        folder.mkdirs();
+
+        //file name
+        File file = new File(folder, "config.csv");
+
+        try {
+            file.createNewFile();
+            FileOutputStream fOut = new FileOutputStream(file);
+            OutputStreamWriter outWriter = new OutputStreamWriter(fOut);
+
+            List<WidgetRow> myList = MyData.getList();
+            for (int i = 0; i< myList.size() ; i++)
+            {
+                outWriter.append(myList.get(i).getPrice());
+                outWriter.append(",");
+                outWriter.append(myList.get(i).getSymbol());
+                outWriter.append(",");
+                outWriter.append(myList.get(i).getVolume());
+                outWriter.append("\n");
+            }
+            outWriter.close();
+
+            fOut.flush();
+            fOut.close();
+        }
+        catch (IOException e)
+        {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }
+
+        Uri fileuri = Uri.fromFile(file);
+
+        //String[] toAddress = {"Default"};
+        Intent sendEmail = new Intent(Intent.ACTION_SEND);
+        sendEmail.setType("message/rfc822");
+        //sendEmail.putExtra(Intent.EXTRA_EMAIL, toAddress);
+        sendEmail.putExtra(Intent.EXTRA_SUBJECT, "Ministocks: Data CSV file Import/Export[Work In Progress]");
+        sendEmail.putExtra(Intent.EXTRA_TEXT, "You will find your requested data csv file attached to this email!");
+        sendEmail.putExtra(Intent.EXTRA_STREAM, fileuri);
+        startActivity(sendEmail);
     }
 
     private void showChangeLog() {
