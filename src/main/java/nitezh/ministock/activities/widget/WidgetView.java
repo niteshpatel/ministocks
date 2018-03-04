@@ -39,7 +39,7 @@ import android.widget.RemoteViews;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.R;
 import nitezh.ministock.WidgetProvider;
-import nitezh.ministock.activities.MyData;
+import nitezh.ministock.activities.GlobalWidgetData;
 import nitezh.ministock.activities.PreferencesActivity;
 import nitezh.ministock.domain.*;
 import nitezh.ministock.utils.CurrencyTools;
@@ -52,7 +52,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import static nitezh.ministock.activities.MyData.myDataList;
+import static nitezh.ministock.activities.GlobalWidgetData.myStockList;
 import static nitezh.ministock.activities.widget.WidgetProviderBase.UpdateType;
 import static nitezh.ministock.activities.widget.WidgetProviderBase.ViewType;
 
@@ -68,7 +68,7 @@ class WidgetView {
     private final String quotesTimeStamp;
     private final Context context;
     private final HashMap<ViewType, Boolean> enabledViews;
-    public MyData myData = new MyData();
+    public GlobalWidgetData myData = new GlobalWidgetData();
 
     public WidgetView(Context context, int appWidgetId, UpdateType updateMode,
                       HashMap<String, StockQuote> quotes, String quotesTimeStamp) {
@@ -481,7 +481,7 @@ class WidgetView {
         this.clear();
 
         // Reset list. Otherwise duplicates the entries
-        myDataList.clear();
+        myStockList.clear();
 
         int lineNo = 0;
         for (String symbol : this.symbols) {
@@ -492,9 +492,9 @@ class WidgetView {
             // Get the info for this quote
             lineNo++;
             WidgetRow rowInfo = getRowInfo(symbol, ViewType.values()[widgetDisplay]);
-            myDataList.add(rowInfo);
+            myStockList.add(rowInfo);
         }
-        myData.setGlobalList(myDataList);
+        myData.setGlobalList(myStockList);
 
         Intent intent = new Intent(context, Bonobo_widget_service.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);

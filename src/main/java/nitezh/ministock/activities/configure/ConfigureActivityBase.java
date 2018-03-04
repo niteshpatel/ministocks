@@ -73,8 +73,8 @@ abstract class ConfigureActivityBase extends Activity {
         super.onCreate(savedInstanceState);
 
         this.setVisible(false);
-        DialogTools.alertWithCallback(this, "Ministocks Widget Added",
-                "Touch the left side of the widget to view setup options.", "Close", null, null,
+        DialogTools.alertWithCallback(this, "Ministocks",
+                "Ministocks widget added.", "Close", null, null,
                 new Callable() {
                     public Object call() throws Exception {
                         setupWidget(mWidgetSize);
