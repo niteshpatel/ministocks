@@ -833,7 +833,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
             FileOutputStream fOut = new FileOutputStream(file);
             OutputStreamWriter outWriter = new OutputStreamWriter(fOut);
 
-            List<WidgetRow> myList = MyData.getList();
+            List<WidgetRow> myList = GlobalWidgetData.getList();
             for (int i = 0; i< myList.size() ; i++)
             {
                 outWriter.append(myList.get(i).getPrice());
