@@ -39,6 +39,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -833,7 +834,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
             FileOutputStream fOut = new FileOutputStream(file);
             OutputStreamWriter outWriter = new OutputStreamWriter(fOut);
 
-            List<WidgetRow> myList = MyData.getList();
+            List<WidgetRow> myList = GlobalWidgetData.getList();
             for (int i = 0; i< myList.size() ; i++)
             {
                 outWriter.append(myList.get(i).getPrice());
