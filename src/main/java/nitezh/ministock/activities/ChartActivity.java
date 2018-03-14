@@ -33,7 +33,12 @@ public class ChartActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bonobo_chart_layout);
         Spanned html = Html.fromHtml("Sample Chart View (Row " + String.valueOf(position) + ") <br /><br />");
-        TextView text = (TextView) findViewById(R.id.chart_text);
+
+        //COMPILE ERROR
+        //**************
+        TextVFew text = (TextView) findViewById(R.id.chart_text);
+        //**************
+
         text.setText(html);
 
         // Need Logic to Retrieve URL of appropriate chart here
