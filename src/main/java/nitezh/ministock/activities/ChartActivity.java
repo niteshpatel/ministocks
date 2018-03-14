@@ -36,7 +36,7 @@ public class ChartActivity extends Activity {
 
         //COMPILE ERROR
         //**************
-        TextVFew text = (TextView) findViewById(R.id.chart_text);
+        TextView text = (TextView) findViewById(R.id.chart_text);
         //**************
 
         text.setText(html);
