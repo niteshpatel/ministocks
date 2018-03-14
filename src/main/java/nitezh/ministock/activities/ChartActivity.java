@@ -40,6 +40,7 @@ public class ChartActivity extends Activity {
         //***************
         //** CODE HERE **
         //***************
+        //Init Commit
 
 
         new ImageSnatcher( (ImageView) findViewById(R.id.chart_img) ).execute("https://www.codeproject.com/KB/graphics/zedgraph/example_1.png");
