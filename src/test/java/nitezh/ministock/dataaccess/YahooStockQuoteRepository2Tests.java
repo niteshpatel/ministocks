@@ -41,7 +41,6 @@ import nitezh.ministock.mocks.MockCache;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 
 public class YahooStockQuoteRepository2Tests {
@@ -56,7 +55,6 @@ public class YahooStockQuoteRepository2Tests {
 
     @Test
     public void retrieveQuotesAsJson() {
-        fail();
         // Skipif
         Assume.assumeTrue(System.getenv("TRAVIS_CI") == null);
 
