@@ -33,20 +33,13 @@ public class ChartActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bonobo_chart_layout);
         Spanned html = Html.fromHtml("Sample Chart View (Row " + String.valueOf(position) + ") <br /><br />");
-
-        //COMPILE ERROR
-        //**************
         TextView text = (TextView) findViewById(R.id.chart_text);
-        //**************
-
         text.setText(html);
 
         // Need Logic to Retrieve URL of appropriate chart here
         //***************
         //** CODE HERE **
         //***************
-        //Init Commit
-
 
         new ImageSnatcher( (ImageView) findViewById(R.id.chart_img) ).execute("https://www.codeproject.com/KB/graphics/zedgraph/example_1.png");
     }
