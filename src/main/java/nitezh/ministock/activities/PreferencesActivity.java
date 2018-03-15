@@ -24,8 +24,10 @@
 
 package nitezh.ministock.activities;
 
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -38,7 +40,9 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.text.InputType;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.TimePicker;
 
 import java.io.File;
@@ -475,6 +479,9 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         });
 
         final Preference sendEmail = findPreference("send_email");
+
+
+
         sendEmail.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -815,9 +822,36 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         DialogTools.showSimpleDialog(this, title, body);
     }
 
+    String m_Text;
+
     private void sendEmailToUser(){
 
-       new MimeSendTask("moltenraj@gmail.com").execute();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Title");
+
+        // Set up the input
+        final EditText input = new EditText(this);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                m_Text = input.getText().toString();
+                new MimeSendTask(m_Text).execute();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+
     }
 
     private void showChangeLog() {

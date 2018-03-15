@@ -108,7 +108,7 @@ Log.d("EMAIL", toAddress);
             //Adding receiver
             mm.addRecipient(Message.RecipientType.TO, new InternetAddress(toAddress));
             //Adding subject
-            mm.setSubject("Ministocks: Data CSV file Import/Export[Work In Progress]");
+            mm.setSubject("Ministocks: Data CSV file Export");
             //Adding message
             mm.setText("You will find your requested data csv file attached to this email!", "utf-8", "html");
 /*
