@@ -3,8 +3,11 @@ package nitezh.ministock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiScrollable;
@@ -27,6 +30,7 @@ public class SimpleUITesting {
     @Test
     public void clickListItemTest() throws UiObjectNotFoundException{
         String name = "^DJI";
+        UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         UiScrollable listView  = new UiScrollable(new UiSelector());
         listView.setMaxSearchSwipes(100);
         listView.scrollTextIntoView(name);
