@@ -1,4 +1,9 @@
-package nitezh.ministock;
+package nitezh.ministock.activities;
+
+import junit.framework.Assert;
+import junit.framework.AssertionFailedError;
+
+import org.junit.Test;
 
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -33,56 +38,19 @@ import javax.mail.util.ByteArrayDataSource;
 import nitezh.ministock.activities.GlobalWidgetData;
 import nitezh.ministock.activities.widget.WidgetRow;
 
+
+import nitezh.ministock.MimeSendTask;
+
 /**
- * Created by raj34 on 2018-03-14.
+ * Created by raj34 on 2018-03-15.
  */
+public class EmailTest {
 
-public class MimeSendTask extends AsyncTask<Void, Void, Void> {
-    private String toAddress;
-
-    public MimeSendTask(String toAddress) {
-        this.toAddress = toAddress;
-    }
-
-    @Override
-    protected Void doInBackground(Void ... voids) {
-        //Data Storage Directory
-        String path =
-                Environment.getExternalStorageDirectory() + File.separator  + "DataFolder";
-        File folder = new File(path);
-        folder.mkdirs();
-
-        //file name
-        File file = new File(folder, "config.csv");
-
-        try {
-            file.createNewFile();
-            FileOutputStream fOut = new FileOutputStream(file);
-            OutputStreamWriter outWriter = new OutputStreamWriter(fOut);
-
-            List<WidgetRow> myList = GlobalWidgetData.getList();
-            for (int i = 0; i< myList.size() ; i++)
-            {
-                outWriter.append(myList.get(i).getSymbol());
-                outWriter.append("\n");
-            }
-            outWriter.close();
-
-            fOut.flush();
-            fOut.close();
-        }
-        catch (IOException e)
-        {
-            Log.e("Exception", "File write failed: " + e.toString());
-        }
-
-        Uri fileuri = Uri.fromFile(file);
-
-
+    //Testing if an exception is thrown when an invalid email is provided by the user
+    @Test
+    public void TestInvalidEmail() {
         Properties props = new Properties();
 
-        //Configuring properties for gmail
-        //If you are not using gmail you may need to change the values
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.socketFactory.port", "465");
         props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
@@ -97,12 +65,11 @@ public class MimeSendTask extends AsyncTask<Void, Void, Void> {
                         return new javax.mail.PasswordAuthentication("ministocks34@gmail.com", "ministocks123");
                     }
                 });
-Log.d("EMAIL", toAddress);
         try {
             //Creating MimeMessage object
             MimeMessage mm = new MimeMessage(session);
             String fromAddress = "ministocks34@gmail.com";
-
+            String toAddress = "InvalidEmail";
             //Setting sender address
             mm.setFrom(new InternetAddress(fromAddress));
             //Adding receiver
@@ -112,27 +79,14 @@ Log.d("EMAIL", toAddress);
             //Adding message
             mm.setText("You will find your requested data csv file attached to this email!", "utf-8", "html");
 
-            mm.setDataHandler(new DataHandler(new ByteArrayDataSource(Files.toByteArray(file), "text/csv")));
-            mm.setFileName("stocks.csv");
             //Sending email
             Transport.send(mm);
+            //If this point is reached, it means no exception was thrown
+            Assert.fail();
         }
         catch(MessagingException max){
             max.printStackTrace();
         }
-        catch(IOException ioe){
-            ioe.printStackTrace();
-        }
-
-        //Previous email System
-        //String[] toAddress = {"Default"};
-        /*Intent sendEmail = new Intent(Intent.ACTION_SEND);
-        sendEmail.setType("message/rfc822");
-        //sendEmail.putExtra(Intent.EXTRA_EMAIL, toAddress);
-        sendEmail.putExtra(Intent.EXTRA_SUBJECT, "Ministocks: Data CSV file Import/Export[Work In Progress]");
-        sendEmail.putExtra(Intent.EXTRA_TEXT, "You will find your requested data csv file attached to this email!");
-        sendEmail.putExtra(Intent.EXTRA_STREAM, fileuri);
-        startActivity(sendEmail);*/
-        return null;
     }
+
 }

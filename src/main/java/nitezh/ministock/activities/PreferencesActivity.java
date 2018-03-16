@@ -98,6 +98,8 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     private int mHour = 0;
     private int mMinute = 0;
 
+    String m_Text; //store input of the user
+
     private String getChangeLog() {
         return CHANGE_LOG;
     }
@@ -822,7 +824,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         DialogTools.showSimpleDialog(this, title, body);
     }
 
-    String m_Text;
+
 
     private void sendEmailToUser(){
 
