@@ -4,8 +4,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import android.inputmethodservice.Keyboard;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
@@ -15,13 +13,10 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.widget.AutoCompleteTextView;
 
 /**
- * Created by GRao on 3/14/2018.
+ * Created by Gurkomal Rao, Jefferson Casmir, Nicholas Fong on 3/14/2018.
  */
-
 
 @RunWith(AndroidJUnit4.class)
 @SdkSuppress(minSdkVersion = 18)
@@ -41,7 +36,6 @@ public class SimpleUITesting {
 
     @Test
     public void clickListItemTest() throws UiObjectNotFoundException{
-
         /*TODO
         Change this function to select index of list rather than specific stock symbol
          */
@@ -70,12 +64,9 @@ public class SimpleUITesting {
     public void clickStockSetupTest() throws UiObjectNotFoundException{
         selectPreferences();                        //click Preferences Button
         selectStockSetup();                        //click Stocks setup
-        addStock(1, "K");       //Add 2nd Stock
-        addStock(0, "MMD");     //Change 1st Stock
-        /*TODO
-        Fix removing stock (currently does not remove)
-         */
-        addStock(0, " ");       //Remove 2nd Stock
+        setStock(1, "K");       //Add 2nd Stock
+        setStock(0, "MMD");     //Change 1st Stock
+        removeStock(1);                     //Remove 2nd Stock
     }
 
     private void selectPreferences()throws UiObjectNotFoundException{
@@ -94,16 +85,28 @@ public class SimpleUITesting {
         preferencesListItem.click();
     }
 
-    private void addStock(int index, String symbolToAdd) throws UiObjectNotFoundException{
+    private UiObject selectStockView(int index)throws UiObjectNotFoundException{
         String searchFieldResourceId = "android:id/search_src_text";
         UiScrollable stockListView  = new UiScrollable(new UiSelector());
         stockListView.getChild(new UiSelector().clickable(true).index(index)).click();
         UiObject searchField = mDevice.findObject(new UiSelector().resourceId(searchFieldResourceId));
+        return searchField;
+    }
+
+    private void setStock(int index, String symbolToAdd) throws UiObjectNotFoundException{
+        UiObject searchField = selectStockView(index);
         searchField.setText(symbolToAdd);
         searchField.clickAndWaitForNewWindow(2000);
         mDevice.pressDPadDown();
         mDevice.pressDPadUp();
         mDevice.pressEnter();
+    }
+
+    private void removeStock(int index)throws UiObjectNotFoundException{
+        UiObject searchField = selectStockView(index);
+        searchField.clearTextField();
+        searchField.clickAndWaitForNewWindow(2000);
+        mDevice.click(540,200);
     }
 
 }
