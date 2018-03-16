@@ -12,6 +12,7 @@ import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
+import android.util.Log;
 
 /**
  * Created by GRao on 3/14/2018.
@@ -22,21 +23,89 @@ import android.support.test.uiautomator.UiSelector;
 @SdkSuppress(minSdkVersion = 18)
 public class SimpleUITesting {
 
+    String preferencesResourceId;
+
     @Before
     public void setup(){
-
+        preferencesResourceId = "nitezh.ministock:id/prefs_but";
     }
 
     @Test
     public void clickListItemTest() throws UiObjectNotFoundException{
-        String name = "^DJI";
+        String stockSymbol = "^DJI";
         UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         UiScrollable listView  = new UiScrollable(new UiSelector());
         listView.setMaxSearchSwipes(100);
-        listView.scrollTextIntoView(name);
+        listView.scrollTextIntoView(stockSymbol);
         listView.waitForExists(5000);
-        UiObject listViewItem = listView.getChildByText(new UiSelector().className(android.widget.TextView.class.getName()),""+name+"");
+        UiObject listViewItem = listView.getChildByText(new UiSelector().className(android.widget.TextView.class.getName()),""+stockSymbol+"");
         listViewItem.click();
-        System.out.println("\""+name+"\" ListView item was clicked.");
+        Log.i("Base Widget View Click Test",stockSymbol+ " ListView item was clicked.");
+    }
+
+    @Test
+    public void clickPreferences() throws UiObjectNotFoundException{
+
+        UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiObject button = mDevice.findObject(new UiSelector().resourceId(preferencesResourceId));
+        button.clickAndWaitForNewWindow();
+    }
+
+    @Test
+    public void ManipulateStocks() throws UiObjectNotFoundException{
+
+        String searchFieldResourceId = "android:id/search_src_text";
+
+        //click Preferences Button
+        UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiObject button = mDevice.findObject(new UiSelector().resourceId(preferencesResourceId));
+        button.clickAndWaitForNewWindow();
+
+        //click Stocks setup
+        String stockSetup = "Stocks setup";
+        UiScrollable preferencesListView  = new UiScrollable(new UiSelector());
+        preferencesListView.setMaxSearchSwipes(100);
+        preferencesListView.scrollTextIntoView(stockSetup);
+        preferencesListView.waitForExists(5000);
+        UiObject preferencesListItem = preferencesListView.getChildByText(new UiSelector().className(android.widget.TextView.class.getName()),""+stockSetup+"");
+        preferencesListItem.click();
+
+        //Add 2nd Stock
+        int index = 1;
+        UiScrollable stockListView  = new UiScrollable(new UiSelector());
+        stockListView.getChild(new UiSelector().clickable(true).index(index)).click();
+
+        String symbolToAdd = "K";
+        UiObject searchField = mDevice.findObject(new UiSelector().resourceId(searchFieldResourceId));
+        searchField.setText(symbolToAdd);
+
+        /*TODO
+        Select first liste item of autocomplete view. autocomplete view does not show up on uiautomatorviewer so idk how to do it yet
+         */
+
+
+        //Change 1st Stock
+        index = 0;
+        stockListView.getChild(new UiSelector().clickable(true).index(index)).click();
+
+        symbolToAdd = "MMD";
+        searchField = mDevice.findObject(new UiSelector().resourceId(searchFieldResourceId));
+        searchField.setText(symbolToAdd);
+
+        /*TODO
+        Select first liste item of autocomplete view. autocomplete view does not show up on uiautomatorviewer so idk how to do it yet
+         */
+
+        //Remove 2nd Stock
+        index = 1;
+        stockListView.getChild(new UiSelector().clickable(true).index(index)).click();
+
+        symbolToAdd = "";
+        searchField = mDevice.findObject(new UiSelector().resourceId(searchFieldResourceId));
+        searchField.setText(symbolToAdd);
+
+        /*TODO
+        Select first list item of autocomplete view. autocomplete view does not show up on uiautomatorviewer so idk how to do it yet
+         */
     }
 }
