@@ -15,7 +15,7 @@ import android.support.test.uiautomator.UiSelector;
 import android.util.Log;
 
 /**
- * Created by Gurkomal Rao, Jefferson Casmir, Nicholas Fong on 3/14/2018.
+ * Created by Gurkomal Rao, Jefferson Casimir, Nicholas Fong on 3/14/2018.
  */
 
 @RunWith(AndroidJUnit4.class)
@@ -35,24 +35,13 @@ public class SimpleUITesting {
     }
 
     @Test
-    public void clickListItemTest() throws UiObjectNotFoundException{
-        /*TODO
-        Change this function to select index of list rather than specific stock symbol
-         */
-        String stockSymbol = "K";
-        UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        UiScrollable listView  = new UiScrollable(new UiSelector());
+    public void clickListItemTest() throws UiObjectNotFoundException
+    {
+        int index = 0;
+        UiScrollable listView = new UiScrollable(new UiSelector());
         listView.setMaxSearchSwipes(100);
-        listView.scrollTextIntoView(stockSymbol);
         listView.waitForExists(5000);
-        UiObject listViewItem = listView.getChildByText(new UiSelector().className(android.widget.TextView.class.getName()),""+stockSymbol+"");
-        listViewItem.click();
-        Log.i("Base Widget View Click Test",stockSymbol+ " ListView item was clicked.");
-
-        try { mDevice.wait(1000); }
-        catch (Exception e) {e.printStackTrace();}
-
-        mDevice.pressBack();
+        listView.getChild(new UiSelector().clickable(true).index(index)).click();
     }
 
     @Test
