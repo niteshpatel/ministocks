@@ -1,5 +1,6 @@
 package nitezh.ministock;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,16 +27,25 @@ import android.widget.AutoCompleteTextView;
 @SdkSuppress(minSdkVersion = 18)
 public class SimpleUITesting {
 
-    String preferencesResourceId;
+    UiDevice mDevice;
 
     @Before
     public void setup(){
-        preferencesResourceId = "nitezh.ministock:id/prefs_but";
+        mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    }
+
+    @After
+    public void finish(){
+        mDevice.pressHome();    //After every test go back to home screen
     }
 
     @Test
     public void clickListItemTest() throws UiObjectNotFoundException{
-        String stockSymbol = "^DJI";
+
+        /*TODO
+        Change this function to select index of list rather than specific stock symbol
+         */
+        String stockSymbol = "K";
         UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         UiScrollable listView  = new UiScrollable(new UiSelector());
         listView.setMaxSearchSwipes(100);
@@ -52,23 +62,29 @@ public class SimpleUITesting {
     }
 
     @Test
-    public void clickPreferences() throws UiObjectNotFoundException{
-        UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    public void clickPreferencesTest() throws UiObjectNotFoundException{
+        selectPreferences();
+    }
+
+    @Test
+    public void clickStockSetupTest() throws UiObjectNotFoundException{
+        selectPreferences();                        //click Preferences Button
+        selectStockSetup();                        //click Stocks setup
+        addStock(1, "K");       //Add 2nd Stock
+        addStock(0, "MMD");     //Change 1st Stock
+        /*TODO
+        Fix removing stock (currently does not remove)
+         */
+        addStock(0, " ");       //Remove 2nd Stock
+    }
+
+    private void selectPreferences()throws UiObjectNotFoundException{
+        String preferencesResourceId = "nitezh.ministock:id/prefs_but";
         UiObject button = mDevice.findObject(new UiSelector().resourceId(preferencesResourceId));
         button.clickAndWaitForNewWindow();
     }
 
-    @Test
-    public void ManipulateStocks() throws UiObjectNotFoundException{
-
-        String searchFieldResourceId = "android:id/search_src_text";
-
-        //click Preferences Button
-        UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        UiObject button = mDevice.findObject(new UiSelector().resourceId(preferencesResourceId));
-        button.clickAndWaitForNewWindow();
-
-        //click Stocks setup
+    private void selectStockSetup() throws UiObjectNotFoundException{
         String stockSetup = "Stocks setup";
         UiScrollable preferencesListView  = new UiScrollable(new UiSelector());
         preferencesListView.setMaxSearchSwipes(100);
@@ -76,48 +92,18 @@ public class SimpleUITesting {
         preferencesListView.waitForExists(5000);
         UiObject preferencesListItem = preferencesListView.getChildByText(new UiSelector().className(android.widget.TextView.class.getName()),""+stockSetup+"");
         preferencesListItem.click();
+    }
 
-        //Add 2nd Stock
-        int index = 1;
+    private void addStock(int index, String symbolToAdd) throws UiObjectNotFoundException{
+        String searchFieldResourceId = "android:id/search_src_text";
         UiScrollable stockListView  = new UiScrollable(new UiSelector());
         stockListView.getChild(new UiSelector().clickable(true).index(index)).click();
-
-        String symbolToAdd = "K";
         UiObject searchField = mDevice.findObject(new UiSelector().resourceId(searchFieldResourceId));
         searchField.setText(symbolToAdd);
-
         searchField.clickAndWaitForNewWindow(2000);
         mDevice.pressDPadDown();
         mDevice.pressDPadUp();
         mDevice.pressEnter();
-
-        //Change 1st Stock
-        index = 0;
-        stockListView.getChild(new UiSelector().clickable(true).index(index)).click();
-
-        symbolToAdd = "MMD";
-        searchField = mDevice.findObject(new UiSelector().resourceId(searchFieldResourceId));
-        searchField.setText(symbolToAdd);
-
-        searchField.clickAndWaitForNewWindow(2000);
-        mDevice.pressDPadDown();
-        mDevice.pressDPadUp();
-        mDevice.pressEnter();
-        
-        //Remove 2nd Stock
-        index = 1;
-        stockListView.getChild(new UiSelector().clickable(true).index(index)).click();
-
-        symbolToAdd = " ";
-        searchField = mDevice.findObject(new UiSelector().resourceId(searchFieldResourceId));
-        searchField.setText(symbolToAdd);
-
-        searchField.clickAndWaitForNewWindow(2000);
-        mDevice.pressDPadDown();
-        mDevice.pressDPadDown();
-        mDevice.pressDPadDown();
-        mDevice.pressDPadDown();
-        mDevice.pressEnter();
-
     }
+
 }
