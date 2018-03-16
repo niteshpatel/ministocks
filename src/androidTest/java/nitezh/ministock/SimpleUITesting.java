@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import android.inputmethodservice.Keyboard;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SdkSuppress;
 import android.support.test.runner.AndroidJUnit4;
@@ -13,6 +14,8 @@ import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiScrollable;
 import android.support.test.uiautomator.UiSelector;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.widget.AutoCompleteTextView;
 
 /**
  * Created by GRao on 3/14/2018.
@@ -41,11 +44,15 @@ public class SimpleUITesting {
         UiObject listViewItem = listView.getChildByText(new UiSelector().className(android.widget.TextView.class.getName()),""+stockSymbol+"");
         listViewItem.click();
         Log.i("Base Widget View Click Test",stockSymbol+ " ListView item was clicked.");
+
+        try { mDevice.wait(1000); }
+        catch (Exception e) {e.printStackTrace();}
+
+        mDevice.pressBack();
     }
 
     @Test
     public void clickPreferences() throws UiObjectNotFoundException{
-
         UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         UiObject button = mDevice.findObject(new UiSelector().resourceId(preferencesResourceId));
         button.clickAndWaitForNewWindow();
@@ -79,10 +86,10 @@ public class SimpleUITesting {
         UiObject searchField = mDevice.findObject(new UiSelector().resourceId(searchFieldResourceId));
         searchField.setText(symbolToAdd);
 
-        /*TODO
-        Select first liste item of autocomplete view. autocomplete view does not show up on uiautomatorviewer so idk how to do it yet
-         */
-
+        searchField.clickAndWaitForNewWindow(2000);
+        mDevice.pressDPadDown();
+        mDevice.pressDPadUp();
+        mDevice.pressEnter();
 
         //Change 1st Stock
         index = 0;
@@ -92,20 +99,25 @@ public class SimpleUITesting {
         searchField = mDevice.findObject(new UiSelector().resourceId(searchFieldResourceId));
         searchField.setText(symbolToAdd);
 
-        /*TODO
-        Select first liste item of autocomplete view. autocomplete view does not show up on uiautomatorviewer so idk how to do it yet
-         */
-
+        searchField.clickAndWaitForNewWindow(2000);
+        mDevice.pressDPadDown();
+        mDevice.pressDPadUp();
+        mDevice.pressEnter();
+        
         //Remove 2nd Stock
         index = 1;
         stockListView.getChild(new UiSelector().clickable(true).index(index)).click();
 
-        symbolToAdd = "";
+        symbolToAdd = " ";
         searchField = mDevice.findObject(new UiSelector().resourceId(searchFieldResourceId));
         searchField.setText(symbolToAdd);
 
-        /*TODO
-        Select first list item of autocomplete view. autocomplete view does not show up on uiautomatorviewer so idk how to do it yet
-         */
+        searchField.clickAndWaitForNewWindow(2000);
+        mDevice.pressDPadDown();
+        mDevice.pressDPadDown();
+        mDevice.pressDPadDown();
+        mDevice.pressDPadDown();
+        mDevice.pressEnter();
+
     }
 }
