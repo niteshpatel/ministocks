@@ -27,6 +27,7 @@ package nitezh.ministock.dataaccess;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -53,6 +54,7 @@ public class GoogleStockQuoteRepositoryTests {
 
     @Test
     public void retrieveDJIQuoteAsJson() {
+        Assume.assumeTrue(System.getenv("CIRCLECI") == null);
         // Arrange
         List<String> symbols = Collections.singletonList(".DJI");
         JSONArray json = null;
