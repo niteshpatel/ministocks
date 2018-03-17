@@ -123,16 +123,6 @@ Log.d("EMAIL", toAddress);
         catch(IOException ioe){
             ioe.printStackTrace();
         }
-
-        //Previous email System
-        //String[] toAddress = {"Default"};
-        /*Intent sendEmail = new Intent(Intent.ACTION_SEND);
-        sendEmail.setType("message/rfc822");
-        //sendEmail.putExtra(Intent.EXTRA_EMAIL, toAddress);
-        sendEmail.putExtra(Intent.EXTRA_SUBJECT, "Ministocks: Data CSV file Import/Export[Work In Progress]");
-        sendEmail.putExtra(Intent.EXTRA_TEXT, "You will find your requested data csv file attached to this email!");
-        sendEmail.putExtra(Intent.EXTRA_STREAM, fileuri);
-        startActivity(sendEmail);*/
         return null;
     }
 }
