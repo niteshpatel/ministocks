@@ -38,18 +38,21 @@ import java.util.concurrent.RejectedExecutionException;
 import nitezh.ministock.CustomAlarmManager;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.Storage;
-import nitezh.ministock.domain.Widget;
-import nitezh.ministock.utils.StorageCache;
 import nitezh.ministock.UserData;
+import nitezh.ministock.activities.ChartActivity;
 import nitezh.ministock.activities.PreferencesActivity;
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.domain.StockQuoteRepository;
+import nitezh.ministock.domain.Widget;
 import nitezh.ministock.domain.WidgetRepository;
 import nitezh.ministock.utils.DateTools;
+import nitezh.ministock.utils.StorageCache;
 
 
 public class WidgetProviderBase extends AppWidgetProvider {
+
+    public static String ROW_POSITION = "ROW_POSITION";
 
     private static void applyUpdate(Context context, int appWidgetId, UpdateType updateMode,
                                     HashMap<String, StockQuote> quotes, String quotesTimeStamp) {
@@ -57,7 +60,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
                 quotes, quotesTimeStamp);
         widgetView.setOnClickPendingIntents();
         if (widgetView.hasPendingChanges()) {
-            widgetView.applyPendingChanges();
+            widgetView.applyPendingChanges(appWidgetId);
             AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, widgetView.getRemoteViews());
         }
     }
@@ -115,9 +118,9 @@ public class WidgetProviderBase extends AppWidgetProvider {
     }
 
     private void handleTouch(Context context, int appWidgetId, String action) {
-        if (action.equals("LEFT")) {
+        if (action.equals("PREFERENCES")) {
             startPreferencesActivity(context, appWidgetId);
-        } else if (action.equals("RIGHT")) {
+        } else if (action.equals("REFRESH")) {
             UpdateType updateType = getUpdateTypeForTouchRight(context, appWidgetId);
             updateWidgetAsync(context, appWidgetId, updateType);
         }
@@ -141,19 +144,24 @@ public class WidgetProviderBase extends AppWidgetProvider {
         context.startActivity(activity);
     }
 
+    private void startChartActivity(Context context, int appWidgetId, int position) {
+        ChartActivity.mAppWidgetId = appWidgetId;
+        Intent activity = new Intent(context, ChartActivity.class);
+        activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        activity.putExtra(ROW_POSITION, position);
+        context.startActivity(activity);
+    }
+
     @Override
     public void onReceive(@SuppressWarnings("NullableProblems") Context context,
                           @SuppressWarnings("NullableProblems") Intent intent) {
         String action = intent.getAction();
-
         if (action != null) {
             switch (action) {
                 case CustomAlarmManager.ALARM_UPDATE:
                     doScheduledUpdates(context);
                     break;
-
-                case "LEFT":
-                case "RIGHT":
+                case "PREFERENCES":
                     Bundle extras = intent.getExtras();
                     if (extras != null) {
                         int appWidgetId = extras.getInt(
@@ -162,7 +170,27 @@ public class WidgetProviderBase extends AppWidgetProvider {
                         handleTouch(context, appWidgetId, action);
                     }
                     break;
+                case "REFRESH":
+                    Bundle refExtras = intent.getExtras();
+                    if (refExtras != null) {
+                        int refAppWidgetId = refExtras.getInt(
+                                AppWidgetManager.EXTRA_APPWIDGET_ID,
+                                AppWidgetManager.INVALID_APPWIDGET_ID);
+                        handleTouch(context, refAppWidgetId, action);
+                    }
+                    break;
+                case "POP_CHART":
+                    Bundle chartExtras = intent.getExtras();
+                    if (chartExtras != null) {
+                        int chartAppWidgetId = chartExtras.getInt(
+                                AppWidgetManager.EXTRA_APPWIDGET_ID,
+                                AppWidgetManager.INVALID_APPWIDGET_ID);
+                        int position = intent.getIntExtra(ROW_POSITION,
+                                0);
 
+                        startChartActivity(context, chartAppWidgetId, position);
+                    }
+                    break;
                 default:
                     super.onReceive(context, intent);
                     break;
@@ -178,6 +206,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
         new CustomAlarmManager(context).reinitialize();
         updateWidgetsFromCache(context);
     }
@@ -188,6 +217,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
 
         new CustomAlarmManager(context).reinitialize();
     }
+
 
     @Override
     public void onDeleted(Context context, int[] appWidgetIds) {

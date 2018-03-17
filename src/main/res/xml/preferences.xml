@@ -349,5 +349,9 @@
                 android:summary="View the attributions"
                 android:title="Attributions" />
         </PreferenceScreen>
+        <PreferenceScreen
+            android:key="send_email"
+            android:summary="Export data through email"
+            android:title="Export"></PreferenceScreen>
     </PreferenceCategory>
 </PreferenceScreen>

@@ -24,21 +24,21 @@
 
 package nitezh.ministock.domain;
 
-import nitezh.ministock.utils.NumberTools;
-
 import java.text.ParseException;
 import java.util.Locale;
+
+import nitezh.ministock.utils.NumberTools;
 
 
 public class StockQuote {
 
+    private final String exchange;
+    private final String volume;
+    private final String name;
     private String symbol;
     private String price;
     private String change;
     private String percent;
-    private final String exchange;
-    private final String volume;
-    private final String name;
 
     public StockQuote(
             String symbol,

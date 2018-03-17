@@ -196,6 +196,7 @@ class AndroidWidget implements Widget {
 
         if (!found) {
             symbols.add("^DJI");
+
         }
         return symbols;
     }

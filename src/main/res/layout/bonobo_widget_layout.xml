@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:backgroundTint="#111">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:background="#00ffffff"
+        android:orientation="vertical">
+
+        <ListView
+            android:id="@+id/widgetCollectionList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ministock_bg_transparent68"></ListView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="2"
+            android:background="#00ffffff"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/test_but"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:alpha="0.5"
+                android:gravity="center"
+                android:text="REFRESH"
+                android:textSize="10sp" />
+
+            <Button
+                android:id="@+id/prefs_but"
+                android:layout_width="95dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:alpha="0.5"
+                android:gravity="center"
+                android:text="PREFERENCES"
+                android:textSize="10sp"
+
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

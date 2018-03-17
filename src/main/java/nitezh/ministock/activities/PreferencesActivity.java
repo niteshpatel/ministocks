@@ -24,8 +24,10 @@
 
 package nitezh.ministock.activities;
 
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -37,6 +39,8 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.text.InputType;
+import android.widget.EditText;
 import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
@@ -45,6 +49,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import nitezh.ministock.DialogTools;
+import nitezh.ministock.MimeSendTask;
 import nitezh.ministock.R;
 import nitezh.ministock.UserData;
 import nitezh.ministock.activities.widget.WidgetProviderBase;
@@ -53,7 +58,6 @@ import nitezh.ministock.utils.VersionTools;
 
 import static android.content.SharedPreferences.Editor;
 import static android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-
 
 public class PreferencesActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
@@ -71,7 +75,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 //            + "• TODO.<br/><br/>"
             + "Multiple bug fixes:<br/><br/>"
             + "• Allow comma when entering numbers";
-
+    String m_Text; //store input of the user
     // Fields for time pickers
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
     private String mTimePickerKey = null;
@@ -158,6 +162,8 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     @Override
     protected void onResume() {
         super.onResume();
+
+
         showRecentChanges();
         PreferenceScreen screen = getPreferenceScreen();
         SharedPreferences sharedPreferences = screen.getSharedPreferences();
@@ -207,6 +213,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         // Perform some custom handling of some values
+
         if (key.startsWith("Stock") && !key.endsWith("_summary")) {
             updateStockValue(sharedPreferences, key);
 
@@ -232,6 +239,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 
     private void updateStockValue(SharedPreferences sharedPreferences, String key) {
         // Unregister the listener whenever a key changes
+
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
 
         // Massages the value: remove whitespace and upper-case
@@ -453,6 +461,18 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 return true;
             }
         });
+
+        final Preference sendEmail = findPreference("send_email");
+
+
+        sendEmail.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                sendEmailToUser();
+                return true;
+            }
+        });
+
         // Hook the PortfolioActivity preference to the PortfolioActivity activity
         Preference portfolio = findPreference("portfolio");
         portfolio.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -679,6 +699,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 
     private void updateSummaries(SharedPreferences sharedPreferences, String key) {
         Preference preference = findPreference(key);
+
         if (preference != null) {
 
             // Initialise the Stock summaries
@@ -759,7 +780,6 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     @Override
     protected void onStop() {
         super.onStop();
-
         // Update the widget when we quit the preferences, and if the dirty,
         // flag is true then do a web update, otherwise do a regular update
         if (mPendingUpdate) {
@@ -783,6 +803,37 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         String title = "Using the portfolio";
         String body = "On the portfolio screen you will see all the stocks that you have entered in your widgets in one list.<br /><br />You can touch an item to enter your stock purchase details.<br /><br /><b>Entering purchase details</b><br /><br />Enter the price that you bought the stock for, this will then be used for the PortfolioActivity and Profit and loss widget views.<br /><br />The Date is optional, and will be used for the AER rate on the portfolio AER and profit and loss AER views.<br /><br />The Quantity is optional, and will be used to calculate your holdings for the profit and loss views.  You may use negative values to simulate a short position.<br /><br />The High price limit and Low price limit are optional.  When the current price hits these limits, the price color will change in the widget.<br /><br /><b>Removing purchase details</b><br /><br />To remove purchase and alert details, long press the portfolio item and then choose the Clear details option.";
         DialogTools.showSimpleDialog(this, title, body);
+    }
+
+
+    private void sendEmailToUser() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Title");
+
+        // Set up the input
+        final EditText input = new EditText(this);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                m_Text = input.getText().toString();
+                new MimeSendTask(m_Text).execute();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+
     }
 
     private void showChangeLog() {
