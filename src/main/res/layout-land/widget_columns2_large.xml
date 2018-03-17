@@ -23,150 +23,235 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:paddingLeft="0dp">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingLeft="0dp">
 
     <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="horizontal">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal">
 
         <LinearLayout
-                android:id="@+id/widget_left"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-        </LinearLayout>
+            android:id="@+id/widget_left"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"></LinearLayout>
+
         <LinearLayout
-                android:id="@+id/widget_right"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-        </LinearLayout>
+            android:id="@+id/widget_right"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"></LinearLayout>
     </LinearLayout>
 
     <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical"
-            android:paddingLeft="9dp"
-            android:paddingRight="9dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:paddingBottom="6dp"
+        android:paddingLeft="9dp"
+        android:paddingRight="9dp"
+        android:paddingTop="6dp">
 
         <LinearLayout
-                android:id="@+id/line1"
-                android:orientation="horizontal"
-                style="@style/StockLine">
+            android:id="@+id/line1"
+            style="@style/StockLine"
+            android:orientation="horizontal">
 
-            <TextView android:id="@+id/text11" style="@style/StockSymbol_land_large"/>
-            <TextView android:id="@+id/text12" style="@style/StockPrice_land_large"/>
-            <TextView android:id="@+id/text13" style="@style/StockChange_land_large"/>
+            <TextView
+                android:id="@+id/text11"
+                style="@style/StockSymbol_land_large" />
+
+            <TextView
+                android:id="@+id/text12"
+                style="@style/StockPrice_land_large" />
+
+            <TextView
+                android:id="@+id/text13"
+                style="@style/StockChange_land_large" />
         </LinearLayout>
 
         <LinearLayout
-                android:id="@+id/line2"
-                android:orientation="horizontal"
-                style="@style/StockLine">
+            android:id="@+id/line2"
+            style="@style/StockLine"
+            android:orientation="horizontal">
 
-            <TextView android:id="@+id/text21" style="@style/StockSymbol_land_large"/>
-            <TextView android:id="@+id/text22" style="@style/StockPrice_land_large"/>
-            <TextView android:id="@+id/text23" style="@style/StockChange_land_large"/>
+            <TextView
+                android:id="@+id/text21"
+                style="@style/StockSymbol_land_large" />
+
+            <TextView
+                android:id="@+id/text22"
+                style="@style/StockPrice_land_large" />
+
+            <TextView
+                android:id="@+id/text23"
+                style="@style/StockChange_land_large" />
         </LinearLayout>
 
         <LinearLayout
-                android:id="@+id/line3"
-                android:orientation="horizontal"
-                style="@style/StockLine">
+            android:id="@+id/line3"
+            style="@style/StockLine"
+            android:orientation="horizontal">
 
-            <TextView android:id="@+id/text31" style="@style/StockSymbol_land_large"/>
-            <TextView android:id="@+id/text32" style="@style/StockPrice_land_large"/>
-            <TextView android:id="@+id/text33" style="@style/StockChange_land_large"/>
+            <TextView
+                android:id="@+id/text31"
+                style="@style/StockSymbol_land_large" />
+
+            <TextView
+                android:id="@+id/text32"
+                style="@style/StockPrice_land_large" />
+
+            <TextView
+                android:id="@+id/text33"
+                style="@style/StockChange_land_large" />
         </LinearLayout>
 
         <LinearLayout
-                android:id="@+id/line4"
-                android:orientation="horizontal"
-                style="@style/StockLine">
+            android:id="@+id/line4"
+            style="@style/StockLine"
+            android:orientation="horizontal">
 
-            <TextView android:id="@+id/text41" style="@style/StockSymbol_land_large"/>
-            <TextView android:id="@+id/text42" style="@style/StockPrice_land_large"/>
-            <TextView android:id="@+id/text43" style="@style/StockChange_land_large"/>
+            <TextView
+                android:id="@+id/text41"
+                style="@style/StockSymbol_land_large" />
+
+            <TextView
+                android:id="@+id/text42"
+                style="@style/StockPrice_land_large" />
+
+            <TextView
+                android:id="@+id/text43"
+                style="@style/StockChange_land_large" />
         </LinearLayout>
 
         <LinearLayout
-                android:id="@+id/line5"
-                android:orientation="horizontal"
-                style="@style/StockLine">
+            android:id="@+id/line5"
+            style="@style/StockLine"
+            android:orientation="horizontal">
 
-            <TextView android:id="@+id/text51" style="@style/StockSymbol_land_large"/>
-            <TextView android:id="@+id/text52" style="@style/StockPrice_land_large"/>
-            <TextView android:id="@+id/text53" style="@style/StockChange_land_large"/>
+            <TextView
+                android:id="@+id/text51"
+                style="@style/StockSymbol_land_large" />
+
+            <TextView
+                android:id="@+id/text52"
+                style="@style/StockPrice_land_large" />
+
+            <TextView
+                android:id="@+id/text53"
+                style="@style/StockChange_land_large" />
         </LinearLayout>
 
         <LinearLayout
-                android:id="@+id/line6"
-                android:orientation="horizontal"
-                style="@style/StockLine">
+            android:id="@+id/line6"
+            style="@style/StockLine"
+            android:orientation="horizontal">
 
-            <TextView android:id="@+id/text61" style="@style/StockSymbol_land_large"/>
-            <TextView android:id="@+id/text62" style="@style/StockPrice_land_large"/>
-            <TextView android:id="@+id/text63" style="@style/StockChange_land_large"/>
+            <TextView
+                android:id="@+id/text61"
+                style="@style/StockSymbol_land_large" />
+
+            <TextView
+                android:id="@+id/text62"
+                style="@style/StockPrice_land_large" />
+
+            <TextView
+                android:id="@+id/text63"
+                style="@style/StockChange_land_large" />
         </LinearLayout>
 
         <LinearLayout
-                android:id="@+id/line7"
-                android:orientation="horizontal"
-                style="@style/StockLine">
+            android:id="@+id/line7"
+            style="@style/StockLine"
+            android:orientation="horizontal">
 
-            <TextView android:id="@+id/text71" style="@style/StockSymbol_land_large"/>
-            <TextView android:id="@+id/text72" style="@style/StockPrice_land_large"/>
-            <TextView android:id="@+id/text73" style="@style/StockChange_land_large"/>
+            <TextView
+                android:id="@+id/text71"
+                style="@style/StockSymbol_land_large" />
+
+            <TextView
+                android:id="@+id/text72"
+                style="@style/StockPrice_land_large" />
+
+            <TextView
+                android:id="@+id/text73"
+                style="@style/StockChange_land_large" />
         </LinearLayout>
 
         <LinearLayout
-                android:id="@+id/line8"
-                android:orientation="horizontal"
-                style="@style/StockLine">
+            android:id="@+id/line8"
+            style="@style/StockLine"
+            android:orientation="horizontal">
 
-            <TextView android:id="@+id/text81" style="@style/StockSymbol_land_large"/>
-            <TextView android:id="@+id/text82" style="@style/StockPrice_land_large"/>
-            <TextView android:id="@+id/text83" style="@style/StockChange_land_large"/>
+            <TextView
+                android:id="@+id/text81"
+                style="@style/StockSymbol_land_large" />
+
+            <TextView
+                android:id="@+id/text82"
+                style="@style/StockPrice_land_large" />
+
+            <TextView
+                android:id="@+id/text83"
+                style="@style/StockChange_land_large" />
         </LinearLayout>
 
         <LinearLayout
-                android:id="@+id/line9"
-                android:orientation="horizontal"
-                style="@style/StockLine">
+            android:id="@+id/line9"
+            style="@style/StockLine"
+            android:orientation="horizontal">
 
-            <TextView android:id="@+id/text91" style="@style/StockSymbol_land_large"/>
-            <TextView android:id="@+id/text92" style="@style/StockPrice_land_large"/>
-            <TextView android:id="@+id/text93" style="@style/StockChange_land_large"/>
+            <TextView
+                android:id="@+id/text91"
+                style="@style/StockSymbol_land_large" />
+
+            <TextView
+                android:id="@+id/text92"
+                style="@style/StockPrice_land_large" />
+
+            <TextView
+                android:id="@+id/text93"
+                style="@style/StockChange_land_large" />
         </LinearLayout>
 
         <LinearLayout
-                android:id="@+id/line10"
-                android:orientation="horizontal"
-                style="@style/StockLine">
+            android:id="@+id/line10"
+            style="@style/StockLine"
+            android:orientation="horizontal">
 
-            <TextView android:id="@+id/text101" style="@style/StockSymbol_land_large"/>
-            <TextView android:id="@+id/text102" style="@style/StockPrice_land_large"/>
-            <TextView android:id="@+id/text103" style="@style/StockChange_land_large"/>
+            <TextView
+                android:id="@+id/text101"
+                style="@style/StockSymbol_land_large" />
+
+            <TextView
+                android:id="@+id/text102"
+                style="@style/StockPrice_land_large" />
+
+            <TextView
+                android:id="@+id/text103"
+                style="@style/StockChange_land_large" />
         </LinearLayout>
 
         <LinearLayout
-                style="@style/StockLine"
-                android:visibility="gone">
+            style="@style/StockLine"
+            android:visibility="gone">
+
             <LinearLayout
-                    android:id="@+id/text_footer"
-                    android:orientation="horizontal"
-                    style="@style/StockLine">
+                android:id="@+id/text_footer"
+                style="@style/StockLine"
+                android:orientation="horizontal">
 
-                <TextView android:id="@+id/text5" style="@style/StockTime"/>
-                <TextView android:id="@+id/text6" style="@style/StockView"/>
+                <TextView
+                    android:id="@+id/text5"
+                    style="@style/StockTime" />
+
+                <TextView
+                    android:id="@+id/text6"
+                    style="@style/StockView" />
 
             </LinearLayout>
         </LinearLayout>

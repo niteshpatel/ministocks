@@ -1,8 +1,8 @@
 package nitezh.ministock.activities.widget;
 
+import android.content.Intent;
 import android.util.Log;
 import android.widget.RemoteViewsService;
-import android.content.Intent;
 
 
 /**

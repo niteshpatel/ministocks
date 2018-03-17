@@ -4,7 +4,7 @@
     android:id="@+id/bonobo_item"
     android:layout_width="match_parent"
     android:layout_height="50dp">
-  
+
     <TextView
         android:id="@+id/ticker_col"
         android:layout_width="wrap_content"

@@ -24,11 +24,11 @@
 
 package nitezh.ministock.domain;
 
-import nitezh.ministock.utils.NumberTools;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import nitezh.ministock.utils.NumberTools;
 
 
 public class WidgetStock {

@@ -8,16 +8,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
         android:background="#00ffffff"
-        android:orientation="vertical"
-        android:layout_gravity="center_horizontal">
+        android:orientation="vertical">
 
         <ListView
             android:id="@+id/widgetCollectionList"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/ministock_bg_transparent68">
-        </ListView>
+            android:background="@drawable/ministock_bg_transparent68"></ListView>
 
         <LinearLayout
             android:layout_width="match_parent"

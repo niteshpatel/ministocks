@@ -27,13 +27,12 @@ package nitezh.ministock.domain;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.junit.Assert.assertEquals;
-
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 import nitezh.ministock.Storage;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(RobolectricTestRunner.class)
 public class AndroidWidgetTests {

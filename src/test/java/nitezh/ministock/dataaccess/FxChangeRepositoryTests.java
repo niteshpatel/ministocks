@@ -28,7 +28,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+
 import nitezh.ministock.mocks.MockCache;
+
 import static org.junit.Assert.assertNotNull;
 
 

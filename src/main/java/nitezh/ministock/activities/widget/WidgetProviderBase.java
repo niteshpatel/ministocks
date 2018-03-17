@@ -24,17 +24,12 @@
 
 package nitezh.ministock.activities.widget;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -42,23 +37,23 @@ import java.util.concurrent.RejectedExecutionException;
 
 import nitezh.ministock.CustomAlarmManager;
 import nitezh.ministock.PreferenceStorage;
-import nitezh.ministock.R;
 import nitezh.ministock.Storage;
-import nitezh.ministock.activities.ChartActivity;
-import nitezh.ministock.domain.Widget;
-import nitezh.ministock.utils.StorageCache;
 import nitezh.ministock.UserData;
+import nitezh.ministock.activities.ChartActivity;
 import nitezh.ministock.activities.PreferencesActivity;
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.domain.StockQuoteRepository;
+import nitezh.ministock.domain.Widget;
 import nitezh.ministock.domain.WidgetRepository;
 import nitezh.ministock.utils.DateTools;
+import nitezh.ministock.utils.StorageCache;
 
 
 public class WidgetProviderBase extends AppWidgetProvider {
 
     public static String ROW_POSITION = "ROW_POSITION";
+
     private static void applyUpdate(Context context, int appWidgetId, UpdateType updateMode,
                                     HashMap<String, StockQuote> quotes, String quotesTimeStamp) {
         WidgetView widgetView = new WidgetView(context, appWidgetId, updateMode,
@@ -192,7 +187,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
                                 AppWidgetManager.INVALID_APPWIDGET_ID);
                         int position = intent.getIntExtra(ROW_POSITION,
                                 0);
-                        
+
                         startChartActivity(context, chartAppWidgetId, position);
                     }
                     break;

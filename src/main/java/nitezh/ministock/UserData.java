@@ -28,12 +28,6 @@ import android.app.Activity;
 import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
-
-import nitezh.ministock.domain.AndroidWidgetRepository;
-import nitezh.ministock.domain.PortfolioStockRepository;
-import nitezh.ministock.domain.Widget;
-import nitezh.ministock.domain.WidgetRepository;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,6 +39,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
+
+import nitezh.ministock.domain.AndroidWidgetRepository;
+import nitezh.ministock.domain.PortfolioStockRepository;
+import nitezh.ministock.domain.Widget;
+import nitezh.ministock.domain.WidgetRepository;
 
 
 public class UserData {

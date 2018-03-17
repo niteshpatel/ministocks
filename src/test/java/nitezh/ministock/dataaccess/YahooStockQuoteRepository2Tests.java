@@ -27,9 +27,9 @@ package nitezh.ministock.dataaccess;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Assume;
 
 import java.util.Arrays;
 import java.util.HashMap;

@@ -33,9 +33,6 @@ public class CurrencyTools {
     private static final HashMap<String, String> codeMap = new HashMap<>();
     private static final HashMap<String, String> charMap = new HashMap<>();
 
-    private CurrencyTools() {
-    }
-
     static {
         codeMap.put(".AS", "EUR");
         codeMap.put(".AX", "AUD");
@@ -111,6 +108,9 @@ public class CurrencyTools {
         charMap.put("ILS", "₪");
         charMap.put("CAD", "$");
         charMap.put("TWD", "$");
+    }
+
+    private CurrencyTools() {
     }
 
     private static String getCurrencyForSymbol(String symbol) {

@@ -2,9 +2,6 @@ package nitezh.ministock.domain;
 
 import android.test.AndroidTestCase;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,25 +9,18 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import nitezh.ministock.activities.GlobalWidgetData;
 import nitezh.ministock.activities.widget.WidgetRow;
-import nitezh.ministock.mocks.MockCache;
-import nitezh.ministock.mocks.MockStorage;
-import nitezh.ministock.mocks.MockWidgetRepository;
 
 import static nitezh.ministock.activities.GlobalWidgetData.myStockList;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by GRao on 2/20/2018.
  */
 @RunWith(RobolectricTestRunner.class)
-public class myDataTest extends AndroidTestCase{
+public class myDataTest extends AndroidTestCase {
 
     private StockQuoteRepository stockRepository;
     private GlobalWidgetData testData;
@@ -54,7 +44,7 @@ public class myDataTest extends AndroidTestCase{
     }
 
     @Test
-    public void testDataRetrieval(){
+    public void testDataRetrieval() {
 
         myList = GlobalWidgetData.getList();          //retrieve from global class
         assertEquals("500", myList.get(0).getPrice());

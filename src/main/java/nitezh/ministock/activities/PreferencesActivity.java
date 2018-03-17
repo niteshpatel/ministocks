@@ -32,7 +32,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -41,34 +40,19 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.text.InputType;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.Callable;
-
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 import nitezh.ministock.DialogTools;
 import nitezh.ministock.MimeSendTask;
 import nitezh.ministock.R;
 import nitezh.ministock.UserData;
 import nitezh.ministock.activities.widget.WidgetProviderBase;
-import nitezh.ministock.activities.widget.WidgetRow;
 import nitezh.ministock.utils.DateTools;
 import nitezh.ministock.utils.VersionTools;
 
@@ -91,14 +75,12 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 //            + "• TODO.<br/><br/>"
             + "Multiple bug fixes:<br/><br/>"
             + "• Allow comma when entering numbers";
-
+    String m_Text; //store input of the user
     // Fields for time pickers
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
     private String mTimePickerKey = null;
     private int mHour = 0;
     private int mMinute = 0;
-
-    String m_Text; //store input of the user
 
     private String getChangeLog() {
         return CHANGE_LOG;
@@ -483,7 +465,6 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         final Preference sendEmail = findPreference("send_email");
 
 
-
         sendEmail.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -825,8 +806,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     }
 
 
-
-    private void sendEmailToUser(){
+    private void sendEmailToUser() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Title");

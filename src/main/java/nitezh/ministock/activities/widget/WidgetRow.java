@@ -30,9 +30,8 @@ import nitezh.ministock.domain.Widget;
 
 public class WidgetRow {
     private final Widget widget;
-
-    private String symbol;
     private final int symbolDisplayColor;
+    private String symbol;
     private String price;
     private int priceColor;
     private String volume;

@@ -29,4 +29,4 @@
     android:minWidth="146dp"
     android:resizeMode="vertical|horizontal"
     android:updatePeriodMillis="1800000"
-    android:widgetCategory="keyguard|home_screen"/>
+    android:widgetCategory="keyguard|home_screen" />

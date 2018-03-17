@@ -35,7 +35,7 @@ public class ChartActivity extends Activity {
         Spanned html = Html.fromHtml("Sample Chart View (Row " + String.valueOf(position) + ") <br /><br />");
         TextView text = (TextView) findViewById(R.id.chart_text);
         text.setText(html);
-        new ImageSnatcher( (ImageView) findViewById(R.id.chart_img) ).execute("https://www.codeproject.com/KB/graphics/zedgraph/example_1.png");
+        new ImageSnatcher((ImageView) findViewById(R.id.chart_img)).execute("https://www.codeproject.com/KB/graphics/zedgraph/example_1.png");
     }
 
     @Override
@@ -44,6 +44,7 @@ public class ChartActivity extends Activity {
         finish();
     }
 }
+
 class ImageSnatcher extends AsyncTask<String, Void, Bitmap> {
     ImageView bmImage;
 

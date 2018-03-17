@@ -14,20 +14,13 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Properties;
 
-import javax.mail.BodyPart;
+import javax.activation.DataHandler;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.mail.util.ByteArrayDataSource;
 
 import nitezh.ministock.activities.GlobalWidgetData;
@@ -45,10 +38,10 @@ public class MimeSendTask extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Void ... voids) {
+    protected Void doInBackground(Void... voids) {
         //Data Storage Directory
         String path =
-                Environment.getExternalStorageDirectory() + File.separator  + "DataFolder";
+                Environment.getExternalStorageDirectory() + File.separator + "DataFolder";
         File folder = new File(path);
         folder.mkdirs();
 
@@ -61,8 +54,7 @@ public class MimeSendTask extends AsyncTask<Void, Void, Void> {
             OutputStreamWriter outWriter = new OutputStreamWriter(fOut);
 
             List<WidgetRow> myList = GlobalWidgetData.getList();
-            for (int i = 0; i< myList.size() ; i++)
-            {
+            for (int i = 0; i < myList.size(); i++) {
                 outWriter.append(myList.get(i).getSymbol());
                 outWriter.append("\n");
             }
@@ -70,9 +62,7 @@ public class MimeSendTask extends AsyncTask<Void, Void, Void> {
 
             fOut.flush();
             fOut.close();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             Log.e("Exception", "File write failed: " + e.toString());
         }
 
@@ -97,7 +87,7 @@ public class MimeSendTask extends AsyncTask<Void, Void, Void> {
                         return new javax.mail.PasswordAuthentication("ministocks34@gmail.com", "ministocks123");
                     }
                 });
-Log.d("EMAIL", toAddress);
+        Log.d("EMAIL", toAddress);
         try {
             //Creating MimeMessage object
             MimeMessage mm = new MimeMessage(session);
@@ -116,11 +106,9 @@ Log.d("EMAIL", toAddress);
             mm.setFileName("stocks.csv");
             //Sending email
             Transport.send(mm);
-        }
-        catch(MessagingException max){
+        } catch (MessagingException max) {
             max.printStackTrace();
-        }
-        catch(IOException ioe){
+        } catch (IOException ioe) {
             ioe.printStackTrace();
         }
         return null;
