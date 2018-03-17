@@ -56,7 +56,7 @@ public class YahooStockQuoteRepository2Tests {
     @Test
     public void retrieveQuotesAsJson() {
         // Skipif
-        Assume.assumeTrue(System.getenv("TRAVIS_CI") == null);
+        Assume.assumeTrue(System.getenv("CIRCLECI") == null);
 
         // Arrange
         List<String> symbols = Arrays.asList("AAPL", "GOOG");
@@ -97,7 +97,7 @@ public class YahooStockQuoteRepository2Tests {
     @Test
     public void getQuotes() {
         // Skipif
-        Assume.assumeTrue(System.getenv("TRAVIS_CI") == null);
+        Assume.assumeTrue(System.getenv("CIRCLECI") == null);
 
         // Arrange
         List<String> symbols = Arrays.asList("AAPL", "GOOG");

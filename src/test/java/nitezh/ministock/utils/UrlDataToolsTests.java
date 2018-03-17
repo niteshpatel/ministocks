@@ -12,7 +12,7 @@ public class UrlDataToolsTests {
     @Test
     public void testDataRetrievalFromIex() throws IOException {
         // Skipif
-        Assume.assumeTrue(System.getenv("TRAVIS_CI") == null);
+        Assume.assumeTrue(System.getenv("CIRCLECI") == null);
 
         // Arrange
         String url = "https://api.iextrading.com/1.0/stock/market/batch?symbols=aapl&types=quote";

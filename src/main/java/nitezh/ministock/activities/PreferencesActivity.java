@@ -24,9 +24,10 @@
 
 package nitezh.ministock.activities;
 
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.app.TimePickerDialog;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -39,40 +40,40 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
-import android.provider.Settings;
+import android.text.InputType;
 import android.util.Log;
-import android.widget.TextView;
+import android.widget.EditText;
 import android.widget.TimePicker;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 import nitezh.ministock.DialogTools;
+import nitezh.ministock.MimeSendTask;
 import nitezh.ministock.R;
 import nitezh.ministock.UserData;
 import nitezh.ministock.activities.widget.WidgetProviderBase;
 import nitezh.ministock.activities.widget.WidgetRow;
-import nitezh.ministock.domain.Widget;
 import nitezh.ministock.utils.DateTools;
 import nitezh.ministock.utils.VersionTools;
 
 import static android.content.SharedPreferences.Editor;
 import static android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-
 
 public class PreferencesActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
@@ -96,6 +97,8 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     private String mTimePickerKey = null;
     private int mHour = 0;
     private int mMinute = 0;
+
+    String m_Text; //store input of the user
 
     private String getChangeLog() {
         return CHANGE_LOG;
@@ -478,6 +481,9 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         });
 
         final Preference sendEmail = findPreference("send_email");
+
+
+
         sendEmail.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -818,52 +824,36 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         DialogTools.showSimpleDialog(this, title, body);
     }
 
+
+
     private void sendEmailToUser(){
 
-        //Data Storage Directory
-        String path =
-                Environment.getExternalStorageDirectory() + File.separator  + "DataFolder";
-        File folder = new File(path);
-        folder.mkdirs();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Title");
 
-        //file name
-        File file = new File(folder, "config.csv");
+        // Set up the input
+        final EditText input = new EditText(this);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
 
-        try {
-            file.createNewFile();
-            FileOutputStream fOut = new FileOutputStream(file);
-            OutputStreamWriter outWriter = new OutputStreamWriter(fOut);
-
-            List<WidgetRow> myList = GlobalWidgetData.getList();
-            for (int i = 0; i< myList.size() ; i++)
-            {
-                outWriter.append(myList.get(i).getPrice());
-                outWriter.append(",");
-                outWriter.append(myList.get(i).getSymbol());
-                outWriter.append(",");
-                outWriter.append(myList.get(i).getVolume());
-                outWriter.append("\n");
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                m_Text = input.getText().toString();
+                new MimeSendTask(m_Text).execute();
             }
-            outWriter.close();
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
 
-            fOut.flush();
-            fOut.close();
-        }
-        catch (IOException e)
-        {
-            Log.e("Exception", "File write failed: " + e.toString());
-        }
+        builder.show();
 
-        Uri fileuri = Uri.fromFile(file);
-
-        //String[] toAddress = {"Default"};
-        Intent sendEmail = new Intent(Intent.ACTION_SEND);
-        sendEmail.setType("message/rfc822");
-        //sendEmail.putExtra(Intent.EXTRA_EMAIL, toAddress);
-        sendEmail.putExtra(Intent.EXTRA_SUBJECT, "Ministocks: Data CSV file Import/Export[Work In Progress]");
-        sendEmail.putExtra(Intent.EXTRA_TEXT, "You will find your requested data csv file attached to this email!");
-        sendEmail.putExtra(Intent.EXTRA_STREAM, fileuri);
-        startActivity(sendEmail);
     }
 
     private void showChangeLog() {
