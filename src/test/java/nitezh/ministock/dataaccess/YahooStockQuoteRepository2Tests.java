@@ -59,7 +59,7 @@ public class YahooStockQuoteRepository2Tests {
         Assume.assumeTrue(System.getenv("TRAVIS_CI") == null);
 
         // Arrange
-        List<String> symbols = Arrays.asList("AAPL", "GOOG");
+        List<String> symbols = Arrays.asList("AAPL", "GOOG", "^DJI");
         JSONArray json = null;
 
         // Act
@@ -70,7 +70,7 @@ public class YahooStockQuoteRepository2Tests {
 
         // Assert
         assertNotNull(json);
-        assertEquals(2, json.length());
+        assertEquals(3, json.length());
 
         JSONObject aaplJson = json.optJSONObject(0);
         assertEquals("AAPL", aaplJson.optString("symbol"));
@@ -92,6 +92,11 @@ public class YahooStockQuoteRepository2Tests {
                 "NasdaqGS"
         ).contains(googJson.optString("exchange")));
         assertEquals("Alphabet Inc.", googJson.optString("name"));
+
+        JSONObject djiJson = json.optJSONObject(2);
+        assertEquals("^DJI", djiJson.optString("symbol"));
+        assertEquals("DJI", djiJson.optString("exchange"));
+        assertEquals("Dow Jones Industrial Average", djiJson.optString("name"));
     }
 
     @Test
@@ -100,13 +105,13 @@ public class YahooStockQuoteRepository2Tests {
         Assume.assumeTrue(System.getenv("TRAVIS_CI") == null);
 
         // Arrange
-        List<String> symbols = Arrays.asList("AAPL", "GOOG");
+        List<String> symbols = Arrays.asList("AAPL", "GOOG", "^DJI");
 
         // Act
         HashMap<String, StockQuote> stockQuotes = quoteRepository.getQuotes(new MockCache(), symbols);
 
         // Assert
-        assertEquals(2, stockQuotes.size());
+        assertEquals(3, stockQuotes.size());
 
         StockQuote aaplQuote = stockQuotes.get("AAPL");
         assertEquals("AAPL", aaplQuote.getSymbol());
@@ -127,5 +132,10 @@ public class YahooStockQuoteRepository2Tests {
                 "NasdaqGS"
         ).contains(googQuote.getExchange()));
         assertEquals("Alphabet Inc.", googQuote.getName());
+
+        StockQuote djiQuote = stockQuotes.get("^DJI");
+        assertEquals("^DJI", djiQuote.getSymbol());
+        assertEquals("DJI", djiQuote.getExchange());
+        assertEquals("Dow Jones Industrial Average", djiQuote.getName());
     }
 }

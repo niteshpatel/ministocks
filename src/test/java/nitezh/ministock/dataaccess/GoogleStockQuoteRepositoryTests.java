@@ -42,6 +42,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 
+@SuppressWarnings("unused")
 public class GoogleStockQuoteRepositoryTests {
 
     private GoogleStockQuoteRepository googleRepository;
@@ -51,7 +52,6 @@ public class GoogleStockQuoteRepositoryTests {
         this.googleRepository = new GoogleStockQuoteRepository();
     }
 
-    @Test
     public void retrieveDJIQuoteAsJson() {
         // Arrange
         List<String> symbols = Collections.singletonList(".DJI");
@@ -72,7 +72,6 @@ public class GoogleStockQuoteRepositoryTests {
         assertEquals("INDEXDJX", djiJson.optString("e"));
     }
 
-    @Test
     public void retrieveIXICQuoteAsJson() {
         // Arrange
         List<String> symbols = Collections.singletonList(".IXIC");
@@ -93,7 +92,6 @@ public class GoogleStockQuoteRepositoryTests {
         assertEquals("INDEXNASDAQ", ixicJson.optString("e"));
     }
 
-    @Test
     public void getQuotes() {
         // Arrange
         List<String> symbols = Arrays.asList(".DJI", ".IXIC");

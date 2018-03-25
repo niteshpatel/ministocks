@@ -50,9 +50,9 @@ import nitezh.ministock.utils.Cache;
 public class StockQuoteRepository {
 
     private static final ImmutableBiMap<String, String> GOOGLE_SYMBOLS = new ImmutableBiMap.Builder<String, String>()
-            .put(".DJI", "^DJI")
-            .put(".IXIC", "^IXIC")
-            .put("DWCPF", "^DWCPF")
+//            .put(".DJI", "^DJI")
+//            .put(".IXIC", "^IXIC")
+//            .put("DWCPF", "^DWCPF")
             .build();
 
     private static String mTimeStamp;
