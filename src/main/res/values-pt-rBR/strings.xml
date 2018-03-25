@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The MIT License
+
+  Copyright (c) 2013 Nitesh Patel http://niteshpatel.github.io/ministocks
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+  -->
+
+<resources>
+    <string name="app_name">Ministocks</string>
+    <string name="prefs_name">nitezh.ministock_preferences</string>
+
+    <string name="hello">Olá, Mundo!</string>
+
+    <string-array name="background_entries">
+        <item>Sólido</item>
+        <item>Transparente</item>
+        <item>Nenhum</item>
+    </string-array>
+    <string-array name="background_entryvalues">
+        <item>solid</item>
+        <item>transparent</item>
+        <item>none</item>
+    </string-array>
+
+    <string-array name="updated_colour_entries">
+        <item>Claro</item>
+        <item>Escuro</item>
+        <item>Amarelo</item>
+    </string-array>
+    <string-array name="updated_colour_entryvalues">
+        <item>light</item>
+        <item>dark</item>
+        <item>yellow</item>
+    </string-array>
+
+    <string-array name="updated_display_entries">
+        <item>Visível</item>
+        <item>Invisível</item>
+        <item>Remover</item>
+    </string-array>
+    <string-array name="updated_display_entryvalues">
+        <item>visible</item>
+        <item>invisible</item>
+        <item>remove</item>
+    </string-array>
+
+    <string-array name="price_colour_entries">
+        <item>Branco</item>
+        <item>Cinza</item>
+    </string-array>
+    <string-array name="price_colour_entryvalues">
+        <item>white</item>
+        <item>gray</item>
+    </string-array>
+
+    <string-array name="text_style_entries">
+        <item>Normal</item>
+        <item>Negrito</item>
+    </string-array>
+    <string-array name="text_style_entryvalues">
+        <item>normal</item>
+        <item>bold</item>
+    </string-array>
+
+    <string-array name="update_interval_entries">
+        <item>5 minutos</item>
+        <item>15 minutos</item>
+        <item>30 minutos</item>
+        <item>Uma hora</item>
+        <item>Três horas</item>
+        <item>Diariamente</item>
+    </string-array>
+
+    <string-array name="update_interval_entryvalues">
+        <item>300000</item>
+        <item>900000</item>
+        <item>1800000</item>
+        <item>3600000</item>
+        <item>10800000</item>
+        <item>86400000</item>
+    </string-array>
+
+    <string name="symbolNotFound">Símbolo \'%s\' não encontrado. Pressione para adicioná-lo assim mesmo.
+    </string>
+</resources>
