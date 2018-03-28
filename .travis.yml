@@ -3,9 +3,9 @@ language: android
 android:
   components:
   - tools
-  - build-tools-25.0.2
-  - android-25
-  - sys-img-armeabi-v7a-android-25
+  - build-tools-26.0.3
+  - android-26
+  - sys-img-armeabi-v7a-android-26
 
 jdk:
 - oraclejdk8
