@@ -40,7 +40,7 @@ public class MinistocksActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ministocks);
         Spanned html = Html.fromHtml("Note: This is a widget only app.<br /><br />" + "<b>Getting started</b><br /><br />" + "First long-press an empty space on your Home screen to bring up the <i>Add to Home screen</i> menu.<br /><br />" + "Then select the Widgets option and finally, select the <i>MinistocksActivity</i> item from the list of widgets.<br /><br />" + "Multiple widgets can be added, as each widget stores its own data.<br /><br />" + "<b>Press Home or Back to close.</b><br />");
-        TextView text = (TextView) findViewById(R.id.ministocks_text);
+        TextView text = findViewById(R.id.ministocks_text);
         text.setText(html);
     }
 

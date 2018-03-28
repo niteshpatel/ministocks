@@ -65,8 +65,8 @@ class WidgetView {
     private final Context context;
     private final HashMap<ViewType, Boolean> enabledViews;
 
-    public WidgetView(Context context, int appWidgetId, UpdateType updateMode,
-                      HashMap<String, StockQuote> quotes, String quotesTimeStamp) {
+    WidgetView(Context context, int appWidgetId, UpdateType updateMode,
+               HashMap<String, StockQuote> quotes, String quotesTimeStamp) {
         WidgetRepository widgetRepository = new AndroidWidgetRepository(context);
 
         this.context = context;
@@ -628,11 +628,13 @@ class WidgetView {
 
             // Check if we should use yesterdays date or today's time
             String[] parts = timeStamp.split(" ");
-            String fullDate = parts[0] + " " + parts[1];
-            if (fullDate.equals(date)) {
-                timeStamp = parts[2];
-            } else {
-                timeStamp = fullDate;
+            if (parts.length > 2) {
+                String fullDate = parts[0] + " " + parts[1];
+                if (fullDate.equals(date)) {
+                    timeStamp = parts[2];
+                } else {
+                    timeStamp = fullDate;
+                }
             }
         }
 
