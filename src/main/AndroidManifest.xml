@@ -24,10 +24,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="nitezh.ministock"
-    android:versionCode="74"
-    android:versionName="74">
+    android:versionCode="75"
+    android:versionName="75">
 
-    <uses-sdk android:minSdkVersion="16" />
+    <uses-sdk android:minSdkVersion="13" />
 
     <uses-permission android:name="android.permission.INTERNET" />
 

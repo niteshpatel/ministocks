@@ -24,6 +24,7 @@
 
 package nitezh.ministock.activities;
 
+import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.app.TimePickerDialog;
 import android.content.Intent;
@@ -55,6 +56,7 @@ import static android.content.SharedPreferences.Editor;
 import static android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 
 
+@SuppressLint("ExportedPreferenceActivity")
 public class PreferencesActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 
     // Constants
@@ -70,7 +72,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 //            + "New features:<br/><br/>"
 //            + "• TODO.<br/><br/>"
             + "Multiple bug fixes:<br/><br/>"
-            + "• Fix source for some indexes";
+            + "• Fix widget text cropping";
 
     // Fields for time pickers
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
@@ -137,7 +139,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         UserData.cleanupPreferenceFiles(getApplicationContext());
         @SuppressWarnings("rawtypes") Callable callable = new Callable() {
             @Override
-            public Object call() throws Exception {
+            public Object call() {
                 // Ensure we don't show this again
                 SharedPreferences preferences = getAppPreferences();
                 Editor editor = preferences.edit();
@@ -500,7 +502,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
             public boolean onPreferenceClick(Preference preference) {
                 DialogTools.InputAlertCallable callable = new DialogTools.InputAlertCallable() {
                     @Override
-                    public Object call() throws Exception {
+                    public Object call() {
                         UserData.backupWidget(PreferencesActivity.this, mAppWidgetId, this.getInputValue());
                         return new Object();
                     }
@@ -530,7 +532,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 // If there are backups then show the list
                 DialogTools.InputAlertCallable callable = new DialogTools.InputAlertCallable() {
                     @Override
-                    public Object call() throws Exception {
+                    public Object call() {
                         UserData.restoreWidget(PreferencesActivity.this, mAppWidgetId, this.getInputValue());
                         return new Object();
                     }
@@ -557,7 +559,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 // If there are backups then show the list
                 DialogTools.InputAlertCallable callable = new DialogTools.InputAlertCallable() {
                     @Override
-                    public Object call() throws Exception {
+                    public Object call() {
                         UserData.deleteWidgetBackup(PreferencesActivity.this, this.getInputValue());
                         return new Object();
                     }
@@ -804,7 +806,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     private void showFeedbackOption() {
         @SuppressWarnings("rawtypes") Callable callable = new Callable() {
             @Override
-            public Object call() throws Exception {
+            public Object call() {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=nitezh.ministock")));
                 return new Object();
             }
