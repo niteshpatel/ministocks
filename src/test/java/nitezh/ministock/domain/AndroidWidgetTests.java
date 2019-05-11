@@ -27,13 +27,13 @@ package nitezh.ministock.domain;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.junit.Assert.assertEquals;
-
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 import nitezh.ministock.Storage;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 public class AndroidWidgetTests {
@@ -53,7 +53,7 @@ public class AndroidWidgetTests {
     @Test
     public void testShouldUpdateOnRightTouchReturnsFalseByDefault() {
         // Act and Assert
-        assertEquals(false, widget.shouldUpdateOnRightTouch());
+        assertFalse(widget.shouldUpdateOnRightTouch());
     }
 
     @Test
@@ -64,6 +64,6 @@ public class AndroidWidgetTests {
         storage.apply();
 
         // Act and Assert
-        assertEquals(true, widget.shouldUpdateOnRightTouch());
+        assertTrue(widget.shouldUpdateOnRightTouch());
     }
 }

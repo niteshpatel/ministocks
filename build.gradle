@@ -1,12 +1,17 @@
 buildscript {
     repositories {
-        mavenCentral()
+        google()
+        jcenter()
     }
     dependencies {
-        // Check supported Gradle version at the URL below before changing the below
-        // https://repo1.maven.org/maven2/com/android/tools/build/gradle/
-        //noinspection GradleDependency
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:3.4.0'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
     }
 }
 
@@ -14,11 +19,22 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 28
-    buildToolsVersion '28.0.3'
-
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources true
+        }
+    }
+
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode 77
+        versionName "77"
     }
 
     buildTypes {
@@ -34,15 +50,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: '*.jar', dir: 'libs')
-    compile 'com.google.guava:guava:20.0'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.json:json:20160810'
-    testCompile 'org.robolectric:robolectric:3.7.1'
-}
-
-allprojects {
-    repositories {
-        jcenter()
-    }
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api 'com.google.guava:guava:27.1-android'
+    testImplementation 'junit:junit:4.13-beta-2'
+    testImplementation 'org.json:json:20180813'
+    testImplementation 'org.robolectric:robolectric:4.3-alpha-2'
 }
