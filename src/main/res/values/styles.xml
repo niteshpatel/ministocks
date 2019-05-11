@@ -62,7 +62,7 @@
         <item name="android:gravity">right</item>
         <item name="android:textSize">11sp</item>
     </style>
-    
+
     <!-- styles for portrait view (stocks) -->
     <style name="StockDatum">
         <item name="android:layout_weight">1</item>

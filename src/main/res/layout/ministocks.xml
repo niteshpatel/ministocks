@@ -22,22 +22,21 @@
   THE SOFTWARE.
   -->
 
-<ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:padding="0dp">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_weight="1"
+    android:padding="0dp">
 
     <TextView
-            android:id="@+id/ministocks_text"
-            android:textSize="16dp"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:singleLine="false"
-            android:padding="10dp"
-            android:paddingTop="0dp"
-            android:gravity="fill_horizontal"/>
+        android:id="@+id/ministocks_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="fill_horizontal"
+        android:padding="10dp"
+        android:paddingTop="0dp"
+        android:singleLine="false"
+        android:textSize="16dp" />
 
 </ScrollView>			
 
