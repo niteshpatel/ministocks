@@ -69,10 +69,11 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     private static boolean mPendingUpdate = false;
     private static String mSymbolSearchKey = "";
     private final String CHANGE_LOG = ""
-//            + "New features:<br/><br/>"
-//            + "• TODO.<br/><br/>"
+            + "New features:<br/><br/>"
+            + "• Support widget resizing<br/>"
+            + "• Use updated theme<br/><br/>"
             + "Multiple bug fixes:<br/><br/>"
-            + "• Fix widget text cropping";
+            + "• Fix widget layout options";
 
     // Fields for time pickers
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
