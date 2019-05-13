@@ -24,6 +24,7 @@
 
 package nitezh.ministock;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -37,7 +38,6 @@ import nitezh.ministock.utils.DateTools;
 
 public class CustomAlarmManager {
 
-    public static final String ALARM_UPDATE = "nitezh.ministock.ALARM_UPDATE";
     private final PreferenceStorage appStorage;
     private final AlarmManager alarmManager;
     private final PendingIntent pendingIntent;
@@ -45,8 +45,8 @@ public class CustomAlarmManager {
     public CustomAlarmManager(Context context) {
         this.appStorage = PreferenceStorage.getInstance(context);
         this.alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        this.pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0,
-                new Intent(ALARM_UPDATE), 0);
+        Intent intent = new Intent("UPDATE", null, context, WidgetProvider.class);
+        this.pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
     }
 
     private Long getUpdateInterval() {
@@ -65,7 +65,7 @@ public class CustomAlarmManager {
     }
 
     public void setUpdateTimestamp() {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         this.appStorage.putString("last_update1", formatter.format(new Date()));
         this.appStorage.apply();
     }

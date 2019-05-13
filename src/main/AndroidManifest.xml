@@ -31,7 +31,8 @@
         android:allowBackup="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:theme="@android:style/Theme.DeviceDefault">
+        android:theme="@android:style/Theme.DeviceDefault"
+        tools:ignore="GoogleAppIndexingWarning">
 
         <activity
             android:name=".activities.MinistocksActivity"
@@ -150,10 +151,6 @@
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="nitezh.ministock.ASYNC_UPDATE" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="nitezh.ministock.ALARM_UPDATE" />
             </intent-filter>
 
             <meta-data
@@ -167,9 +164,6 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="nitezh.ministocks.ALARM_UPDATE" />
-            </intent-filter>
 
             <meta-data
                 android:name="android.appwidget.provider"
@@ -181,9 +175,6 @@
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="nitezh.ministocks.ALARM_UPDATE" />
             </intent-filter>
 
             <meta-data
@@ -197,10 +188,6 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="nitezh.ministocks.ALARM_UPDATE" />
-            </intent-filter>
-
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_2x4" />

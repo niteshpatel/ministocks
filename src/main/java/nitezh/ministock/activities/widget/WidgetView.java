@@ -35,19 +35,25 @@ import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import nitezh.ministock.PreferenceStorage;
-import nitezh.ministock.R;
-import nitezh.ministock.WidgetProvider;
-import nitezh.ministock.domain.*;
-import nitezh.ministock.utils.CurrencyTools;
-import nitezh.ministock.utils.NumberTools;
-import nitezh.ministock.utils.ReflectionTools;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
+import nitezh.ministock.PreferenceStorage;
+import nitezh.ministock.R;
+import nitezh.ministock.WidgetProvider;
+import nitezh.ministock.domain.AndroidWidgetRepository;
+import nitezh.ministock.domain.PortfolioStock;
+import nitezh.ministock.domain.PortfolioStockRepository;
+import nitezh.ministock.domain.StockQuote;
+import nitezh.ministock.domain.Widget;
+import nitezh.ministock.domain.WidgetRepository;
+import nitezh.ministock.domain.WidgetStock;
+import nitezh.ministock.utils.CurrencyTools;
+import nitezh.ministock.utils.NumberTools;
+import nitezh.ministock.utils.ReflectionTools;
 
 import static nitezh.ministock.activities.widget.WidgetProviderBase.UpdateType;
 import static nitezh.ministock.activities.widget.WidgetProviderBase.ViewType;
@@ -115,30 +121,22 @@ class WidgetView {
             }
         }
         views.setImageViewResource(R.id.widget_bg,
-                getImageViewSrcId(backgroundStyle, useLargeFont));
+                getImageViewSrcId(backgroundStyle));
         this.hideUnusedRows(views, widget.getSymbolCount());
         return views;
     }
 
-    private int getImageViewSrcId(String backgroundStyle, Boolean useLargeFont) {
-        Integer imageViewSrcId;
+    private int getImageViewSrcId(String backgroundStyle) {
+        int imageViewSrcId;
         switch (backgroundStyle) {
             case "transparent":
-                if (useLargeFont) {
-                    imageViewSrcId = R.drawable.ministock_bg_transparent68_large;
-                } else {
-                    imageViewSrcId = R.drawable.ministock_bg_transparent68;
-                }
+                imageViewSrcId = R.drawable.ministock_bg_transparent68;
                 break;
             case "none":
                 imageViewSrcId = R.drawable.blank;
                 break;
             default:
-                if (useLargeFont) {
-                    imageViewSrcId = R.drawable.ministock_bg_large;
-                } else {
-                    imageViewSrcId = R.drawable.ministock_bg;
-                }
+                imageViewSrcId = R.drawable.ministock_bg;
                 break;
         }
         return imageViewSrcId;
@@ -204,14 +202,14 @@ class WidgetView {
 
         updateWidgetRowWithDefaults(widgetRow, widgetStock);
 
-        Boolean plView = false;
+        boolean plView = false;
 
         String priceColumn = null;
         String stockInfo = null;
         String stockInfoExtra = null;
 
-        Boolean stockInfoIsCurrency = false;
-        Boolean stockInfoExtraIsCurrency = false;
+        boolean stockInfoIsCurrency = false;
+        boolean stockInfoExtraIsCurrency = false;
 
         switch (widgetView) {
             case VIEW_DAILY_PERCENT:

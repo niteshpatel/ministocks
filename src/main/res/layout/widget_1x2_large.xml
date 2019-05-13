@@ -37,7 +37,7 @@
         android:contentDescription="@+string/widget_bg_desc"
         android:orientation="horizontal"
         android:scaleType="fitXY"
-        android:src="@drawable/ministock_bg_transparent68_large" />
+        android:src="@drawable/ministock_bg_transparent68" />
 
     <LinearLayout
         android:layout_width="fill_parent"

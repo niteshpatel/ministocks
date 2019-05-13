@@ -38,15 +38,15 @@ import java.util.concurrent.RejectedExecutionException;
 import nitezh.ministock.CustomAlarmManager;
 import nitezh.ministock.PreferenceStorage;
 import nitezh.ministock.Storage;
-import nitezh.ministock.domain.Widget;
-import nitezh.ministock.utils.StorageCache;
 import nitezh.ministock.UserData;
 import nitezh.ministock.activities.PreferencesActivity;
 import nitezh.ministock.domain.AndroidWidgetRepository;
 import nitezh.ministock.domain.StockQuote;
 import nitezh.ministock.domain.StockQuoteRepository;
+import nitezh.ministock.domain.Widget;
 import nitezh.ministock.domain.WidgetRepository;
 import nitezh.ministock.utils.DateTools;
+import nitezh.ministock.utils.StorageCache;
 
 
 public class WidgetProviderBase extends AppWidgetProvider {
@@ -82,7 +82,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
         alarmManager.reinitialize();
     }
 
-    private static void doScheduledUpdates(Context context) {
+    public static void doScheduledUpdates(Context context) {
         boolean doUpdates = true;
         Storage prefs = PreferenceStorage.getInstance(context);
 
@@ -103,7 +103,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
         }
 
         // Do not update on weekends
-        Boolean doWeekendUpdates = prefs.getBoolean("update_weekend", false);
+        boolean doWeekendUpdates = prefs.getBoolean("update_weekend", false);
         if (!doWeekendUpdates) {
             int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
             if (dayOfWeek == 1 || dayOfWeek == 7) {
@@ -142,13 +142,12 @@ public class WidgetProviderBase extends AppWidgetProvider {
     }
 
     @Override
-    public void onReceive(@SuppressWarnings("NullableProblems") Context context,
-                          @SuppressWarnings("NullableProblems") Intent intent) {
+    public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
 
         if (action != null) {
             switch (action) {
-                case CustomAlarmManager.ALARM_UPDATE:
+                case "UPDATE":
                     doScheduledUpdates(context);
                     break;
 
@@ -230,7 +229,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
         private HashMap<String, StockQuote> quotes;
         private String timeStamp;
 
-        public GetDataTask build(Context context, Integer appWidgetId, UpdateType updateType) {
+        GetDataTask build(Context context, Integer appWidgetId, UpdateType updateType) {
             this.context = context;
             this.appWidgetId = appWidgetId;
             this.updateType = updateType;
