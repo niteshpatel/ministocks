@@ -32,10 +32,8 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -46,6 +44,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 import nitezh.ministock.DialogTools;
@@ -72,10 +71,7 @@ public class PortfolioActivity extends Activity {
         Storage storage = PreferenceStorage.getInstance(this);
         AndroidWidgetRepository widgetRepository = new AndroidWidgetRepository(this);
 
-        this.portfolioRepository = new PortfolioStockRepository(
-                storage,
-                widgetRepository
-        );
+        this.portfolioRepository = new PortfolioStockRepository(storage, widgetRepository);
 
         this.portfolioRepository.updateStocksQuotes();
 
@@ -86,42 +82,11 @@ public class PortfolioActivity extends Activity {
         setContentView(R.layout.portfolio);
 
         List<Map<String, String>> listViewData = this.portfolioRepository.getDisplayInfo();
-        SimpleAdapter adapter = new SimpleAdapter(this, listViewData, R.layout.portfolio_list_item,
-                new String[]{
-                        "symbol",
-                        "name",
-                        "buyPrice",
-                        "date",
-                        "limitHigh",
-                        "limitLow",
-                        "quantity",
-                        "currentPrice",
-                        "lastChange",
-                        "totalChange",
-                        "holdingValue"
-                },
-                new int[]{
-                        R.id.portfolio_list_item_symbol,
-                        R.id.portfolio_list_item_name,
-                        R.id.portfolio_list_item_buy_price,
-                        R.id.portfolio_list_item_date,
-                        R.id.portfolio_list_item_limit_high,
-                        R.id.portfolio_list_item_limit_low,
-                        R.id.portfolio_list_item_quantity,
-                        R.id.portfolio_list_item_current_price,
-                        R.id.portfolio_list_item_last_change,
-                        R.id.portfolio_list_item_total_change,
-                        R.id.portfolio_list_item_holding_value
-                });
+        SimpleAdapter adapter = new SimpleAdapter(this, listViewData, R.layout.portfolio_list_item, new String[]{"symbol", "name", "buyPrice", "date", "limitHigh", "limitLow", "quantity", "currentPrice", "lastChange", "totalChange", "holdingValue"}, new int[]{R.id.portfolio_list_item_symbol, R.id.portfolio_list_item_name, R.id.portfolio_list_item_buy_price, R.id.portfolio_list_item_date, R.id.portfolio_list_item_limit_high, R.id.portfolio_list_item_limit_low, R.id.portfolio_list_item_quantity, R.id.portfolio_list_item_current_price, R.id.portfolio_list_item_last_change, R.id.portfolio_list_item_total_change, R.id.portfolio_list_item_holding_value});
 
-        ListView portfolioListView = (ListView) findViewById(R.id.portfolio_list);
+        ListView portfolioListView = findViewById(R.id.portfolio_list);
         portfolioListView.setAdapter(adapter);
-        portfolioListView.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> a, View v, int position, long id) {
-                showPortfolioItemEdit(a, position);
-            }
-        });
+        portfolioListView.setOnItemClickListener((a, v, position, id) -> showPortfolioItemEdit(a, position));
         registerForContextMenu(portfolioListView);
         mPortfolioListView = portfolioListView;
     }
@@ -139,17 +104,12 @@ public class PortfolioActivity extends Activity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         if (item.getItemId() == 1) {
-            Callable callable = new Callable() {
-                @Override
-                public Object call() throws Exception {
-                    portfolioRepository.updateStock(mStockSymbol);
-                    refreshView();
-                    return new Object();
-                }
+            Callable callable = () -> {
+                portfolioRepository.updateStock(mStockSymbol);
+                refreshView();
+                return new Object();
             };
-            DialogTools.alertWithCallback(this, "Confirm Delete",
-                    "Clear portfolio info for " + mStockSymbol + "?", "Delete", "Cancel",
-                    callable, null);
+            DialogTools.alertWithCallback(this, "Confirm Delete", "Clear portfolio info for " + mStockSymbol + "?", "Delete", "Cancel", callable, null);
         } else if (item.getItemId() == 0) {
             AdapterContextMenuInfo menuInfo = ((AdapterView.AdapterContextMenuInfo) item.getMenuInfo());
             showPortfolioItemEdit(mPortfolioListView, menuInfo.position);
@@ -169,8 +129,7 @@ public class PortfolioActivity extends Activity {
         // Get current data for this stock
         StockQuote data = this.portfolioRepository.stocksQuotes.get(mStockSymbol);
         String currentPrice = "";
-        if (data != null)
-            currentPrice = data.getPrice();
+        if (data != null) currentPrice = data.getPrice();
 
         // Get portfolio details for this stock
         String price = stockMap.get("buyPrice") != null ? stockMap.get("buyPrice") : "";
@@ -181,128 +140,121 @@ public class PortfolioActivity extends Activity {
         String customDisplay = stockMap.get("customName") != null ? stockMap.get("customName") : "";
 
         // If there is no price data, use today's price and date
+        assert price != null;
         if (price.equals("")) {
             price = currentPrice;
             date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         }
         // Initialise the price
-        EditText priceEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_price);
+        EditText priceEditText = portfolioItemEdit.findViewById(R.id.portfolio_item_price);
         priceEditText.setText(price);
 
         // Initialise the date if the price has been set
         // to avoid getting the <none held> text
-        EditText dateEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_date);
-        if (!date.equals("") && !price.equals(""))
-            dateEditText.setText(date);
+        EditText dateEditText = portfolioItemEdit.findViewById(R.id.portfolio_item_date);
+        assert date != null;
+        if (!date.equals("") && !price.equals("")) dateEditText.setText(date);
 
         // Initialise the quantity if the price has been set
-        EditText quantityEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_quantity);
-        if (!quantity.equals("") && !price.equals(""))
-            quantityEditText.setText(quantity);
+        EditText quantityEditText = portfolioItemEdit.findViewById(R.id.portfolio_item_quantity);
+        assert quantity != null;
+        if (!quantity.equals("") && !price.equals("")) quantityEditText.setText(quantity);
 
         // Initialise the limit high if the price has been set
-        EditText limitHighEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_limit_high);
-        if (!limitHigh.equals("") && !price.equals(""))
-            limitHighEditText.setText(limitHigh);
+        EditText limitHighEditText = portfolioItemEdit.findViewById(R.id.portfolio_item_limit_high);
+        assert limitHigh != null;
+        if (!limitHigh.equals("") && !price.equals("")) limitHighEditText.setText(limitHigh);
 
         // Initialise the limit low if the price has been set
-        EditText limitLowEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_limit_low);
-        if (!limitLow.equals("") && !price.equals(""))
-            limitLowEditText.setText(limitLow);
+        EditText limitLowEditText = portfolioItemEdit.findViewById(R.id.portfolio_item_limit_low);
+        assert limitLow != null;
+        if (!limitLow.equals("") && !price.equals("")) limitLowEditText.setText(limitLow);
 
         // Initialise the custom display if the price has been set
-        EditText customDisplayText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_symbol);
+        EditText customDisplayText = portfolioItemEdit.findViewById(R.id.portfolio_item_symbol);
         customDisplayText.setInputType(InputType.TYPE_CLASS_TEXT + InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        assert customDisplay != null;
         if (!customDisplay.equals("") && !customDisplay.equals("No description"))
             customDisplayText.setText(customDisplay);
 
         // Setup OK button
-        Button okButton = (Button) portfolioItemEdit.findViewById(R.id.portfolio_item_save);
-        okButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Retrieve updated price
-                EditText priceEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_price);
-                String price = priceEditText.getText().toString();
+        Button okButton = portfolioItemEdit.findViewById(R.id.portfolio_item_save);
+        okButton.setOnClickListener(v -> {
+            // Retrieve updated price
+            EditText priceEditText1 = portfolioItemEdit.findViewById(R.id.portfolio_item_price);
+            String price1 = priceEditText1.getText().toString();
 
-                // Retrieve updated date
-                EditText dateEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_date);
-                String date = dateEditText.getText().toString();
+            // Retrieve updated date
+            EditText dateEditText1 = portfolioItemEdit.findViewById(R.id.portfolio_item_date);
+            String date1 = dateEditText1.getText().toString();
 
-                // Retrieve updated quantity
-                EditText quantityEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_quantity);
-                String quantity = quantityEditText.getText().toString();
+            // Retrieve updated quantity
+            EditText quantityEditText1 = portfolioItemEdit.findViewById(R.id.portfolio_item_quantity);
+            String quantity1 = quantityEditText1.getText().toString();
 
-                // Retrieve updated quantity
-                EditText limitHighEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_limit_high);
-                String limitHigh = limitHighEditText.getText().toString();
+            // Retrieve updated quantity
+            EditText limitHighEditText1 = portfolioItemEdit.findViewById(R.id.portfolio_item_limit_high);
+            String limitHigh1 = limitHighEditText1.getText().toString();
 
-                // Retrieve updated quantity
-                EditText limitLowEditText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_limit_low);
-                String limitLow = limitLowEditText.getText().toString();
+            // Retrieve updated quantity
+            EditText limitLowEditText1 = portfolioItemEdit.findViewById(R.id.portfolio_item_limit_low);
+            String limitLow1 = limitLowEditText1.getText().toString();
 
-                // Retrieve custom display text
-                EditText customDisplayText = (EditText) portfolioItemEdit.findViewById(R.id.portfolio_item_symbol);
-                String customDisplay = customDisplayText.getText().toString();
+            // Retrieve custom display text
+            EditText customDisplayText1 = portfolioItemEdit.findViewById(R.id.portfolio_item_symbol);
+            String customDisplay1 = customDisplayText1.getText().toString();
 
-                // If the price is empty then clear all other values
-                if (price.equals("")) {
-                    date = "";
-                    quantity = "";
-                    limitHigh = "";
-                    limitLow = "";
-                }
-                // Otherwise validate the fields
-                else {
-                    try {
-                        // First validate and parse the data, if this fails then
-                        // dismiss the dialog without making any changes
-
-                        price = NumberTools.validatedDoubleString(price);
-
-                        // Allow a blank date
-                        if (!date.equals("")) {
-                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-                            date = formatter.format(formatter.parse(date.replaceAll("[./]", "-"))).toUpperCase();
-                        }
-                        // Allow a blank quantity
-                        if (!quantity.equals("")) {
-                            quantity = NumberTools.validatedDoubleString(quantity);
-                        }
-                        // Allow a blank limitHigh
-                        if (!limitHigh.equals("")) {
-                            limitHigh = NumberTools.validatedDoubleString(limitHigh);
-                        }
-                        // Allow a blank limitLow
-                        if (!limitLow.equals("")) {
-                            limitLow = NumberTools.validatedDoubleString(limitLow);
-                        }
-                    } catch (Exception e) {
-                        // On error just ignore the input and close the dialog
-                        portfolioItemEdit.dismiss();
-                        return;
-                    }
-                }
-                // If the string only has one digit after the decimal
-                // point add another one
-                if (price.indexOf(".") == price.length() - 2) {
-                    price = price + "0";
-                }
-                // Update the actual values
-                portfolioRepository.updateStock(mStockSymbol, price, date, quantity,
-                        limitHigh, limitLow, customDisplay);
-                refreshView();
-                portfolioItemEdit.dismiss();
+            // If the price is empty then clear all other values
+            if (price1.equals("")) {
+                date1 = "";
+                quantity1 = "";
+                limitHigh1 = "";
+                limitLow1 = "";
             }
+            // Otherwise validate the fields
+            else {
+                try {
+                    // First validate and parse the data, if this fails then
+                    // dismiss the dialog without making any changes
+
+                    price1 = NumberTools.validatedDoubleString(price1);
+
+                    // Allow a blank date
+                    if (!date1.equals("")) {
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                        date1 = formatter.format(Objects.requireNonNull(formatter.parse(date1.replaceAll("[./]", "-")))).toUpperCase();
+                    }
+                    // Allow a blank quantity
+                    if (!quantity1.equals("")) {
+                        quantity1 = NumberTools.validatedDoubleString(quantity1);
+                    }
+                    // Allow a blank limitHigh
+                    if (!limitHigh1.equals("")) {
+                        limitHigh1 = NumberTools.validatedDoubleString(limitHigh1);
+                    }
+                    // Allow a blank limitLow
+                    if (!limitLow1.equals("")) {
+                        limitLow1 = NumberTools.validatedDoubleString(limitLow1);
+                    }
+                } catch (Exception e) {
+                    // On error just ignore the input and close the dialog
+                    portfolioItemEdit.dismiss();
+                    return;
+                }
+            }
+            // If the string only has one digit after the decimal
+            // point add another one
+            if (price1.indexOf(".") == price1.length() - 2) {
+                price1 = price1 + "0";
+            }
+            // Update the actual values
+            portfolioRepository.updateStock(mStockSymbol, price1, date1, quantity1, limitHigh1, limitLow1, customDisplay1);
+            refreshView();
+            portfolioItemEdit.dismiss();
         });
         // Setup Cancel button
-        Button cancelButton = (Button) portfolioItemEdit.findViewById(R.id.portfolio_item_cancel);
-        cancelButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                portfolioItemEdit.dismiss();
-            }
-        });
+        Button cancelButton = portfolioItemEdit.findViewById(R.id.portfolio_item_cancel);
+        cancelButton.setOnClickListener(v -> portfolioItemEdit.dismiss());
 
         // Display the dialog
         portfolioItemEdit.setTitle(mStockSymbol + " purchase details");

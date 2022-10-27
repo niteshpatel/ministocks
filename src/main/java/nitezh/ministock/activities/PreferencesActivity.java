@@ -72,8 +72,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 //            + "New features:<br/><br/>"
 //            + "• Support widget resizing<br/>"
 //            + "• Use updated theme<br/><br/>"
-            + "Bug fixes:<br/><br/>"
-            + "• Enable automatic updates on Android 8+";
+            + "Bug fixes:<br/><br/>" + "• Enable automatic updates on Android 8+";
 
     // Fields for time pickers
     private TimePickerDialog.OnTimeSetListener mTimeSetListener;
@@ -138,24 +137,20 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         }
         // Cleanup preferences files
         UserData.cleanupPreferenceFiles(getApplicationContext());
-        @SuppressWarnings("rawtypes") Callable callable = new Callable() {
-            @Override
-            public Object call() {
-                // Ensure we don't show this again
-                SharedPreferences preferences = getAppPreferences();
-                Editor editor = preferences.edit();
-                editor.putString("change_log_viewed", VersionTools.BUILD);
+        @SuppressWarnings("rawtypes") Callable callable = () -> {
+            // Ensure we don't show this again
+            SharedPreferences preferences = getAppPreferences();
+            Editor editor = preferences.edit();
+            editor.putString("change_log_viewed", VersionTools.BUILD);
 
-                // Set first install if not set
-                if (preferences.getString("install_date", "").equals("")) {
-                    editor.putString("install_date", new SimpleDateFormat("yyyyMMdd").format(new Date()).toUpperCase());
-                }
-                editor.apply();
-                return new Object();
+            // Set first install if not set
+            if (preferences.getString("install_date", "").equals("")) {
+                editor.putString("install_date", new SimpleDateFormat("yyyyMMdd").format(new Date()).toUpperCase());
             }
+            editor.apply();
+            return new Object();
         };
-        DialogTools.alertWithCallback(this, "BUILD " + VersionTools.BUILD,
-                getChangeLog(), "Close", null, callable, null);
+        DialogTools.alertWithCallback(this, "BUILD " + VersionTools.BUILD, getChangeLog(), "Close", null, callable, null);
     }
 
     @Override
@@ -184,8 +179,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         }
         // Hide Feedback option if not relevant
         String install_date = getAppPreferences().getString("install_date", null);
-        if (DateTools.elapsedDays(install_date) < 30)
-            removePref("about_menu", "rate_app");
+        if (DateTools.elapsedDays(install_date) < 30) removePref("about_menu", "rate_app");
 
         // Initialise the summaries when the preferences screen loads
         Map<String, ?> map = sharedPreferences.getAll();
@@ -439,32 +433,23 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         });
         // Hook the Help preference to the Help activity
         Preference help_prices = findPreference("help_prices");
-        help_prices.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                showHelpPrices();
-                return true;
-            }
+        help_prices.setOnPreferenceClickListener(preference -> {
+            showHelpPrices();
+            return true;
         });
         // Hook the Update preference to the Help activity
         Preference updateNow = findPreference("update_now");
-        updateNow.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                mPendingUpdate = true;
-                finish();
-                return true;
-            }
+        updateNow.setOnPreferenceClickListener(preference -> {
+            mPendingUpdate = true;
+            finish();
+            return true;
         });
         // Hook the PortfolioActivity preference to the PortfolioActivity activity
         Preference portfolio = findPreference("portfolio");
-        portfolio.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(PreferencesActivity.this, PortfolioActivity.class);
-                startActivity(intent);
-                return true;
-            }
+        portfolio.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent(PreferencesActivity.this, PortfolioActivity.class);
+            startActivity(intent);
+            return true;
         });
 
         /*
@@ -508,11 +493,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                         return new Object();
                     }
                 };
-                DialogTools.inputWithCallback(PreferencesActivity.this,
-                        "Backup this widget", "Please enter a name for this backup:",
-                        "OK", "Cancel",
-                        "Widget <" + mAppWidgetId + "> from " + DateTools.getNowAsString(),
-                        callable);
+                DialogTools.inputWithCallback(PreferencesActivity.this, "Backup this widget", "Please enter a name for this backup:", "OK", "Cancel", "Widget <" + mAppWidgetId + "> from " + DateTools.getNowAsString(), callable);
                 return true;
             }
         });
@@ -525,8 +506,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 CharSequence[] backupNames = UserData.getWidgetBackupNames(PreferencesActivity.this);
                 // If there are no backups show an appropriate dialog
                 if (backupNames == null) {
-                    DialogTools.showSimpleDialog(PreferencesActivity.this,
-                            "No backups available", "There were no widget backups to restore.");
+                    DialogTools.showSimpleDialog(PreferencesActivity.this, "No backups available", "There were no widget backups to restore.");
                     return true;
                 }
 
@@ -538,8 +518,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                         return new Object();
                     }
                 };
-                DialogTools.choiceWithCallback(PreferencesActivity.this,
-                        "Select a widget backup to restore", "Cancel", backupNames, callable);
+                DialogTools.choiceWithCallback(PreferencesActivity.this, "Select a widget backup to restore", "Cancel", backupNames, callable);
                 return true;
             }
         });
@@ -552,8 +531,7 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                 CharSequence[] backupNames = UserData.getWidgetBackupNames(PreferencesActivity.this);
                 // If there are no backups show an appropriate dialog
                 if (backupNames == null) {
-                    DialogTools.showSimpleDialog(PreferencesActivity.this,
-                            "No backups available to delete", "There were no widget backups to delete.");
+                    DialogTools.showSimpleDialog(PreferencesActivity.this, "No backups available to delete", "There were no widget backups to delete.");
                     return true;
                 }
 
@@ -565,94 +543,72 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
                         return new Object();
                     }
                 };
-                DialogTools.choiceWithCallback(PreferencesActivity.this,
-                        "Select a widget backup to delete", "Cancel", backupNames, callable);
+                DialogTools.choiceWithCallback(PreferencesActivity.this, "Select a widget backup to delete", "Cancel", backupNames, callable);
                 return true;
             }
         });
 
         // Hook Rate MinistocksActivity preference to the market link
         Preference rate_app = findPreference("rate_app");
-        rate_app.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                showFeedbackOption();
-                return true;
-            }
+        rate_app.setOnPreferenceClickListener(preference -> {
+            showFeedbackOption();
+            return true;
         });
 
         // Hook the Online help preference to the online help link
         Preference online_help = findPreference("online_help");
-        online_help.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                showOnlineHelp();
-                return true;
-            }
+        online_help.setOnPreferenceClickListener(preference -> {
+            showOnlineHelp();
+            return true;
         });
 
         // Hook the Online faqs preference to the online faqs link
         Preference online_faqs = findPreference("online_faqs");
-        online_faqs.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                showOnlineFaqs();
-                return true;
-            }
+        online_faqs.setOnPreferenceClickListener(preference -> {
+            showOnlineFaqs();
+            return true;
         });
 
         // Hook the Feedback preference to the PortfolioActivity activity
         Preference feedback = findPreference("feedback");
-        feedback.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                // Open the e-mail client with destination and subject
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("message/rfc822");
-                String[] toAddress = {"nitezh@gmail.com"};
-                intent.putExtra(Intent.EXTRA_EMAIL, toAddress);
-                intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + " BUILD " + VersionTools.BUILD);
-                intent.setType("message/rfc822");
+        feedback.setOnPreferenceClickListener(preference -> {
+            // Open the e-mail client with destination and subject
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("message/rfc822");
+            String[] toAddress = {"nitezh@gmail.com"};
+            intent.putExtra(Intent.EXTRA_EMAIL, toAddress);
+            intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + " BUILD " + VersionTools.BUILD);
+            intent.setType("message/rfc822");
 
-                // In case we can't launch e-mail, show a dialog
-                try {
-                    startActivity(intent);
-                    return true;
-                } catch (Throwable e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                // Show dialog if launching e-mail fails
-                DialogTools.showSimpleDialog(getApplicationContext(), "Launching e-mail failed", "We were unable to launch your e-mail client automatically.<br /><br />Our e-mail address for support and feedback is nitezh@gmail.com");
+            // In case we can't launch e-mail, show a dialog
+            try {
+                startActivity(intent);
                 return true;
+            } catch (Throwable e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
+            // Show dialog if launching e-mail fails
+            DialogTools.showSimpleDialog(getApplicationContext(), "Launching e-mail failed", "We were unable to launch your e-mail client automatically.<br /><br />Our e-mail address for support and feedback is nitezh@gmail.com");
+            return true;
         });
         // Hook the Change history preference to the Change history dialog
         Preference change_history = findPreference("change_history");
-        change_history.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                showChangeLog();
-                return true;
-            }
+        change_history.setOnPreferenceClickListener(preference -> {
+            showChangeLog();
+            return true;
         });
         // Hook the Attributions preference to the Attributions dialog
         Preference attributions = findPreference("attributions");
-        attributions.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                showAttributions();
-                return true;
-            }
+        attributions.setOnPreferenceClickListener(preference -> {
+            showAttributions();
+            return true;
         });
         // Hook the Terms of Service preference to the Terms of Service dialog
         Preference termsOfService = findPreference("termsOfService");
-        termsOfService.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                showTermsOfService();
-                return true;
-            }
+        termsOfService.setOnPreferenceClickListener(preference -> {
+            showTermsOfService();
+            return true;
         });
         // Callback received when the user sets the time in the dialog
         mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
@@ -663,20 +619,14 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         };
         // Hook the Update schedule preferences up
         Preference update_start = findPreference("update_start");
-        update_start.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                showTimePickerDialog(preference, "00:00");
-                return true;
-            }
+        update_start.setOnPreferenceClickListener(preference -> {
+            showTimePickerDialog(preference, "00:00");
+            return true;
         });
         Preference update_end = findPreference("update_end");
-        update_end.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                showTimePickerDialog(preference, "23:59");
-                return true;
-            }
+        update_end.setOnPreferenceClickListener(preference -> {
+            showTimePickerDialog(preference, "23:59");
+            return true;
         });
     }
 
@@ -767,11 +717,9 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
         // flag is true then do a web update, otherwise do a regular update
         if (mPendingUpdate) {
             mPendingUpdate = false;
-            WidgetProviderBase.updateWidgets(getApplicationContext(),
-                    WidgetProviderBase.UpdateType.VIEW_UPDATE);
+            WidgetProviderBase.updateWidgets(getApplicationContext(), WidgetProviderBase.UpdateType.VIEW_UPDATE);
         } else {
-            WidgetProviderBase.updateWidgetAsync(getApplicationContext(), mAppWidgetId,
-                    WidgetProviderBase.UpdateType.VIEW_NO_UPDATE);
+            WidgetProviderBase.updateWidgetAsync(getApplicationContext(), mAppWidgetId, WidgetProviderBase.UpdateType.VIEW_NO_UPDATE);
         }
         finish();
     }
@@ -805,15 +753,10 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
     }
 
     private void showFeedbackOption() {
-        @SuppressWarnings("rawtypes") Callable callable = new Callable() {
-            @Override
-            public Object call() {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=nitezh.ministock")));
-                return new Object();
-            }
+        @SuppressWarnings("rawtypes") Callable callable = () -> {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=nitezh.ministock")));
+            return new Object();
         };
-        DialogTools.alertWithCallback(this, "Rate MinistocksActivity",
-                "Please support MinistocksActivity by giving the application a 5 star rating in the android market.<br /><br />Motivation to continue to improve the product and add new features comes from positive feedback and ratings.",
-                "Rate it!", "Close", callable, null);
+        DialogTools.alertWithCallback(this, "Rate MinistocksActivity", "Please support MinistocksActivity by giving the application a 5 star rating in the android market.<br /><br />Motivation to continue to improve the product and add new features comes from positive feedback and ratings.", "Rate it!", "Close", callable, null);
     }
 }

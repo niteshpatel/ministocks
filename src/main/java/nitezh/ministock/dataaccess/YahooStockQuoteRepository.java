@@ -59,16 +59,7 @@ class YahooStockQuoteRepository {
             if (jsonArray != null) {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     quoteJson = jsonArray.getJSONObject(i);
-                    StockQuote quote = new StockQuote(
-                            quoteJson.optString("symbol"),
-                            quoteJson.optString("price"),
-                            quoteJson.optString("change"),
-                            quoteJson.optString("percent"),
-                            quoteJson.optString("exchange"),
-                            quoteJson.optString("volume"),
-                            quoteJson.optString("name"),
-                            fxChanges.get(quoteJson.optString("symbol")),
-                            Locale.US);
+                    StockQuote quote = new StockQuote(quoteJson.optString("symbol"), quoteJson.optString("price"), quoteJson.optString("change"), quoteJson.optString("percent"), quoteJson.optString("exchange"), quoteJson.optString("volume"), quoteJson.optString("name"), fxChanges.get(quoteJson.optString("symbol")), Locale.US);
                     quotes.put(quote.getSymbol(), quote);
                 }
             }

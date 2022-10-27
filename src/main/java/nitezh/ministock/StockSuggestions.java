@@ -34,8 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import nitezh.ministock.utils.Cache;
 import nitezh.ministock.utils.StorageCache;
@@ -44,8 +42,7 @@ import nitezh.ministock.utils.UrlDataTools;
 
 class StockSuggestions {
 
-    private static final String BASE_URL = "https://s.yimg.com/aq/autoc?callback=YAHOO.Finance.SymbolSuggest.ssCallback&region=US&lang=en-US&query=";
-    private static final Pattern PATTERN_RESPONSE = Pattern.compile("YAHOO\\.Finance\\.SymbolSuggest\\.ssCallback\\((\\{.*?\\})\\)");
+    private static final String BASE_URL = "https://query2.finance.yahoo.com/v1/finance/search?q=";
 
     static List<Map<String, String>> getSuggestions(String query) {
         List<Map<String, String>> suggestions = new ArrayList<>();
@@ -63,26 +60,21 @@ class StockSuggestions {
         if (response == null || response.equals("")) {
             return suggestions;
         }
-        Matcher m = PATTERN_RESPONSE.matcher(response);
-        if (m.find()) {
-            response = m.group(1);
-            try {
-                JSONArray jsonA = new JSONObject(response)
-                        .getJSONObject("ResultSet")
-                        .getJSONArray("Result");
+        try {
+            JSONArray jsonA = new JSONObject(response).getJSONArray("quotes");
 
-                for (int i = 0; i < jsonA.length(); i++) {
-                    Map<String, String> suggestion = new HashMap<>();
-                    JSONObject jsonO = jsonA.getJSONObject(i);
-                    suggestion.put("symbol", jsonO.getString("symbol"));
-                    suggestion.put("name", jsonO.getString("name"));
-                    suggestions.add(suggestion);
-                }
-                return suggestions;
-
-            } catch (JSONException ignored) {
+            for (int i = 0; i < jsonA.length(); i++) {
+                Map<String, String> suggestion = new HashMap<>();
+                JSONObject jsonO = jsonA.getJSONObject(i);
+                suggestion.put("symbol", jsonO.getString("symbol"));
+                suggestion.put("name", jsonO.getString("shortname"));
+                suggestions.add(suggestion);
             }
+            return suggestions;
+
+        } catch (JSONException ignored) {
         }
+
         return suggestions;
     }
 }

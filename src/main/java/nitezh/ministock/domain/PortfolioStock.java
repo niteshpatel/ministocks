@@ -39,15 +39,7 @@ public class PortfolioStock {
     private final String customName;
     private final String symbol2;
 
-    PortfolioStock(
-            String price,
-            String date,
-            String quantity,
-            String highLimit,
-            String lowLimit,
-            String customName,
-            String symbol2
-    ) {
+    PortfolioStock(String price, String date, String quantity, String highLimit, String lowLimit, String customName, String symbol2) {
         this.price = price;
         this.date = date;
         this.quantity = quantity;
@@ -108,7 +100,6 @@ public class PortfolioStock {
     }
 
     boolean hasData() {
-        return (this.getPrice() != null && !this.getPrice().equals("") ||
-                (this.getCustomName() != null && !this.getCustomName().equals("")));
+        return (this.getPrice() != null && !this.getPrice().equals("") || (this.getCustomName() != null && !this.getCustomName().equals("")));
     }
 }

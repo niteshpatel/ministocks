@@ -22,8 +22,7 @@
     THE SOFTWARE.
     -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="nitezh.ministock">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -37,8 +36,8 @@
         <activity
             android:name=".activities.MinistocksActivity"
             android:configChanges="orientation"
-            android:label="@string/app_name"
-            android:theme="@android:style/Theme.Dialog">
+            android:theme="@android:style/Theme.Dialog"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -49,7 +48,8 @@
             android:name=".activities.PortfolioActivity"
             android:configChanges="orientation"
             android:label="Portfolio"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -61,7 +61,8 @@
             android:configChanges="orientation"
             android:finishOnTaskLaunch="true"
             android:label="Preferences"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:exported="false">
 
             <intent-filter>
                 <action android:name="android.intent.action.EDIT" />
@@ -82,7 +83,8 @@
         </activity>
         <activity
             android:name=".activities.configure.ConfigureActivity1x2"
-            android:theme="@android:style/Theme.Dialog">
+            android:theme="@android:style/Theme.Dialog"
+            android:exported="false">
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
@@ -90,7 +92,8 @@
         </activity>
         <activity
             android:name=".activities.configure.ConfigureActivity2x2"
-            android:theme="@android:style/Theme.Dialog">
+            android:theme="@android:style/Theme.Dialog"
+            android:exported="false">
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
@@ -98,7 +101,8 @@
         </activity>
         <activity
             android:name=".activities.configure.ConfigureActivity1x4"
-            android:theme="@android:style/Theme.Dialog">
+            android:theme="@android:style/Theme.Dialog"
+            android:exported="false">
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
@@ -106,7 +110,8 @@
         </activity>
         <activity
             android:name=".activities.configure.ConfigureActivity2x4"
-            android:theme="@android:style/Theme.Dialog">
+            android:theme="@android:style/Theme.Dialog"
+            android:exported="false">
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
@@ -117,7 +122,8 @@
             android:configChanges="orientation"
             android:excludeFromRecents="true"
             android:launchMode="singleTop"
-            android:theme="@android:style/Theme.NoTitleBar">
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:exported="false">
 
             <intent-filter>
                 <action android:name="android.intent.action.EDIT" />
@@ -147,7 +153,8 @@
         <!-- Receivers -->
         <receiver
             android:name=".WidgetProvider"
-            android:label="Ministocks">
+            android:label="Ministocks"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -159,7 +166,8 @@
         </receiver>
         <receiver
             android:name=".activities.widget.WidgetProvider1x4"
-            android:label="Ministocks (wide)">
+            android:label="Ministocks (wide)"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -171,7 +179,8 @@
         </receiver>
         <receiver
             android:name=".activities.widget.WidgetProvider2x2"
-            android:label="Ministocks (tall)">
+            android:label="Ministocks (tall)"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -183,7 +192,8 @@
         </receiver>
         <receiver
             android:name=".activities.widget.WidgetProvider2x4"
-            android:label="Ministocks (wide/tall)">
+            android:label="Ministocks (wide/tall)"
+            android:exported="true">
 
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

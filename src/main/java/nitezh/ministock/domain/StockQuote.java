@@ -40,39 +40,12 @@ public class StockQuote {
     private final String volume;
     private final String name;
 
-    public StockQuote(
-            String symbol,
-            String price,
-            String change,
-            String percent,
-            String exchange,
-            String volume,
-            String name,
-            Locale locale) {
+    public StockQuote(String symbol, String price, String change, String percent, String exchange, String volume, String name, Locale locale) {
 
-        this(
-                symbol,
-                price,
-                change,
-                percent,
-                exchange,
-                volume,
-                name,
-                null,
-                locale
-        );
+        this(symbol, price, change, percent, exchange, volume, name, null, locale);
     }
 
-    public StockQuote(
-            String symbol,
-            String price,
-            String change,
-            String percent,
-            String exchange,
-            String volume,
-            String name,
-            String previousPrice,
-            Locale locale) {
+    public StockQuote(String symbol, String price, String change, String percent, String exchange, String volume, String name, String previousPrice, Locale locale) {
 
         this.symbol = symbol;
         this.exchange = exchange;
@@ -149,9 +122,7 @@ public class StockQuote {
     }
 
     private boolean isNonEmptyNumber(String value) {
-        return !value.equals("N/A")
-                && !value.equals("")
-                && !value.equals("null");
+        return !value.equals("N/A") && !value.equals("") && !value.equals("null");
     }
 
     public String getSymbol() {

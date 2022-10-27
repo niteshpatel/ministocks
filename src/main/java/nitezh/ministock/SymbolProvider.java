@@ -36,6 +36,7 @@ import android.text.TextUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -53,13 +54,8 @@ public class SymbolProvider extends ContentProvider {
      * {@link SearchManager} for the details on additional columns that are
      * supported.
      */
-    private static final String[] COLUMNS = {
-            "_id", // must include this column
-            SearchManager.SUGGEST_COLUMN_TEXT_1,
-            SearchManager.SUGGEST_COLUMN_TEXT_2,
-            SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA,
-            SearchManager.SUGGEST_COLUMN_INTENT_DATA
-    };
+    private static final String[] COLUMNS = {"_id", // must include this column
+            SearchManager.SUGGEST_COLUMN_TEXT_1, SearchManager.SUGGEST_COLUMN_TEXT_2, SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA, SearchManager.SUGGEST_COLUMN_INTENT_DATA};
 
     /**
      * Sets up a uri matcher for search suggestion and shortcut refresh queries.
@@ -106,7 +102,7 @@ public class SymbolProvider extends ContentProvider {
         if (!query.equals("")) {
             boolean symbolFound = false;
             for (Map<String, String> suggestion1 : suggestions) {
-                if (suggestion1.get("symbol").equals(query.toUpperCase())) {
+                if (Objects.equals(suggestion1.get("symbol"), query.toUpperCase())) {
                     symbolFound = true;
                     break;
                 }

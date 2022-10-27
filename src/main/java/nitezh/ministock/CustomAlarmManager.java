@@ -46,22 +46,21 @@ public class CustomAlarmManager {
         this.appStorage = PreferenceStorage.getInstance(context);
         this.alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent("UPDATE", null, context, WidgetProvider.class);
-        this.pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        this.pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 
     private Long getUpdateInterval() {
-        return Long.parseLong((this.appStorage.getString("update_interval",
-                Long.toString(AlarmManager.INTERVAL_HALF_HOUR))));
+        return Long.parseLong((this.appStorage.getString("update_interval", Long.toString(AlarmManager.INTERVAL_HALF_HOUR))));
     }
 
     private int getTimeToNextUpdate(Long updateInterval) {
-        Double timeToNextUpdate = updateInterval.doubleValue();
-        Double elapsedTime = DateTools.elapsedTime(this.appStorage.getString("last_update1", null));
+        double timeToNextUpdate = updateInterval.doubleValue();
+        double elapsedTime = DateTools.elapsedTime(this.appStorage.getString("last_update1", null));
         if (elapsedTime > 0) {
             timeToNextUpdate = Math.max(updateInterval - elapsedTime, 0);
         }
 
-        return timeToNextUpdate.intValue();
+        return (int) timeToNextUpdate;
     }
 
     public void setUpdateTimestamp() {
@@ -77,8 +76,7 @@ public class CustomAlarmManager {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.add(Calendar.MILLISECOND, this.getTimeToNextUpdate(updateInterval));
-        alarmManager.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis(),
-                updateInterval, pendingIntent);
+        alarmManager.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis(), updateInterval, pendingIntent);
     }
 
     public void cancel() {

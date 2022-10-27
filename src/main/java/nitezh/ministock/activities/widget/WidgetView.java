@@ -158,13 +158,13 @@ class WidgetView {
         leftTouchIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widget.getId());
         leftTouchIntent.setAction("LEFT");
         this.remoteViews.setOnClickPendingIntent(R.id.widget_left,
-                PendingIntent.getBroadcast(this.context, this.widget.getId(), leftTouchIntent, 0));
+                PendingIntent.getBroadcast(this.context, this.widget.getId(), leftTouchIntent, PendingIntent.FLAG_IMMUTABLE));
 
         Intent rightTouchIntent = new Intent(this.context, WidgetProvider.class);
         rightTouchIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, this.widget.getId());
         rightTouchIntent.setAction("RIGHT");
         this.remoteViews.setOnClickPendingIntent(R.id.widget_right,
-                PendingIntent.getBroadcast(this.context, this.widget.getId(), rightTouchIntent, 0));
+                PendingIntent.getBroadcast(this.context, this.widget.getId(), rightTouchIntent, PendingIntent.FLAG_IMMUTABLE));
     }
 
     private HashMap<WidgetProviderBase.ViewType, Boolean> getEnabledViews() {
@@ -414,7 +414,7 @@ class WidgetView {
 
         // Skip views as relevant
         int count = 0;
-        while (!this.getEnabledViews().get(ViewType.values()[currentView])) {
+        while (Boolean.FALSE.equals(this.getEnabledViews().get(ViewType.values()[currentView]))) {
             count += 1;
             currentView += 1;
             currentView = currentView % 10;
@@ -641,8 +641,8 @@ class WidgetView {
 
     private boolean canChangeView() {
         HashMap<ViewType, Boolean> enabledViews = this.getEnabledViews();
-        boolean hasMultipleDefaultViews = enabledViews.get(ViewType.VIEW_DAILY_PERCENT)
-                && enabledViews.get(ViewType.VIEW_DAILY_CHANGE);
+        boolean hasMultipleDefaultViews = Boolean.TRUE.equals(enabledViews.get(ViewType.VIEW_DAILY_PERCENT))
+                && Boolean.TRUE.equals(enabledViews.get(ViewType.VIEW_DAILY_CHANGE));
 
         return !(this.updateMode == UpdateType.VIEW_CHANGE
                 && !this.hasPortfolioData

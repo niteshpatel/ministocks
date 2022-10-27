@@ -38,7 +38,7 @@ import nitezh.ministock.utils.UrlDataTools;
 
 
 public class YahooStockQuoteRepository2 {
-//    private static final String BASE_URL = "https://api.iextrading.com/1.0/stock/market/batch";
+    //    private static final String BASE_URL = "https://api.iextrading.com/1.0/stock/market/batch";
     private static final String BASE_URL = "https://query1.finance.yahoo.com/v7/finance/quote?fields=symbol,regularMarketPrice,regularMarketChange,regularMarketChangePercent,regularMarketVolume,shortName,longName";
     private final FxChangeRepository fxChangeRepository;
 
@@ -70,16 +70,7 @@ public class YahooStockQuoteRepository2 {
             if (jsonArray != null) {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     quoteJson = jsonArray.getJSONObject(i);
-                    StockQuote quote = new StockQuote(
-                            quoteJson.optString("symbol"),
-                            quoteJson.optString("price"),
-                            quoteJson.optString("change"),
-                            quoteJson.optString("percent"),
-                            quoteJson.optString("exchange"),
-                            quoteJson.optString("volume"),
-                            quoteJson.optString("name"),
-                            fxChanges.get(quoteJson.optString("symbol")),
-                            Locale.US);
+                    StockQuote quote = new StockQuote(quoteJson.optString("symbol"), quoteJson.optString("price"), quoteJson.optString("change"), quoteJson.optString("percent"), quoteJson.optString("exchange"), quoteJson.optString("volume"), quoteJson.optString("name"), fxChanges.get(quoteJson.optString("symbol")), Locale.US);
                     quotes.put(quote.getSymbol(), quote);
                 }
             }
@@ -93,9 +84,7 @@ public class YahooStockQuoteRepository2 {
     JSONArray retrieveQuotesAsJson(Cache cache, List<String> symbols) throws JSONException {
         String url = buildRequestUrl(symbols);
         String quotesString = UrlDataTools.getCachedUrlData(url, cache, 300);
-        JSONArray quotesJson = new JSONObject(quotesString)
-                .getJSONObject("quoteResponse")
-                .getJSONArray("result");
+        JSONArray quotesJson = new JSONObject(quotesString).getJSONObject("quoteResponse").getJSONArray("result");
         JSONObject quoteJson;
 
         JSONArray quotes = new JSONArray();

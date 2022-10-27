@@ -29,7 +29,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class PreferenceStorage implements Storage {
 
@@ -41,8 +40,7 @@ public class PreferenceStorage implements Storage {
     }
 
     public static PreferenceStorage getInstance(Context context) {
-        return new PreferenceStorage(context.getSharedPreferences(
-                context.getString(R.string.prefs_name), 0));
+        return new PreferenceStorage(context.getSharedPreferences(context.getString(R.string.prefs_name), 0));
     }
 
     @Override
@@ -74,10 +72,7 @@ public class PreferenceStorage implements Storage {
 
     @Override
     public HashMap<String, ?> getAll() {
-        HashMap<String, Object> items = new HashMap<>();
-        for (Map.Entry<String, ?> entry : this.preferences.getAll().entrySet()) {
-            items.put(entry.getKey(), entry.getValue());
-        }
+        HashMap<String, Object> items = new HashMap<>(this.preferences.getAll());
 
         return items;
     }

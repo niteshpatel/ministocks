@@ -70,14 +70,8 @@ public class DateTools {
     }
 
     public static int compareToNow(Date date) {
-        Long now = new Date().getTime();
-        if (date.getTime() > now) {
-            return 1;
-        } else if (date.getTime() < now) {
-            return -1;
-        } else {
-            return 0;
-        }
+        long now = new Date().getTime();
+        return Long.compare(date.getTime(), now);
     }
 
     public static String getNowAsString() {
@@ -85,9 +79,7 @@ public class DateTools {
     }
 
     public static String timeDigitPad(int c) {
-        if (c >= 10)
-            return String.valueOf(c);
-        else
-            return "0" + String.valueOf(c);
+        if (c >= 10) return String.valueOf(c);
+        else return "0" + String.valueOf(c);
     }
 }

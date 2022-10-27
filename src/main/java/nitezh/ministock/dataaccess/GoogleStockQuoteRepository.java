@@ -53,15 +53,7 @@ public class GoogleStockQuoteRepository {
 
                 for (int i = 0; i < jsonArray.length(); i++) {
                     quoteJson = jsonArray.getJSONObject(i);
-                    StockQuote quote = new StockQuote(
-                            quoteJson.optString("t"),
-                            quoteJson.optString("l_cur", quoteJson.optString("l")).replace(",", ""),
-                            quoteJson.optString("c"),
-                            quoteJson.optString("cp"),
-                            quoteJson.optString("e").replace("INDEX", ""),
-                            "0",
-                            quoteJson.optString("e"),
-                            Locale.US);
+                    StockQuote quote = new StockQuote(quoteJson.optString("t"), quoteJson.optString("l_cur", quoteJson.optString("l")).replace(",", ""), quoteJson.optString("c"), quoteJson.optString("cp"), quoteJson.optString("e").replace("INDEX", ""), "0", quoteJson.optString("e"), Locale.US);
                     quotes.put(quote.getSymbol(), quote);
                 }
             } catch (JSONException ignored) {

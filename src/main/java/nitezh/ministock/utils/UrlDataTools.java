@@ -24,10 +24,13 @@
 
 package nitezh.ministock.utils;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -61,11 +64,15 @@ public class UrlDataTools {
         }
 
         try {
-            URLConnection connection = new URL(url).openConnection();
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setConnectTimeout(30000);
             connection.setReadTimeout(60000);
-            return inputStreamToString(connection.getInputStream());
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("User-Agent", "Ministocks - Stocks Widget");
+            InputStream inputStream = connection.getInputStream();
+            return inputStreamToString(inputStream);
         } catch (IOException ignored) {
+            Log.i("TAG", "getUrlData: " + ignored);
         }
         return null;
     }

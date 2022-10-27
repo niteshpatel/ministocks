@@ -48,8 +48,7 @@ public class BackupAgent extends BackupAgentHelper {
     }
 
     @Override
-    public void onBackup(ParcelFileDescriptor oldState, BackupDataOutput data,
-                         ParcelFileDescriptor newState) throws IOException {
+    public void onBackup(ParcelFileDescriptor oldState, BackupDataOutput data, ParcelFileDescriptor newState) throws IOException {
         // Hold the lock while the FileBackupHelper performs backup
         synchronized (UserData.sFileBackupLock) {
             super.onBackup(oldState, data, newState);
@@ -57,8 +56,7 @@ public class BackupAgent extends BackupAgentHelper {
     }
 
     @Override
-    public void onRestore(BackupDataInput data, int appVersionCode,
-                          ParcelFileDescriptor newState) throws IOException {
+    public void onRestore(BackupDataInput data, int appVersionCode, ParcelFileDescriptor newState) throws IOException {
         // Hold the lock while the FileBackupHelper restores the file
         synchronized (UserData.sFileBackupLock) {
             super.onRestore(data, appVersionCode, newState);

@@ -43,7 +43,7 @@ abstract class ConfigureActivityBase extends Activity {
     int mWidgetSize = 0;
 
     @Override
-    public boolean onKeyDown(int keyCode, @SuppressWarnings("NullableProblems") KeyEvent event) {
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             setupWidget(0);
         }
@@ -75,11 +75,9 @@ abstract class ConfigureActivityBase extends Activity {
         this.setVisible(false);
         DialogTools.alertWithCallback(this, "Ministocks Widget Added",
                 "Touch the left side of the widget to view setup options.", "Close", null, null,
-                new Callable() {
-                    public Object call() throws Exception {
-                        setupWidget(mWidgetSize);
-                        return new Object();
-                    }
+                (Callable) () -> {
+                    setupWidget(mWidgetSize);
+                    return new Object();
                 });
     }
 }

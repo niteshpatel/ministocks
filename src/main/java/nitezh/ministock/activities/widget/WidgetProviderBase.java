@@ -51,10 +51,8 @@ import nitezh.ministock.utils.StorageCache;
 
 public class WidgetProviderBase extends AppWidgetProvider {
 
-    private static void applyUpdate(Context context, int appWidgetId, UpdateType updateMode,
-                                    HashMap<String, StockQuote> quotes, String quotesTimeStamp) {
-        WidgetView widgetView = new WidgetView(context, appWidgetId, updateMode,
-                quotes, quotesTimeStamp);
+    private static void applyUpdate(Context context, int appWidgetId, UpdateType updateMode, HashMap<String, StockQuote> quotes, String quotesTimeStamp) {
+        WidgetView widgetView = new WidgetView(context, appWidgetId, updateMode, quotes, quotesTimeStamp);
         widgetView.setOnClickPendingIntents();
         if (widgetView.hasPendingChanges()) {
             widgetView.applyPendingChanges();
@@ -63,12 +61,10 @@ public class WidgetProviderBase extends AppWidgetProvider {
     }
 
     public static void updateWidgetAsync(Context context, int appWidgetId, UpdateType updateType) {
-        try {
+
             new GetDataTask().build(context, appWidgetId, updateType).execute();
-        }
-        // usually occurs when queued tasks = 128
-        catch (RejectedExecutionException ignored) {
-        }
+
+
     }
 
     public static void updateWidgets(Context context, UpdateType updateType) {
@@ -155,9 +151,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
                 case "RIGHT":
                     Bundle extras = intent.getExtras();
                     if (extras != null) {
-                        int appWidgetId = extras.getInt(
-                                AppWidgetManager.EXTRA_APPWIDGET_ID,
-                                AppWidgetManager.INVALID_APPWIDGET_ID);
+                        int appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
                         handleTouch(context, appWidgetId, action);
                     }
                     break;
@@ -204,22 +198,11 @@ public class WidgetProviderBase extends AppWidgetProvider {
     }
 
     public enum ViewType {
-        VIEW_DAILY_PERCENT,
-        VIEW_DAILY_CHANGE,
-        VIEW_PORTFOLIO_PERCENT,
-        VIEW_PORTFOLIO_CHANGE,
-        VIEW_PORTFOLIO_PERCENT_AER,
-        VIEW_PL_DAILY_PERCENT,
-        VIEW_PL_DAILY_CHANGE,
-        VIEW_PL_PERCENT,
-        VIEW_PL_CHANGE,
-        VIEW_PL_PERCENT_AER
+        VIEW_DAILY_PERCENT, VIEW_DAILY_CHANGE, VIEW_PORTFOLIO_PERCENT, VIEW_PORTFOLIO_CHANGE, VIEW_PORTFOLIO_PERCENT_AER, VIEW_PL_DAILY_PERCENT, VIEW_PL_DAILY_CHANGE, VIEW_PL_PERCENT, VIEW_PL_CHANGE, VIEW_PL_PERCENT_AER
     }
 
     public enum UpdateType {
-        VIEW_UPDATE,
-        VIEW_NO_UPDATE,
-        VIEW_CHANGE
+        VIEW_UPDATE, VIEW_NO_UPDATE, VIEW_CHANGE
     }
 
     private static class GetDataTask extends AsyncTask<Object, Void, Void> {
@@ -241,13 +224,9 @@ public class WidgetProviderBase extends AppWidgetProvider {
         protected Void doInBackground(Object... params) {
             WidgetRepository widgetRepository = new AndroidWidgetRepository(this.context);
             Storage storage = PreferenceStorage.getInstance(this.context);
-            StockQuoteRepository quoteRepository = new StockQuoteRepository(
-                    PreferenceStorage.getInstance(this.context), new StorageCache(storage),
-                    widgetRepository);
+            StockQuoteRepository quoteRepository = new StockQuoteRepository(PreferenceStorage.getInstance(this.context), new StorageCache(storage), widgetRepository);
 
-            this.quotes = quoteRepository.getQuotes(
-                    widgetRepository.getWidget(this.appWidgetId).getSymbols(),
-                    updateType == UpdateType.VIEW_UPDATE);
+            this.quotes = quoteRepository.getQuotes(widgetRepository.getWidget(this.appWidgetId).getSymbols(), updateType == UpdateType.VIEW_UPDATE);
             this.timeStamp = quoteRepository.getTimeStamp();
 
             return null;
@@ -255,8 +234,7 @@ public class WidgetProviderBase extends AppWidgetProvider {
 
         @Override
         protected void onPostExecute(Void result) {
-            applyUpdate(this.context, this.appWidgetId, this.updateType, this.quotes,
-                    this.timeStamp);
+            applyUpdate(this.context, this.appWidgetId, this.updateType, this.quotes, this.timeStamp);
         }
     }
 }

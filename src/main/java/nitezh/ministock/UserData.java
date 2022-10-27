@@ -43,6 +43,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 
@@ -53,14 +54,14 @@ public class UserData {
 
     public static void cleanupPreferenceFiles(Context context) {
         ArrayList<String> preferencesPathsInUse = getPreferencesPathsInUse(context);
-        String sharedPrefsPath = context.getFilesDir().getParentFile().getPath() + "/shared_prefs";
+        String sharedPrefsPath = Objects.requireNonNull(context.getFilesDir().getParentFile()).getPath() + "/shared_prefs";
         removeFilesExceptWhitelist(sharedPrefsPath, preferencesPathsInUse);
     }
 
     private static void removeFilesExceptWhitelist(String sharedPrefsFolder, ArrayList<String> preferencesFilenames) {
         File sharedPrefsDir = new File(sharedPrefsFolder);
         if (sharedPrefsDir.exists()) {
-            for (File f : sharedPrefsDir.listFiles()) {
+            for (File f : Objects.requireNonNull(sharedPrefsDir.listFiles())) {
                 if (!preferencesFilenames.contains(f.getName())) {
                     //noinspection ResultOfMethodCallIgnored
                     f.delete();
@@ -115,11 +116,9 @@ public class UserData {
             JSONObject jsonBackupsForAllWidgets = getJsonBackupsForAllWidgets(context);
 
             Widget widget = new AndroidWidgetRepository(context).getWidget(appWidgetId);
-            widget.setWidgetPreferencesFromJson(
-                    jsonBackupsForAllWidgets.getJSONObject(backupName));
+            widget.setWidgetPreferencesFromJson(jsonBackupsForAllWidgets.getJSONObject(backupName));
 
-            Boolean areAllStocksRestored = widget.getSymbolCount() == 10
-                    && !widget.getStock(4).equals("");
+            Boolean areAllStocksRestored = widget.getSymbolCount() == 10 && !widget.getStock(4).equals("");
 
             InformUserWidgetBackupRestoredAndReloadPreferences(context, areAllStocksRestored);
         } catch (JSONException ignored) {
@@ -138,12 +137,9 @@ public class UserData {
 
     private static void InformUserWidgetBackupRestoredAndReloadPreferences(Context context, Boolean areAllStocksRestored) {
         final Context finalContext = context;
-        Callable callable = new Callable() {
-            @Override
-            public Object call() throws Exception {
-                ReloadPreferences((Activity) finalContext);
-                return new Object();
-            }
+        Callable callable = () -> {
+            ReloadPreferences((Activity) finalContext);
+            return new Object();
         };
 
         String msg = "The current widget preferences have been restored from your selected backup.";
@@ -151,11 +147,7 @@ public class UserData {
             msg += "<br/><br/>Note: The backup had more stocks than your current widget, so not all stocks were restored.";
         }
 
-        DialogTools.alertWithCallback(context,
-                "Widget restored",
-                msg,
-                "Close", null,
-                callable, null);
+        DialogTools.alertWithCallback(context, "Widget restored", msg, "Close", null, callable, null);
     }
 
     private static void ReloadPreferences(Activity activity) {
@@ -172,10 +164,10 @@ public class UserData {
             }
 
             JSONObject jsonBackupsForAllWidgets = getJsonBackupsForAllWidgets(context);
-            Iterator iterator = jsonBackupsForAllWidgets.keys();
+            Iterator<String> iterator = jsonBackupsForAllWidgets.keys();
             ArrayList<String> backupList = new ArrayList<>();
             while (iterator.hasNext()) {
-                backupList.add((String) iterator.next());
+                backupList.add(iterator.next());
             }
 
             return backupList.toArray(new String[backupList.size()]);

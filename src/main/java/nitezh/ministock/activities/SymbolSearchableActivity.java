@@ -56,7 +56,7 @@ public class SymbolSearchableActivity extends ListActivity {
             setResult(RESULT_OK, resultValue);
             finish();
         } else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new String[]{String.format("Symbol \'%s\' is not found. Press to add it anyway.", intent.getStringExtra(SearchManager.QUERY))});
+            ListAdapter adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new String[]{String.format("Symbol '%s' is not found. Press to add it anyway.", intent.getStringExtra(SearchManager.QUERY))});
             setListAdapter(adapter);
         } else if (Intent.ACTION_EDIT.equals(intent.getAction())) {
             startSearch(SearchManager.QUERY, false, null, false);

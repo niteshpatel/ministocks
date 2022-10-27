@@ -57,8 +57,8 @@ public class FxChangeRepository {
         try {
             JSONObject jsonChanges = retrieveChangesAsJson(cache);
             String symbol;
-            for (Iterator iter = jsonChanges.keys(); iter.hasNext(); ) {
-                symbol = (String) iter.next();
+            for (Iterator<String> iter = jsonChanges.keys(); iter.hasNext(); ) {
+                symbol = iter.next();
                 changes.put(symbol, jsonChanges.getString(symbol));
             }
         } catch (JSONException ignored) {

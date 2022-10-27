@@ -74,8 +74,8 @@ class AndroidWidget implements Widget {
     @Override
     public void setWidgetPreferencesFromJson(JSONObject jsonPrefs) {
         String key;
-        for (Iterator preferenceKey = jsonPrefs.keys(); preferenceKey.hasNext(); ) {
-            key = (String) preferenceKey.next();
+        for (Iterator<String> preferenceKey = jsonPrefs.keys(); preferenceKey.hasNext(); ) {
+            key = preferenceKey.next();
 
             if (preferencesToNotRestore.contains(key)) {
                 continue;
@@ -259,8 +259,7 @@ class AndroidWidget implements Widget {
 
     @Override
     public boolean hasDailyPercentView() {
-        return this.storage.getBoolean("show_percent_change", false)
-                && (size == 0 || size == 2);
+        return this.storage.getBoolean("show_percent_change", false) && (size == 0 || size == 2);
     }
 
     @Override
@@ -270,8 +269,7 @@ class AndroidWidget implements Widget {
 
     @Override
     public boolean hasTotalPercentView() {
-        return this.storage.getBoolean("show_portfolio_change", false)
-                && (size == 0 || size == 2);
+        return this.storage.getBoolean("show_portfolio_change", false) && (size == 0 || size == 2);
     }
 
     @Override
@@ -286,8 +284,7 @@ class AndroidWidget implements Widget {
 
     @Override
     public boolean hasDailyPlPercentView() {
-        return this.storage.getBoolean("show_profit_daily_change", false)
-                && (size == 0 || size == 2);
+        return this.storage.getBoolean("show_profit_daily_change", false) && (size == 0 || size == 2);
     }
 
     @Override
@@ -297,8 +294,7 @@ class AndroidWidget implements Widget {
 
     @Override
     public boolean hasTotalPlPercentView() {
-        return this.storage.getBoolean("show_profit_change", false)
-                && (size == 0 || size == 2);
+        return this.storage.getBoolean("show_profit_change", false) && (size == 0 || size == 2);
     }
 
     @Override

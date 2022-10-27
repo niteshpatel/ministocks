@@ -47,8 +47,8 @@ public class PortfolioStockRepository {
     public static final String WIDGET_JSON = "widgetJson";
 
     public HashMap<String, StockQuote> stocksQuotes = new HashMap<>();
-    HashMap<String, PortfolioStock> portfolioStocksInfo = new HashMap<>();
-    private Set<String> widgetsStockSymbols = new HashSet<>();
+    HashMap<String, PortfolioStock> portfolioStocksInfo;
+    private final Set<String> widgetsStockSymbols;
 
     private static final HashMap<String, PortfolioStock> mPortfolioStocks = new HashMap<>();
     private static boolean mDirtyPortfolioStockMap = true;
@@ -84,7 +84,7 @@ public class PortfolioStockRepository {
         Set<String> symbolSet = portfolioStocksInfo.keySet();
 
         return stockQuoteRepository
-                .getQuotes(Arrays.asList(symbolSet.toArray(new String[symbolSet.size()])), false);
+                .getQuotes(Arrays.asList(symbolSet.toArray(new String[0])), false);
     }
 
     private HashMap<String, PortfolioStock> getPortfolioStocksInfo(Set<String> symbols) {
@@ -152,7 +152,7 @@ public class PortfolioStockRepository {
         String holdingValue = "";
         try {
             Double holdingQuanta = NumberTools.parseDouble(stock.getQuantity());
-            Double holdingPrice = numberFormat.parse(currentPrice).doubleValue();
+            Double holdingPrice = Objects.requireNonNull(numberFormat.parse(currentPrice)).doubleValue();
             holdingValue = CurrencyTools.addCurrencyToSymbol(String.format(Locale.getDefault(), "%.0f", (holdingQuanta * holdingPrice)), symbol);
         } catch (Exception ignored) {
         }
@@ -165,8 +165,8 @@ public class PortfolioStockRepository {
             if (quote != null) {
                 lastChange = quote.getPercent();
                 try {
-                    Double change = numberFormat.parse(quote.getChange()).doubleValue();
-                    Double totalChange = NumberTools.parseDouble(stock.getQuantity()) * change;
+                    Double change = Objects.requireNonNull(numberFormat.parse(quote.getChange())).doubleValue();
+                    double totalChange = NumberTools.parseDouble(stock.getQuantity()) * change;
                     lastChange += " / " + CurrencyTools.addCurrencyToSymbol(String.format(Locale.getDefault(), "%.0f", (totalChange)), symbol);
                 } catch (Exception ignored) {
                 }
@@ -180,9 +180,9 @@ public class PortfolioStockRepository {
         // Calculate total change, including percentage
         String totalChange = "";
         try {
-            Double price = numberFormat.parse(currentPrice).doubleValue();
+            Double price = Objects.requireNonNull(numberFormat.parse(currentPrice)).doubleValue();
             Double buy = NumberTools.parseDouble(buyPrice);
-            Double totalPercentChange = price - buy;
+            double totalPercentChange = price - buy;
             totalChange = String.format(Locale.getDefault(), "%.0f", 100 * totalPercentChange / buy) + "%";
 
             // Calculate change
@@ -306,6 +306,7 @@ public class PortfolioStockRepository {
         JSONObject json = new JSONObject();
         for (String symbol : this.portfolioStocksInfo.keySet()) {
             PortfolioStock item = this.portfolioStocksInfo.get(symbol);
+            assert item != null;
             if (item.hasData()) {
                 try {
                     json.put(symbol, item.toJson());
@@ -333,8 +334,7 @@ public class PortfolioStockRepository {
     }
 
     private List<String> getSortedSymbols() {
-        ArrayList<String> symbols = new ArrayList<>();
-        symbols.addAll(this.portfolioStocksInfo.keySet());
+        ArrayList<String> symbols = new ArrayList<>(this.portfolioStocksInfo.keySet());
 
         try {
             // Ensure symbols beginning with ^ appear first
@@ -358,7 +358,7 @@ public class PortfolioStockRepository {
     void removeUnused() {
         List<String> symbols = new ArrayList<>(this.portfolioStocksInfo.keySet());
         for (String symbol : symbols) {
-            String price = this.portfolioStocksInfo.get(symbol).getPrice();
+            String price = Objects.requireNonNull(this.portfolioStocksInfo.get(symbol)).getPrice();
             if ((price == null || price.equals("")) && !this.widgetsStockSymbols.contains(symbol)) {
                 this.portfolioStocksInfo.remove(symbol);
             }

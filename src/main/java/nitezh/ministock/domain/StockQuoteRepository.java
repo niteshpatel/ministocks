@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 import nitezh.ministock.Storage;
@@ -95,9 +96,10 @@ public class StockQuoteRepository {
         for (String symbol : quotes.keySet()) {
             StockQuote quote = quotes.get(symbol);
 
+            assert quote != null;
             String newSymbol = quote.getSymbol();
             for (String symbolToReplace : GOOGLE_SYMBOLS.keySet()) {
-                newSymbol = newSymbol.replace(symbolToReplace, GOOGLE_SYMBOLS.get(symbolToReplace));
+                newSymbol = newSymbol.replace(symbolToReplace, Objects.requireNonNull(GOOGLE_SYMBOLS.get(symbolToReplace)));
             }
 
             quote.setSymbol(newSymbol);
@@ -111,7 +113,7 @@ public class StockQuoteRepository {
         for (String symbol : symbols) {
             String newSymbol = symbol;
             for (String symbolToReplace : GOOGLE_SYMBOLS.inverse().keySet()) {
-                newSymbol = newSymbol.replace(symbolToReplace, GOOGLE_SYMBOLS.inverse().get(symbolToReplace));
+                newSymbol = newSymbol.replace(symbolToReplace, Objects.requireNonNull(GOOGLE_SYMBOLS.inverse().get(symbolToReplace)));
             }
             newSymbols.add(newSymbol);
         }
@@ -124,8 +126,7 @@ public class StockQuoteRepository {
         if (noCache) {
             Set<String> widgetSymbols = this.widgetRepository.getWidgetsStockSymbols();
             widgetSymbols.add("^DJI");
-            widgetSymbols.addAll(new PortfolioStockRepository(
-                    this.appStorage, this.widgetRepository).getStocks().keySet());
+            widgetSymbols.addAll(new PortfolioStockRepository(this.appStorage, this.widgetRepository).getStocks().keySet());
             quotes = getLiveQuotes(new ArrayList<>(widgetSymbols));
         }
 
@@ -138,8 +139,7 @@ public class StockQuoteRepository {
         }
 
         // Returns only quotes requested
-        @SuppressWarnings("unchecked") HashMap<String, StockQuote> filteredQuotes =
-                (HashMap<String, StockQuote>) quotes.clone();
+        @SuppressWarnings("unchecked") HashMap<String, StockQuote> filteredQuotes = (HashMap<String, StockQuote>) quotes.clone();
         filteredQuotes.keySet().retainAll(symbols);
         return filteredQuotes;
     }
@@ -164,20 +164,11 @@ public class StockQuoteRepository {
                 String key;
                 JSONObject details;
 
-                for (Iterator iter = savedQuotes.keys(); iter.hasNext(); ) {
-                    key = (String) iter.next();
+                for (Iterator<String> iter = savedQuotes.keys(); iter.hasNext(); ) {
+                    key = iter.next();
                     details = savedQuotes.getJSONObject(key);
 
-                    quotes.put(key, new StockQuote(
-                            details.getString("symbol"),
-                            details.getString("price"),
-                            details.getString("change"),
-                            details.getString("percent"),
-                            details.getString("exchange"),
-                            details.getString("volume"),
-                            details.getString("name"),
-                            Locale.getDefault()
-                    ));
+                    quotes.put(key, new StockQuote(details.getString("symbol"), details.getString("price"), details.getString("change"), details.getString("percent"), details.getString("exchange"), details.getString("volume"), details.getString("name"), Locale.getDefault()));
                 }
             } catch (Exception e) {
                 quotes = new HashMap<>();
@@ -207,6 +198,7 @@ public class StockQuoteRepository {
 
             StockQuote quote = quotes.get(symbol);
             try {
+                assert quote != null;
                 savedQuotes.getJSONObject(symbol).put("symbol", quote.getSymbol());
                 savedQuotes.getJSONObject(symbol).put("price", quote.getPrice());
                 savedQuotes.getJSONObject(symbol).put("change", quote.getChange());

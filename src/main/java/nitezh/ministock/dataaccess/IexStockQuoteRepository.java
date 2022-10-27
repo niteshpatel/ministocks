@@ -69,16 +69,7 @@ class IexStockQuoteRepository {
             if (jsonArray != null) {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     quoteJson = jsonArray.getJSONObject(i);
-                    StockQuote quote = new StockQuote(
-                            quoteJson.optString("symbol"),
-                            quoteJson.optString("price"),
-                            quoteJson.optString("change"),
-                            quoteJson.optString("percent"),
-                            quoteJson.optString("exchange"),
-                            quoteJson.optString("volume"),
-                            quoteJson.optString("name"),
-                            fxChanges.get(quoteJson.optString("symbol")),
-                            Locale.US);
+                    StockQuote quote = new StockQuote(quoteJson.optString("symbol"), quoteJson.optString("price"), quoteJson.optString("change"), quoteJson.optString("percent"), quoteJson.optString("exchange"), quoteJson.optString("volume"), quoteJson.optString("name"), fxChanges.get(quoteJson.optString("symbol")), Locale.US);
                     quotes.put(quote.getSymbol(), quote);
                 }
             }
@@ -96,9 +87,7 @@ class IexStockQuoteRepository {
 
         JSONArray quotes = new JSONArray();
         for (String symbol : symbols) {
-            JSONObject quoteJson = quotesJson
-                    .getJSONObject(symbol)
-                    .getJSONObject("quote");
+            JSONObject quoteJson = quotesJson.getJSONObject(symbol).getJSONObject("quote");
 
             JSONObject data = new JSONObject();
             data.put("symbol", quoteJson.optString("symbol"));

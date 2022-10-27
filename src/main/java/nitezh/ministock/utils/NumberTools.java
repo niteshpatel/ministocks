@@ -113,8 +113,7 @@ public class NumberTools {
         }
 
         // Ignore maxPrecision = 0
-        if (maxPrecision == null)
-            maxPrecision = precision;
+        if (maxPrecision == null) maxPrecision = precision;
         // Trim precision as necessary (max precision 4)
         return String.format("%." + Math.min(precision, maxPrecision) + "f", number);
     }
@@ -144,8 +143,7 @@ public class NumberTools {
                 value = String.format(Locale.getDefault(), "%.0fM", volume / 1000000D);
             else if (volume > 999D)
                 value = String.format(Locale.getDefault(), "%.0fK", volume / 1000D);
-            else
-                value = String.format(Locale.getDefault(), "%.0f", volume);
+            else value = String.format(Locale.getDefault(), "%.0f", volume);
         } catch (Exception ignored) {
         }
         return value;
@@ -169,6 +167,7 @@ public class NumberTools {
         // Double.parse handles '+' but NumberFormat.parse does not, so do it here
         Number number = format.parse(value.replace("+", ""));
 
+        assert number != null;
         return number.doubleValue();
     }
 

@@ -120,8 +120,7 @@ public class CurrencyTools {
             currencyChar = charMap.get(codeMap.get(symbol.substring(index)));
         }
 
-        if (currencyChar == null)
-            currencyChar = "$";
+        if (currencyChar == null) currencyChar = "$";
 
         return currencyChar;
     }
@@ -130,11 +129,10 @@ public class CurrencyTools {
         String currencySymbol = getCurrencyForSymbol(symbol);
 
         // £ needs division by 100
-        if (currencySymbol.equals("£"))
-            try {
-                value = String.format(Locale.getDefault(), "%.0f", NumberTools.tryParseDouble(value) / 100);
-            } catch (Exception ignored) {
-            }
+        if (currencySymbol.equals("£")) try {
+            value = String.format(Locale.getDefault(), "%.0f", NumberTools.tryParseDouble(value) / 100);
+        } catch (Exception ignored) {
+        }
 
         // Move minus sign to front if present
         String prefix = "";
