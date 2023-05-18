@@ -145,8 +145,10 @@ public class StockQuoteRepository {
     }
 
     private HashMap<String, StockQuote> loadQuotes() {
-        if (mCachedQuotes != null && !mCachedQuotes.isEmpty()) {
-            return mCachedQuotes;
+        if (mCachedQuotes != null) {
+            if (!mCachedQuotes.isEmpty()) {
+                return mCachedQuotes;
+            }
         }
 
         HashMap<String, StockQuote> quotes = new HashMap<>();

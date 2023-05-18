@@ -39,7 +39,7 @@ import nitezh.ministock.utils.UrlDataTools;
 
 public class YahooStockQuoteRepository2 {
     //    private static final String BASE_URL = "https://api.iextrading.com/1.0/stock/market/batch";
-    private static final String BASE_URL = "https://query1.finance.yahoo.com/v7/finance/quote?fields=symbol,regularMarketPrice,regularMarketChange,regularMarketChangePercent,regularMarketVolume,shortName,longName";
+    private static final String BASE_URL = "https://query1.finance.yahoo.com/v6/finance/quote?fields=symbol,regularMarketPrice,regularMarketChange,regularMarketChangePercent,regularMarketVolume,shortName,longName";
     private final FxChangeRepository fxChangeRepository;
 
     public YahooStockQuoteRepository2(FxChangeRepository fxChangeRepository) {
